@@ -1,21 +1,4 @@
-# General
-.DS_Store
-.vscode
-
-# API
 PlatypusApi/.project
 PlatypusApi/.settings
 PlatypusApi/.classpath
 PlatypusApi/target
-
-# React
-PlatypusReact/build
-PlatypusReact/coverage
-PlatypusReact/node_modules
-PlatypusReact/npm-debug.log*
-PlatypusReact/yarn-debug.log*
-PlatypusReact/yarn-error.log*
-PlatypusReact/.env.local
-PlatypusReact/.env.development.local
-PlatypusReact/.env.test.local
-PlatypusReact/.env.production.local
