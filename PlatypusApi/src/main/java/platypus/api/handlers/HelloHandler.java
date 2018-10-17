@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.models.Auto;
@@ -18,8 +20,8 @@ import spark.Spark;
 public class HelloHandler implements Route {
 
 	// Private variables should only be thread safe, as the `handle()` method will be called in a multi-threaded fashion.
-	private HikariDataSource ds;
-	public HelloHandler(HikariDataSource ds) {
+	private DataSource ds;
+	public HelloHandler(DataSource ds) {
 		this.ds = ds;
 	}
 	
