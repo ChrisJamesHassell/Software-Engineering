@@ -16,8 +16,3 @@ ReactDom.render(
     <App />,
     document.getElementById('root')
 );
-
-
-// Define the hot loader and that it should be used
-// const AppWithHot = hot(module)(App);
-//module.hot.accept();
