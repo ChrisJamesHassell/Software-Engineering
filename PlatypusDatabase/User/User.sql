@@ -6,7 +6,7 @@
  */
 
 CREATE TABLE User(
-  user_id       INT         NOT NULL UNIQUE AUTO_INCREMENT,
+  user_id       INT         NOT NULL UNSIGNED AUTO_INCREMENT,
   name          VARCHAR(32) NOT NULL, -- User's name, provided on acct create
   username      VARCHAR(32) NOT NULL, -- User's username, provided on acct create
   password      VARCHAR(32) NOT NULL, -- User's most recent password
