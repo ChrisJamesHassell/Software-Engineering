@@ -1,6 +1,6 @@
 var webpack = require('webpack');
 var CompressionPlugin = require('compression-webpack-plugin');
-var WebpackPwaManifest = require('webpack-pwa-manifest')
+var WebpackPwaManifest = require('webpack-pwa-manifest');
 const path = require('path');
 
 
@@ -53,10 +53,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: [
-      '.js',
-      '.jsx'
-    ]
+    extensions: [ '.js', '.jsx', '.css' ]
   },
   plugins: [
     new WebpackPwaManifest({
