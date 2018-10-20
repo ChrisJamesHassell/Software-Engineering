@@ -9,7 +9,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
-import com.zaxxer.hikari.HikariDataSource;
 
 public class LoginHandler implements Route {
 	
@@ -23,10 +22,10 @@ public class LoginHandler implements Route {
 	public Object handle(Request request, Response response) throws Exception 	{
 		User u = new User( 
 				Integer.parseInt(request.queryParams("id")),
-				request.queryParams("Name"),
+				request.queryParams("username"),
 				request.queryParams("pass"),
-				request.queryParams("Email"),
-				request.queryParams("namu"));
+				request.queryParams("email"),
+				request.queryParams("name"));
 		
 		
 		try (Connection db = ds.getConnection()) {
