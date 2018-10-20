@@ -1,13 +1,23 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 
-class App extends React.Component{
-    constructor(props){
+import AppNavbar from './scripts/Navbar/AppNavbar';
+import AppJumbo from './scripts/Main/AppJumbo';
+//import loginbg from './images/loginbg.png'
+import './css/style.css';
+
+
+
+class App extends React.Component {
+    constructor(props) {
         super(props);
     }
     render() {
-        return(
-            <div id="root1">Hello dar.</div>
+        return (
+            <div id="container">
+                <AppNavbar />
+                <AppJumbo />
+            </div>
         )
     }
 }
