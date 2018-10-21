@@ -60,6 +60,27 @@ h1 {
     font-family: 'Raleway', sans-serif;
 }
 
+a.active.btn.btn-link.disabled {
+    color: white;
+    padding: 0;
+    font-weight: 300;
+}
+
+a.active.btn.btn-link, a.btn.btn-link {
+    padding: 0;
+    font-weight: 700;
+}
+
+button:disabled, button[disabled] {
+    background: #929db1;
+    border-color: #929db1;
+}
+
+.btn-success[disabled]:hover {
+    background: #e65d4f;
+    border-color: #e65d4fed;
+}
+
 /* Small devices (landscape phones, 576px and up) */    
 @media (min-width: 0px) { 
     #row-space {
@@ -131,6 +152,10 @@ h1 {
         align-items: stretch;
         justify-content: center;
         padding: 5vh;
+    }
+
+    a.active.btn.btn-link.disabled {
+        color: #333;
     }
  }
 

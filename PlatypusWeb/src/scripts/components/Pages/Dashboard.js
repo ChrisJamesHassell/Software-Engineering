@@ -1,9 +1,9 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
-import {RouteWithSubRoutes} from '../../routes';
+import { Link, Route } from 'react-router-dom';
+import { RouteWithSubRoutes } from '../../routes';
 
 const Dashboard = ({ routes }) => (
-    <div style={{background: 'white'}}>
+    <div style={{ background: 'white' }}>
         <h3>Dashboard</h3>
         <ul>
             <li>
@@ -13,6 +13,7 @@ const Dashboard = ({ routes }) => (
                 <Link to="/dashboard/cart">Cart</Link>
             </li>
         </ul>
+        <Route exact path="/dashboard" component={Bus} />
         {routes.map((route, i) => <RouteWithSubRoutes key={i} {...route} />)}
     </div>
 );
