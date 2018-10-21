@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import platypus.api.handlers.HelloHandler;
 import platypus.api.handlers.IndexHandler;
 import platypus.api.handlers.CorsFilter;
+import platypus.api.handlers.CreateHandler;
 import spark.Service.StaticFiles;
 import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.EmbeddedJettyServer;
@@ -40,13 +41,13 @@ public class Main {
 		// DB stuff
 		// ***************************** //
 		// DB conn pool config
-//		final HikariDataSource ds = new HikariDataSource();
-//		ds.setMaximumPoolSize(8);
-//		ds.setDriverClassName("org.mariadb.jdbc.Driver");
-//		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/butts");
-//		ds.addDataSourceProperty("user", "root");
-//		ds.addDataSourceProperty("password", "lamepassword");
-//		ds.setAutoCommit(false);
+		final HikariDataSource ds = new HikariDataSource();
+		ds.setMaximumPoolSize(8);
+		ds.setDriverClassName("org.mariadb.jdbc.Driver");
+		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/test"); // TODO, agree on a database name.
+		ds.addDataSourceProperty("user", "client");
+		ds.addDataSourceProperty("password", "temppass123");
+		ds.setAutoCommit(true); // Changed to true, bc why Micah?????? Help.
 
 		final Properties emailConfig = new Properties();
 		emailConfig.put("mail.smtp.auth", true);
@@ -80,7 +81,8 @@ public class Main {
 		Spark.path("/", () -> {
 			Spark.before("/*", (q, a) -> System.out.println("Api call"));
 			Spark.path("/User", () -> {
-				Spark.post("/Create", new IndexHandler(), gson::toJson); //Update this to be a userCreate handler
+				// Spark.verb(String, Route, ResponseTransformer.render(Object));
+				Spark.post("/Create", new CreateHandler(ds), gson::toJson); //Update this to be a userCreate handler
 				Spark.get("/Settings", new IndexHandler(), gson::toJson); //Update to settings manager
 				Spark.put("/Login", new IndexHandler(), gson::toJson); //Update to LoginHandler.
 			});
