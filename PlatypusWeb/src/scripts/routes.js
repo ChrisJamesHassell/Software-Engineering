@@ -1,12 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
-// import { Route, IndexRoute } from 'react-router';  
-import App from './components/Pages/App';
-// import LoginPage from './components/Main/LoginPage';
-//remove later
-import logo from '../images/icons/logo_fill_white.svg';
-
+import { Route } from "react-router-dom";
 import {Dashboard, Bus, Cart} from './components/Pages/Dashboard';
 import Login from './components/Pages/Login';
 
@@ -35,7 +28,7 @@ const routes = [
 
 // wrap <Route> and use this everywhere instead, then when
 // sub routes are added to any route it'll work
-const RouteWithSubRoutes = route => (
+const RouteWithSubRoutes = (route) => (
     <Route
       path={route.path}
       render={props => (
