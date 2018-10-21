@@ -1,40 +1,89 @@
 package platypus.api.models;
 
-
 public class User {
-	//Bare minimum for the functionality to create a new User at the moment.
-	private int userid;
-	private String username;
-	private String pass;
+
+	private int userId;
+	private String firstName;
+	private String lastName;
 	private String email;
-	private String name;
+	private String username;
+	private String password;
 	
-	public User(int id, String username, String pass, String email, String name) {
-		this.userid = id;
-		this.username = username;
-		this.pass = pass;
-		this.email = email;
-		this.name = name;
+	public User() {
+		
 	}
 	
-	public int GetId() {
-		return userid;
+	public User(String fn, String ln, String e, String un, String p) {
+		this.firstName = fn;
+		this.lastName = ln;
+		this.email = e;
+		this.username = un;
+		this.password = p;
 	}
 	
-	public String GetUserName() {
-		return username;
+	public User(int u, String fn, String ln, String e, String un, String p) {
+		this.userId = u;
+		this.firstName = fn;
+		this.lastName = ln;
+		this.email = e;
+		this.username = un;
+		this.password = p;
 	}
-	
-	public String GetPass() {
-		return pass;
+
+	public int getUserId() {
+		return userId;
 	}
-	
-	public String GetEmail() {
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getEmail() {
 		return email;
 	}
-	
-	public String GetName() {
-		return name;
-	}
-}
 
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", username=" + username + ", password=" + password + "]";
+	}
+
+	
+	
+}
