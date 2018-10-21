@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-
-import AppNavbar from './scripts/Navbar/AppNavbar';
-import AppJumbo from './scripts/Main/AppJumbo';
-//import loginbg from './images/loginbg.png'
+import { Router, Route, hashHistory } from 'react-router'
+import AppNavbar from './scripts/components/Navbar/AppNavbar';
+import AppJumbo from './scripts/components/Main/AppJumbo';
 import './css/style.css';
 
 
@@ -26,8 +25,3 @@ ReactDom.render(
     <App />,
     document.getElementById('root')
 );
-
-
-// Define the hot loader and that it should be used
-// const AppWithHot = hot(module)(App);
-//module.hot.accept();
