@@ -1,30 +1,30 @@
 import React from 'react';
-import { FormGroup, Button, FormControl, HelpBlock, Alert } from 'react-bootstrap';
+import { FormGroup, Button, FormControl, HelpBlock, ControlLabel, Alert } from 'react-bootstrap';
 import TextInput from './TextInput';
 
 // This is required to match correctly
 const regex = {
-    'userName': /^(?=.*[a-zA-Z])[A-Za-z\d]{8,32}$/g,
-    'userPassword': /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,32}$/g
+    'userName-signup': /^(?=.*[a-zA-Z])[A-Za-z\d]{8,32}$/g,
+    'userPassword-signup': /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,32}$/g
 }
 
-export default class LoginForm extends React.Component {
+export default class SignupForm extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
             id: null,
             isDisabled: true,
-            'userName': {
+            'userName-signup': {
                 validation: null,
                 value: null,
                 requirements: 'Must be between 8-32 chars in length with no special chars',
-                helpText: ''
+                helpText: null
             },
-            'userPassword': {
+            'userPassword-signup': {
                 validation: null,
                 value: null,
                 requirements: 'Must be between 8-32 chars in length with 1 uppercase, 1 lowercase, 1 number, and no special chars',
-                helpText: ''
+                helpText: null
             }
         }
         this.getValidationState = this.getValidationState.bind(this);
@@ -34,7 +34,7 @@ export default class LoginForm extends React.Component {
     componentDidUpdate(prevProps, nextProps) {
         var stateChanged = JSON.stringify(nextProps) !== JSON.stringify(this.state);
         if (stateChanged) {
-            var formValid = this.state['userName'].validation == 'success' && this.state['userPassword'].validation == 'success';
+            var formValid = this.state['userName-signup'].validation == 'success' && this.state['userPassword-signup'].validation == 'success';
             this.setState({ isDisabled: !formValid });
         }
     }
@@ -57,23 +57,27 @@ export default class LoginForm extends React.Component {
         // If there was NOT a match
         else {
             let [validation, helpText] = [null, null];  // Clear the error if the field is empty
-            if(value.length > 0) [validation, helpText] = ['error', this.state[id].requirements];
+            if (value.length > 0) [validation, helpText] = ['error', this.state[id].requirements];
             this.setValidationState(id, { validation: validation, value: null, helpText: helpText });
         }
     }
 
     handleClick(e) {
+        console.log(this.state);
+        console.log('loginname: ', this.state['userName-signup'].value);
+        console.log('password: ', this.state['userPassword-signup'].value);
     }
 
     render() {
-        var userNameHelp = this.state['userName'].helpText;
-        var passwordHelp = this.state['userPassword'].helpText
+        var userNameHelp = this.state['userName-signup'].helpText;
+        var passwordHelp = this.state['userPassword-signup'].helpText
         return (
             <form>
                 <FormGroup
-                    controlId="userName"
-                    validationState={this.state['userName'].validation}
+                    controlId="userName-signup"
+                    validationState={this.state['userName-signup'].validation}
                 >
+                    <ControlLabel>User name</ControlLabel>
                     <TextInput
                         type={'text'}
                         label={'User Name'}
@@ -85,9 +89,10 @@ export default class LoginForm extends React.Component {
                 </FormGroup>
 
                 <FormGroup
-                    controlId="userPassword"
-                    validationState={this.state['userPassword'].validation}
+                    controlId="userPassword-signup"
+                    validationState={this.state['userPassword-signup'].validation}
                 >
+                    <ControlLabel>Password</ControlLabel>
                     <TextInput
                         type={'password'}
                         label={'Password'}
@@ -97,7 +102,7 @@ export default class LoginForm extends React.Component {
                     <FormControl.Feedback />
                     <HelpBlock><Alert bsStyle="danger" hidden={!passwordHelp}>{passwordHelp}</Alert></HelpBlock>
                 </FormGroup>
-                <Button type={'submit'} bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.isDisabled}>Login</Button>
+                <Button type={'submit'} bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.isDisabled}>Sign Up</Button>
             </form>
         );
     }

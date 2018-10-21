@@ -1,21 +1,25 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from "react-router-dom";
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { RouteWithSubRoutes } from '../../routes';
-import logo from '../../../images/icons/logo_fill_white.svg';
+import { RouteWithSubRoutes, routes } from '../../routes';
+import { Dashboard } from './Dashboard';
+import Login from './Login';
+import AppLogoHeader from '../Navbar/AppLogoHeader';
+
+/**************************************/
+//  We want to:
+// ----------------------------------- //
+//  1. Check to see if user is logged in (dash)
+//  2. If not, display login page
+//  3. If yes, display Dashboard
+
 
 const Main = (props) => (
     <Router>
         <div id="container">
             <Navbar collapseOnSelect style={{ marginBottom: '0', borderRadius: '0' }}>
-                <Navbar.Header>
-                    <Navbar.Brand id='logo-brand'>
-                        <img src={logo}></img>
-                        <Link to="/"><span id='brand-platy'>platy</span><span id='brand-pus'>pus</span></Link>
-                    </Navbar.Brand>
-                    <Navbar.Toggle />
-                </Navbar.Header>
+                <AppLogoHeader logo={props.logo} />
                 <Navbar.Collapse>
                     <Nav>
                         <LinkContainer to="/dashboard"><NavItem eventKey={1}>Dashboard</NavItem></LinkContainer>
@@ -29,8 +33,8 @@ const Main = (props) => (
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-            <Route exact path="/" component={props.routes[0].component} />
-            {props.routes.map((route, i) => <RouteWithSubRoutes key={i} {...route} />)}
+            <Route exact path="/" component={Login} logo={props.logo} />
+            {routes.map((route, i) => <RouteWithSubRoutes key={i} {...route} />)}
         </div>
     </Router>
 );

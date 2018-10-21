@@ -5,13 +5,14 @@ import { render } from 'react-dom';
 import { routes } from './scripts/routes';
 import Main from './scripts/components/Pages/Main';
 import './css/style.css';
+import logo from './images/icons/logo_fill_white.svg'
 
 
 //const store = configureStore();
 const baseURI = "https://www.platypus.null-terminator.com/api/";
 
 render(
-    <Main routes={routes} baseURI={baseURI} />,
+    <Main routes={routes} logo={logo} baseURI={baseURI} />,
     document.getElementById('root')
 );
 
