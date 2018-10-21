@@ -1,0 +1,51 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+// import { Route, IndexRoute } from 'react-router';  
+import App from './components/Pages/App';
+// import LoginPage from './components/Main/LoginPage';
+//remove later
+import logo from '../images/icons/logo_fill_white.svg';
+
+import {Dashboard, Bus, Cart} from './components/Pages/Dashboard';
+import Login from './components/Pages/Login';
+
+
+// then our route config
+const routes = [
+    {
+      path: "/login",
+      component: Login
+    },
+    {
+      path: "/dashboard",
+      component: Dashboard,
+      routes: [
+        {
+          path: "/dashboard/bus",
+          component: Bus
+        },
+        {
+          path: "/dashboard/cart",
+          component: Cart
+        }
+      ]
+    }
+  ];
+
+// wrap <Route> and use this everywhere instead, then when
+// sub routes are added to any route it'll work
+const RouteWithSubRoutes = route => (
+    <Route
+      path={route.path}
+      render={props => (
+        // pass the sub-routes down to keep nesting
+        <route.component {...props} routes={route.routes} />
+      )}
+    />
+  );
+
+  export {
+      routes,
+      RouteWithSubRoutes
+  }
