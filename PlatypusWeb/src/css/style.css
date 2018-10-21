@@ -3,7 +3,7 @@
     --bg-overlay: rgba(63, 82, 97, 0.8);
 }
 
-@import url('https://fonts.googleapis.com/css?family=Poppins:300,600|Raleway:300,800|Roboto:300,700');
+@import url('https://fonts.googleapis.com/css?family=Raleway:300,800|Roboto:300,700');
 
 html, body, #root, #container {
     height: 100%;
@@ -128,8 +128,9 @@ h1 {
         display: flex;
         flex-basis: auto;
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
         justify-content: center;
+        padding: 5vh;
     }
  }
 
