@@ -3,7 +3,7 @@ import { Button, Grid, Row, Col } from 'react-bootstrap';
 import LoginForm from '../Forms/LoginForm';
 import logo from '../../../images/icons/logo_fill_white.svg';
 
-export default class AppJumbo extends React.Component {
+export default class LoginPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {}
