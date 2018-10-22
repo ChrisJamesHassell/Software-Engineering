@@ -88,7 +88,7 @@ public class Main {
 				// Spark.verb(String, Route, ResponseTransformer.render(Object));
 				Spark.post("/create", new CreateHandler(ds), gson::toJson); //Update this to be a userCreate handler
 				Spark.get("/settings", new IndexHandler(), gson::toJson); //Update to settings manager
-				Spark.put("/login", new LoginHandler(ds), gson::toJson);
+				Spark.post("/login", new LoginHandler(ds), gson::toJson);
 			});
 		});
 			
