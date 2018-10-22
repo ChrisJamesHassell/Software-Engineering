@@ -33,13 +33,13 @@ export default class SignupForm extends React.Component {
             'firstName-signup': {
                 validation: null,
                 value: null,
-                requirements: 'Must be between 8-32 chars in length and only contain letters',
+                requirements: 'Must be between 1-32 chars in length and only contain letters',
                 helptext: null
             },
             'lastName-signup': {
                 validation: null,
                 value: null,
-                requirements: 'Must be between 8-32 chars in length and only contain letters',
+                requirements: 'Must be between 1-32 chars in length and only contain letters',
                 helptext: null
             },
             'dob-signup': {
