@@ -1,23 +1,22 @@
+import * as serviceWorker from './serviceWorker';
 import React from 'react';
-import ReactDom from 'react-dom';
+import { render } from 'react-dom';
+import { routes } from './scripts/routes';
+import App from './scripts/components/Pages/App';
+import './css/global/bootstrap.css';
+import './css/style.css';
+import logo from './images/icons/logo_fill_white.svg'
 
-class App extends React.Component{
-    constructor(props){
-        super(props);
-    }
-    render() {
-        return(
-            <div id="root1">Hello dar.</div>
-        )
-    }
-}
 
-ReactDom.render(
-    <App />,
+//const store = configureStore();
+const baseURI = "https://www.platypus.null-terminator.com/api/";
+
+render(
+    <App routes={routes} logo={logo} baseURI={baseURI} />,
     document.getElementById('root')
 );
 
-
-// Define the hot loader and that it should be used
-// const AppWithHot = hot(module)(App);
-//module.hot.accept();
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: http://bit.ly/CRA-PWA
+serviceWorker.register();
