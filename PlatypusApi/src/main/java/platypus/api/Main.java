@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.handlers.HelloHandler;
 import platypus.api.handlers.IndexHandler;
+import platypus.api.handlers.LoginHandler;
 import platypus.api.handlers.CorsFilter;
 import platypus.api.handlers.CreateHandler;
 import spark.Service.StaticFiles;
