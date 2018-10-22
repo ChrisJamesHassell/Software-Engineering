@@ -8,26 +8,29 @@ public class User {
 	private String email;
 	private String username;
 	private String password;
+	private String dateOfBirth;
 	
 	public User() {
 		
 	}
 	
-	public User(String fn, String ln, String e, String un, String p) {
+	public User(String fn, String ln, String e, String un, String p, String dob) {
 		this.firstName = fn;
 		this.lastName = ln;
 		this.email = e;
 		this.username = un;
 		this.password = p;
+		dateOfBirth = dob;
 	}
 	
-	public User(int u, String fn, String ln, String e, String un, String p) {
+	public User(int u, String fn, String ln, String e, String un, String p, String dob) {
 		this.userId = u;
 		this.firstName = fn;
 		this.lastName = ln;
 		this.email = e;
 		this.username = un;
 		this.password = p;
+		dateOfBirth = dob;
 	}
 
 	public int getUserId() {
@@ -78,10 +81,18 @@ public class User {
 		this.password = password;
 	}
 
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+	
+	public void setDateOfBirth(String dob) {
+		dateOfBirth = dob;
+	}
+	
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", username=" + username + ", password=" + password + "]";
+				+ ", username=" + username + ", password=" + password + ", dateOfBirth=" + dateOfBirth +" ]";
 	}
 
 	
