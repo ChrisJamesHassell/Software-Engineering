@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# old stuff
+/src/old
+
 # testing
 /coverage
 
