@@ -25,7 +25,7 @@ public class IndexHandler implements Route {
 		InetAddress myIP = null; 
 		try { myIP = InetAddress.getLocalHost(); } 
 		catch (UnknownHostException e) { 
-			// TODO Auto-generated catch block 
+			// TODO Auto-generated catch block
 			e.printStackTrace(); 
 			} // getHostAddress() returns IP address of a machine 
 		String IPAddress = myIP.getHostAddress(); // getHostname returns DNS hostname of a machine 
