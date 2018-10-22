@@ -1,0 +1,177 @@
+:root {
+    --text: #3F5261;
+    --bg-overlay: rgba(63, 82, 97, 0.8);
+}
+
+@import url('https://fonts.googleapis.com/css?family=Raleway:300,800|Roboto:300,700');
+
+html, body, #root, #container {
+    height: 100%;
+    background: #47B5AB;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+}
+
+h1 {
+    font-size: 4em;
+}
+
+#login-extra {
+    color: #ffffff;
+    padding: 5vh;
+}
+
+#login-extra h1 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+}
+
+#login-extra p {
+    padding: 1vh 0;
+}
+
+#login button {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+
+}
+
+.navbar-brand {
+    display: inline-flex;
+    min-width: 200px;
+}
+
+#logo-brand a {
+    color: white;
+}
+
+#logo-brand img {
+    max-height: 30px;
+    display: inline;
+}
+
+#brand-platy {
+    font-weight: 800;
+    font-family: 'Raleway', sans-serif;
+}
+
+#brand-pus {
+    font-weight: 300;
+    font-family: 'Raleway', sans-serif;
+}
+
+a.active.btn.btn-link.disabled {
+    color: white;
+    padding: 0;
+    font-weight: 300;
+}
+
+a.active.btn.btn-link, a.btn.btn-link {
+    padding: 0;
+    font-weight: 700;
+}
+
+button:disabled, button[disabled] {
+    background: #929db1;
+    border-color: #929db1;
+}
+
+.btn-success[disabled]:hover {
+    background: #e65d4f;
+    border-color: #e65d4fed;
+}
+
+/* Small devices (landscape phones, 576px and up) */    
+@media (min-width: 0px) { 
+    #row-space {
+        display: none;
+    }
+
+    #row-container {
+        height: 100%;
+    }
+
+    .container {
+        height: 100%;
+    }
+
+    #container {
+        overflow: hidden;
+    }
+
+    #login {
+        height: 100%;
+        background: linear-gradient(
+            var(--bg-overlay), 
+            var(--bg-overlay)
+          ),url('../images/loginbg.webp') no-repeat;
+        background-size: cover;
+        display: flex;
+        flex-flow: column;
+        justify-content: space-evenly;
+        padding: 5vw;
+    }
+
+    #login-creds {
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #login-creds div {
+        text-align: center;
+    }
+ }
+
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+    #row-space {
+        display: inline-block;
+        height: 20vh;
+    }
+
+    #login {
+        height: auto;
+        display: flex;
+        flex-flow: row;
+        padding: 0;
+    }
+
+    #login-extra {
+        display: flex;
+        align-items: stretch;
+    }
+
+    #login-creds {
+        background: #ffffff;
+        color: var(--text);
+        display: flex;
+        flex-basis: auto;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        padding: 5vh;
+    }
+
+    a.active.btn.btn-link.disabled {
+        color: #333;
+    }
+ }
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+    #login {
+        background: linear-gradient(
+            var(--bg-overlay), 
+            var(--bg-overlay)
+          ),url('../images/loginbg.webp') no-repeat;
+        background-size: contain;
+    }
+ }
+ /* *src\images\loginbg.jpg/
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+
+ }
