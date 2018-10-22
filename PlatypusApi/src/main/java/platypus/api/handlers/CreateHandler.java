@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -31,7 +34,7 @@ public class CreateHandler implements Route {
 				request.queryParams("username"),
 				request.queryParams("password"),
 				request.queryParams("dateofbirth")
-		);
+		); // TODO, verify with Micah that this is how query params will look.
 		
 		System.out.println(u.toString());
 		// TODO, Verify username and password requirements. Break out early if invalid [????]
@@ -55,17 +58,17 @@ public class CreateHandler implements Route {
 						"Failure",
 						"",
 						"Username already exists."
-						);
+				);
 			}
 			rs.close();
 			
 			// Create account in the database
-			ps = conn.prepareStatement("INSERT INTO user (firstname, lastname, email, username, password, dateofbirth) VALUES (?,?,?,?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO user (first_name, last_name, email, username, password, date_of_birth) VALUES (?,?,?,?,?,?)");
 			ps.setString(1, u.getFirstName());
 			ps.setString(2, u.getLastName());
 			ps.setString(3, u.getEmail());
 			ps.setString(4, u.getUsername());
-			ps.setString(5, u.getPassword());
+			ps.setString(5, BCrypt.hashpw(u.getPassword(), BCrypt.gensalt()));
 			ps.setString(6, u.getDateOfBirth());
 			int ret = ps.executeUpdate();
 			ps.close();
@@ -75,7 +78,7 @@ public class CreateHandler implements Route {
 						"Success",
 						"",
 						"Account created successfully."
-						);
+				);
 			}
 			else {
 				// Insert failed, return failure
@@ -83,7 +86,7 @@ public class CreateHandler implements Route {
 						"Failure",
 						"",
 						"Account creation failed. PreparedStatement returned non-1 value."
-						);
+				);
 			}
 		}
 		catch (SQLException e) {
@@ -93,7 +96,15 @@ public class CreateHandler implements Route {
 					"Error",
 					"",
 					"SQLException occured."
-					);
+			);
+		}
+		catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+			return new JsonResponse(
+					"Error",
+					"",
+					"IllegalArgumentException occured while hashing password."
+			);
 		}
 		finally {
 			conn.close();
