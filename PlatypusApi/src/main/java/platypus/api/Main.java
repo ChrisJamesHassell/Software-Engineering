@@ -51,7 +51,7 @@ public class Main {
 		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/test"); // TODO, agree on a database name.
 		ds.addDataSourceProperty("user", "client");
 		ds.addDataSourceProperty("password", "temppass123");
-		ds.setAutoCommit(true); // Changed to true, bc why Micah?????? Help.
+		ds.setAutoCommit(true); // Changed to true
 
 		final Properties emailConfig = new Properties();
 		emailConfig.put("mail.smtp.auth", true);
