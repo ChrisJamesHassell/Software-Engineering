@@ -116,27 +116,21 @@ public class CreateHandler implements Route {
 	
 	private boolean matchesRegexRequirements(User u) {
 		if (!u.getUsername().matches("^(?=.*[a-zA-Z])[A-Za-z\\d]{8,32}$")) {
-			System.out.println("here");
 			return false;
 		}
 		else if (!u.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,32}$")) {
-			System.out.println("here1");
 			return false;
 		}
 		else if (!u.getFirstName().matches("^(?=.*[A-Za-z])[A-Za-z]{1,32}$")) {
-			System.out.println("here2");
 			return false;
 		}
 		else if (!u.getLastName().matches("^(?=.*[A-Za-z])[A-Za-z]{1,32}$")) {
-			System.out.println("here3");
 			return false;
 		}
 		else if (!u.getEmail().matches("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")) {
-			System.out.println("here4");
 			return false;
 		}
 		else if (!u.getDateOfBirth().matches("^.+$")) {
-			System.out.println("here5");
 			return false;
 		}
 		return true;
