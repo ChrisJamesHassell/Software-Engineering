@@ -27,12 +27,12 @@ public class CreateHandler implements Route {
 		
 		// Instantiate user class with JSON post request
 		User u = new User(
-				request.queryParams("firstname"),
-				request.queryParams("lastname"),
-				request.queryParams("email"),
-				request.queryParams("username"),
-				request.queryParams("password"),
-				request.queryParams("dateofbirth")
+				request.params(":firstname"),
+				request.params(":lastname"),
+				request.params(":email"),
+				request.params(":username"),
+				request.params(":password"),
+				request.params(":dateofbirth")
 		);
 		
 		if (!matchesRegexRequirements(u)) {
