@@ -75,7 +75,16 @@ public class Main {
 		 */
 
 		Spark.get("/", new IndexHandler(), gson::toJson);
-
-
+	
+		// Setting up the path groups.
+		Spark.path("/", () -> {
+			Spark.before("/*", (q, a) -> System.out.println("Api call"));
+			Spark.path("/User", () -> {
+				Spark.post("/Create", new IndexHandler(), gson::toJson); //Update this to be a userCreate handler
+				Spark.get("/Settings", new IndexHandler(), gson::toJson); //Update to settings manager
+				Spark.put("/Login", new IndexHandler(), gson::toJson); //Update to LoginHandler.
+			});
+		});
+			
 	}
 }
