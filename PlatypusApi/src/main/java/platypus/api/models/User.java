@@ -32,6 +32,11 @@ public class User {
 		this.password = p;
 		dateOfBirth = dob;
 	}
+	
+	public User(String un, String p) {
+		this.username = un;
+		this.password = p;
+	}	
 
 	public int getUserId() {
 		return userId;
