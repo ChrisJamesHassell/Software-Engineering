@@ -84,11 +84,11 @@ public class Main {
 		// Setting up the path groups.
 		Spark.path("/", () -> {
 			Spark.before("/*", (q, a) -> System.out.println("Api call"));
-			Spark.path("/User", () -> {
+			Spark.path("/user", () -> {
 				// Spark.verb(String, Route, ResponseTransformer.render(Object));
-				Spark.post("/Create", new CreateHandler(ds), gson::toJson); //Update this to be a userCreate handler
-				Spark.get("/Settings", new IndexHandler(), gson::toJson); //Update to settings manager
-				Spark.put("/Login", new LoginHandler(ds), gson::toJson);
+				Spark.post("/create", new CreateHandler(ds), gson::toJson); //Update this to be a userCreate handler
+				Spark.get("/settings", new IndexHandler(), gson::toJson); //Update to settings manager
+				Spark.post("/login", new LoginHandler(ds), gson::toJson);
 			});
 		});
 			
