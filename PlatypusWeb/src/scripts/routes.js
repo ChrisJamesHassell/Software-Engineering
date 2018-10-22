@@ -4,20 +4,22 @@ import { Dashboard, Bus, Cart } from './components/Pages/Dashboard';
 import Login from './components/Pages/Login';
 import LoginForm from './components/Forms/LoginForm';
 import SignupForm from './components/Forms/SignupForm';
-
+import logo from '../images/icons/logo_fill_white.svg';
 // then our route config
 const routes = [
     {
-        path: "/",
+        path: "/login",
         component: Login,
         routes: [
             {
-                path: "/login",
-                component: LoginForm
+                path: "/login/login",
+                component: LoginForm,
+                logo: logo
             },
             {
-                path: "/signup",
-                component: SignupForm
+                path: "/login/signup",
+                component: SignupForm,
+                logo: logo
             }
         ]
     },
