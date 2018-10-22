@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -34,15 +33,19 @@ public class CreateHandler implements Route {
 				request.queryParams("username"),
 				request.queryParams("password"),
 				request.queryParams("dateofbirth")
-		); // TODO, verify with Micah that this is how query params will look.
+		);
 		
-		System.out.println(u.toString());
-		// TODO, Verify username and password requirements. Break out early if invalid [????]
+		if (!matchesRegexRequirements(u)) {
+			return new JsonResponse(
+					"Error",
+					"",
+					"Fields do not match regex requirements."
+			);
+		}
 		
 		// Connect to DB
 		Connection conn = null;
 		try {
-			// Connect to DB
 			conn = ds.getConnection();
 			
 			// Check DB for existing username, break out early if invalid
@@ -109,6 +112,28 @@ public class CreateHandler implements Route {
 		finally {
 			conn.close();
 		}
+	}
+	
+	private boolean matchesRegexRequirements(User u) {
+		if (!u.getUsername().matches("^(?=.*[a-zA-Z])[A-Za-z\\d]{8,32}$")) {
+			return false;
+		}
+		else if (!u.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,32}$")) {
+			return false;
+		}
+		else if (!u.getFirstName().matches("^(?=.*[A-Za-z])[A-Za-z]{1,32}$")) {
+			return false;
+		}
+		else if (!u.getLastName().matches("^(?=.*[A-Za-z])[A-Za-z]{1,32}$")) {
+			return false;
+		}
+		else if (!u.getEmail().matches("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")) {
+			return false;
+		}
+		else if (!u.getDateOfBirth().matches("^.+$")) {
+			return false;
+		}
+		return true;
 	}
 
 }
