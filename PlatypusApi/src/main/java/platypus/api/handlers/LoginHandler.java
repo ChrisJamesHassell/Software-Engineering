@@ -24,8 +24,8 @@ public class LoginHandler implements Route {
 	@Override
 	public Object handle(Request request, Response response) throws Exception 	{
 		User u = new User( 
-				request.queryParams("username"),
-				request.queryParams("password"));
+				request.params(":username"),
+				request.params(":password"));
 		
 		
 		//Set up connection to db
