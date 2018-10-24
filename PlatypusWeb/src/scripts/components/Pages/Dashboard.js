@@ -14,7 +14,9 @@ const Dashboard = ({ routes }) => (
             </li>
         </ul>
         <Route exact path="/dashboard" component={Bus} />
-        {routes.map((route, i) => <RouteWithSubRoutes key={i} {...route} />)}
+        {/* {routes.map((route, i) => <RouteWithSubRoutes key={i} {...route} />)} */}
+        <Route path="/dashboard/bus" component={Bus} />
+        <Route path="/dashboard/cart" component={Cart} />
     </div>
 );
 

@@ -1,5 +1,7 @@
 import React from 'react';
 import { FormGroup, Button, FormControl, HelpBlock, Alert } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom';
+import {Dashboard} from '../Pages/Dashboard';
 import TextInput from './TextInput';
 
 // This is required to match correctly
@@ -9,6 +11,37 @@ const regex = {
 }
 
 const path = window.location.origin.toLowerCase().includes('platypus') ? '' : 'http://localhost:8080';
+
+const fakeAuth = {
+    isAuthenticated: false,
+    authenticate(cb) {
+      this.isAuthenticated = true;
+      setTimeout(cb, 100); // fake async
+    },
+    signout(cb) {
+      this.isAuthenticated = false;
+      setTimeout(cb, 100);
+    }
+  };
+
+const AuthButton = withRouter(
+    ({ history }) =>
+      fakeAuth.isAuthenticated ? (
+        <p>
+          Welcome!{" "}
+          <button
+            onClick={() => {
+              fakeAuth.signout(() => history.push("/"));
+            }}
+          >
+            Sign out
+          </button>
+        </p>
+      ) : (
+        <p>You are not logged in.</p>
+      )
+  );
+
 
 function readResponseAsJSON(response) {
     return response.json();
@@ -48,6 +81,7 @@ export default class LoginForm extends React.Component {
         this.validateResponse = this.validateResponse.bind(this);
         this.logError = this.logError.bind(this);
         this.handleJsonResponse = this.handleJsonResponse.bind(this);
+        this.submit = React.createRef();
     }
 
     componentDidMount() { }
@@ -118,6 +152,7 @@ export default class LoginForm extends React.Component {
         };
 
         fetchJSON(request, this.validateResponse, this.logError, this.handleJsonResponse, opts);
+
     }
 
     validateResponse(result) {
@@ -136,7 +171,8 @@ export default class LoginForm extends React.Component {
         console.log("got to 'handleresponse'");
         console.log(response);
         this.setState({ items: response });
-
+        console.log('after the fetch. doc.cookie: ', document.cookie);
+        if(document.cookie) this.props.authenticate(document.cookie);
     }
 
     logError(error) {
@@ -152,6 +188,8 @@ export default class LoginForm extends React.Component {
     render() {
         var userNameHelp = this.state['userName'].helpText;
         var passwordHelp = this.state['userPassword'].helpText;
+        console.log("**~***~* LOGINFORM: ~*~*~");
+        console.log(this.props);
         return (
             <form action={this.state.route} method="POST">
                 <FormGroup
@@ -183,7 +221,7 @@ export default class LoginForm extends React.Component {
                     <FormControl.Feedback />
                     <HelpBlock><Alert bsStyle="danger" hidden={!passwordHelp}>{passwordHelp}</Alert></HelpBlock>
                 </FormGroup>
-                <Button bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.isDisabled}>Login</Button>
+                <Button ref={this.submit} bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.isDisabled}>Login</Button>
             </form>
         );
     }

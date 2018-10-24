@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Grid, Row, Col } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Link, Route, Switch } from 'react-router-dom';
+import { Link, Route, Switch, Redirect } from 'react-router-dom';
 import { RouteWithSubRoutes } from '../../routes';
 import LoginForm from '../Forms/LoginForm';
 import SignupForm from '../Forms/SignupForm';
@@ -16,7 +16,7 @@ const Login = (props) => {
             </Row>
             {console.log('==========PROPS==============')}
             {console.log(props)}
-            {console.log('==========PROPS.routes==============')}
+            {console.log('==========PROPS.routes (LOGIN)==============')}
             {console.log(props.routes)}
             <Row id='login'>
                 <Col id='login-extra' xsHidden md={8}>
@@ -39,13 +39,15 @@ const Login = (props) => {
                 <Col id='login-creds' xs={12} md={4}>
                     <div>
                     <p>
-                            <LinkContainer to="/"><Button bsStyle="link" disabled={props.match.isExact}>Login</Button></LinkContainer> or
-                            <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!props.match.isExact}> Sign Up</Button></LinkContainer>
+                            <LinkContainer to="/login/login"><Button bsStyle="link" disabled={false}>Login</Button></LinkContainer> or
+                            <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={false}> Sign Up</Button></LinkContainer>
                         </p>
-                        <Switch>
-                            <Route exact path="/" render={(props) => <LoginForm {...props} />} />
+                        {/* <Switch> */}
+                            {console.log("LOGIN auth(): ", props.authenticate)}
+                            <Redirect from="/login" to="/login/login" />
+                            <Route exact path="/login/login" render={(props) => <LoginForm {...props}  authenticate={props.authenticate} />} />
                             <Route path="/login/signup" render={(props) => <SignupForm {...props} />} />
-                        </Switch>
+                        {/* </Switch> */}
 
                     </div>
                 </Col>
