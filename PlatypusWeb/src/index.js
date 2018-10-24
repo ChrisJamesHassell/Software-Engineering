@@ -5,14 +5,10 @@ import { routes } from './scripts/routes';
 import App from './scripts/components/Pages/App';
 import './css/global/bootstrap.css';
 import './css/style.css';
-import logo from './images/icons/logo_fill_white.svg'
 
-
-//const store = configureStore();
-const baseURI = "https://www.platypus.null-terminator.com/api/";
 
 render(
-    <App routes={routes} logo={logo} baseURI={baseURI} />,
+    <App routes={routes} />,
     document.getElementById('root')
 );
 

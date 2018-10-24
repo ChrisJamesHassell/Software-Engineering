@@ -1,5 +1,6 @@
 package platypus.api.handlers;
 
+import platypus.api.JsonParser;
 import platypus.api.models.User;
 import spark.Request;
 import spark.Response;
@@ -12,27 +13,35 @@ import java.sql.SQLException;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-
 public class LoginHandler implements Route {
-	
+
 	private HikariDataSource ds;
-	
-	public LoginHandler(HikariDataSource ds) {
+	private AuthFilter authFilter;
+
+	public LoginHandler(HikariDataSource ds, AuthFilter authFilter) {
 		this.ds = ds;
+		this.authFilter = authFilter;
 	}
-	
+
 	@Override
-	public Object handle(Request request, Response response) throws Exception 	{
-		User u = new User( 
-				request.params(":username"),
-				request.params(":password"));
+	public Object handle(Request request, Response response) throws Exception {
+		//System.out.println(request.body());
+		User u = JsonParser.getObject(User.class, request.body());
+		
+		//User u = new User(request.params(":username"), request.params(":password"));
+//		System.out.println(request.queryParams("username"));
+//		System.out.println(request.queryParams("password"));
 		
 		
-		//Set up connection to db
+		//User u = new User(request.queryParams("username"), request.queryParams("password"));
+		
+		// Set up connection to db
+		System.out.println(u.getUsername());
+		System.out.println(u.getPassword());
 		Connection dbconn = null;
-		
+
 		try {
-			dbconn = ds.getConnection(); 
+			dbconn = ds.getConnection();
 			PreparedStatement stmt = dbconn.prepareStatement("SELECT username, password FROM user WHERE username = ?");
 			stmt.setString(1, u.getUsername());
 			ResultSet rows = stmt.executeQuery();
@@ -40,49 +49,26 @@ public class LoginHandler implements Route {
 
 			if (!rows.next()) {
 				System.out.print("The username/password does not exist");
-				return new JsonResponse( 
-						"Failure",
-						"",
-						"Login failed: username/password does not exist.");
+				return new JsonResponse("FAIL", "", "Login failed: username/password does not exist.");
 			}
-			else {
-				// The username exists, now validate the password.
-				return ValidatePassword(u.getPassword(), rows.getString(2));
+
+			// The username exists, now validate the password.
+			if (BCrypt.checkpw(u.getPassword(), rows.getString(2))) {
+				// set cookie here
+				response.cookie(request.headers("Origin"), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
+						60 * 60 * 24 * 7, false, false);
+
+				return new JsonResponse("SUCCESS", "", "Login success.");
 			}
-			
+			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");
+
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
-			return new JsonResponse(
-					"Failure",
-					"",
-					"SQLException occurred at Login.");
-		}
-		finally {
+			return new JsonResponse("FAIL", "", "SQLException occurred at Login.");
+		} finally {
 			dbconn.close();
 		}
 
 	}
-	
-	/* 
-	 *	ValidatePassword 
-	 *  	Parameters:
-	 *  		-pass: User password provided from front-end
-	 *  		-dbpass: Hashed password in the database
-	 */
-	public JsonResponse ValidatePassword(String pass, String dbpass) {
-		if (BCrypt.checkpw(pass, dbpass)) {
-			System.out.println("Password match");
-			return new JsonResponse(
-					"Success",
-					"",
-					"Login success.");
-		}
-		else {
-			System.out.println("Password mismatch");
-			return new JsonResponse(
-					"Failure",
-					"",
-					"Login failure: Incorrect Password");
-		}
-	}
+
 }
