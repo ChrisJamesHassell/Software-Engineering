@@ -117,28 +117,10 @@ export default class LoginForm extends React.Component {
         }
     }
 
-    getRequestString() {
-        // return this.state.route + this.state['userName'].value + '/' + this.state['userPassword'].value;
-        return this.state.route; //+ this.state['userName'].value + '/' + this.state['userPassword'].value;
-    }
-
     handleClick(e) {
         // THIS IS ALL TEMPORARY SHIT
-        var request = this.getRequestString();
+        var request = this.state.route;
 
-        /*var req = new Request(request, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify({
-                'username': this.state['userName'].value,
-                'password': this.state['userPassword'].value
-            })
-        });*/
-
-        // console.log(e.target);
         var opts = {
             method: 'POST',
             credentials: 'include',
@@ -151,7 +133,11 @@ export default class LoginForm extends React.Component {
             })
         };
 
-        fetchJSON(request, this.validateResponse, this.logError, this.handleJsonResponse, opts);
+        var response = fetchJSON(request, this.validateResponse, this.logError, this.handleJsonResponse, opts);
+        console.log("RESPONSE: ", response);
+        if(response.status === "SUCCESS") {
+            
+        }
 
     }
 
@@ -170,16 +156,13 @@ export default class LoginForm extends React.Component {
     handleJsonResponse(response) {
         console.log("got to 'handleresponse'");
         console.log(response);
-        this.setState({ items: response });
-        console.log('after the fetch. doc.cookie: ', document.cookie);
-        if(document.cookie) this.props.authenticate(document.cookie);
+        //this.setState({ items: response });
     }
 
     logError(error) {
         console.log("THEY BE AN ERRRRR");
         console.log(error);
         var thing = JSON.stringify(error);
-
         console.log(thing);
         this.setState({ error: error })
     }

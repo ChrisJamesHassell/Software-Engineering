@@ -42,22 +42,26 @@ const authenticate = {
 };
 
 const AuthButton = withRouter(
-    ({ history }) =>
-        authenticate.isAuthenticated ? (
-            <p>
-                Welcome!{" "}
-                <button
-                    onClick={() => {
-                        authenticate.signout(() => history.push("/"));
-                    }}
-                >
-                    Sign out
-          </button>
-            </p>
-        ) : (
-                <Redirect to="/login" />
-            )
-);
+    ({ history }) =>{
+        var redirect = !history.location.pathname.includes("login")
+        
+        return(
+            authenticate.isAuthenticated ? (
+                <p>
+                    Dashboard!!!{" "}
+                    <button
+                        onClick={() => {
+                            authenticate.signout(() => history.push("/"));
+                        }}
+                    >
+                        Sign out
+              </button>
+                </p>
+            ) : (
+                    redirect? <Redirect to="/login" /> : <span></span>
+                )
+        )
+    })
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route
@@ -82,7 +86,8 @@ class Login extends React.Component {
         redirectToReferrer: false
     };
 
-    login = () => {
+    login = (data) => {
+        console.log("GOT TO LOGIN 'auth' with DATA: ", data);
         authenticate.authenticate(() => {
             this.setState({ redirectToReferrer: true });
         });
@@ -92,7 +97,9 @@ class Login extends React.Component {
         const { from } = this.props.location.state || { from: { pathname: "/dashboard" } };
         const { redirectToReferrer } = this.state;
         var logoUrl = window.location.origin + '/' + logo;
-        var isLogin = this.props.location.pathname === "/login/login";
+        var isLogin = this.props.location.pathname === "/login";
+        var buttonLabel = isLogin? "Login" : "Submit";
+
         if (redirectToReferrer) {
             return <Redirect to={from} />;
         }
@@ -124,12 +131,11 @@ class Login extends React.Component {
                         <Col id='login-creds' xs={12} md={4}>
                             <div>
                                 <p>
-                                    <LinkContainer to="/login/login"><Button bsStyle="link" disabled={isLogin}>Login</Button></LinkContainer> or
+                                    <LinkContainer to="/login"><Button bsStyle="link" disabled={isLogin}>Login</Button></LinkContainer> or
                                     <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
                                 </p>
-                                <Redirect from="/login" to="/login/login" />
-                                <Route exact path="/login/login" render={(props) => <LoginForm {...props} authenticate={props.authenticate} />} />
-                                <Route path="/login/signup" render={(props) => <SignupForm {...props} />} />
+                                <Route exact path="/login" render={(props) => <LoginForm {...props} buttonLabel={buttonLabel} auth={this.login.bind(this)} />} />
+                                <Route path="/login/signup" render={(props) => <SignupForm {...props} />} buttonLabel={buttonLabel} auth={this.login.bind(this)} />
                             </div>
                         </Col>
                     </Row>
