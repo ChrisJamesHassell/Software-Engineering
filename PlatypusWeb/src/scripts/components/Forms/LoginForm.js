@@ -104,7 +104,7 @@ export default class LoginForm extends React.Component {
             })
         });*/
 
-        console.log(e.target);
+        // console.log(e.target);
         var opts = {
             method: 'POST',
             credentials: 'include',
@@ -151,7 +151,7 @@ export default class LoginForm extends React.Component {
 
     render() {
         var userNameHelp = this.state['userName'].helpText;
-        var passwordHelp = this.state['userPassword'].helpText
+        var passwordHelp = this.state['userPassword'].helpText;
         return (
             <form action={this.state.route} method="POST">
                 <FormGroup
