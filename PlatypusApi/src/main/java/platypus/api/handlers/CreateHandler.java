@@ -26,15 +26,6 @@ public class CreateHandler implements Route {
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
 		User u = JsonParser.getObject(User.class, request.body());
-		// Instantiate user class with JSON post request
-//		User u = new User(
-//				request.params(":firstname"),
-//				request.params(":lastname"),
-//				request.params(":email"),
-//				request.params(":username"),
-//				request.params(":password"),
-//				request.params(":dateofbirth")
-//		);
 		
 		if (!matchesRegexRequirements(u)) {
 			return new JsonResponse(
