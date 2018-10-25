@@ -1,6 +1,7 @@
 package platypus.api.handlers;
 
 import platypus.api.JsonParser;
+import platypus.api.Main;
 import platypus.api.models.User;
 import spark.Request;
 import spark.Response;
@@ -25,10 +26,10 @@ public class LoginHandler implements Route {
 
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
-		System.out.println("=========");
-		System.out.println(request.body());
+//		System.out.println("=========");
+//		System.out.println(request.body());
 		User u = JsonParser.getObject(User.class, request.body());
-		
+//		
 		//User u = new User(request.params(":username"), request.params(":password"));
 //		System.out.println(request.queryParams("username"));
 //		System.out.println(request.queryParams("password"));
@@ -36,8 +37,7 @@ public class LoginHandler implements Route {
 		
 		//User u = new User(request.queryParams("username"), request.queryParams("password"));
 		// Set up connection to db
-		System.out.println(u.getUsername());
-		System.out.println(u.getPassword());
+
 		Connection dbconn = null;
 
 		try {
@@ -57,8 +57,6 @@ public class LoginHandler implements Route {
 				// set cookie here
 				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 						60 * 60 * 24 * 7, false, false);
-
-
 				return new JsonResponse("SUCCESS", "", "Login success.");
 			}
 			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");

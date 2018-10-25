@@ -34,7 +34,14 @@ export default class SignupForm extends React.Component {
             id: null,
             isDisabled: true,
             items: null,
-            route: path + '/user/create/',
+            route: path + '/user/create',
+            usernameS: '',
+            passwordS: '',
+            firstName: '',
+            lastName: '',
+            dob: '',
+            email: '',
+
             'userName-signup': {
                 validation: null,
                 value: null,
@@ -72,7 +79,7 @@ export default class SignupForm extends React.Component {
                 helptext: null
             }
         }
-        this.getValidationState = this.getValidationState.bind(this);
+        this.updateVals = this.updateVals.bind(this);
         this.setValidationState = this.setValidationState.bind(this);
         this.validateResponse = this.validateResponse.bind(this);
         this.logError = this.logError.bind(this);
@@ -100,7 +107,7 @@ export default class SignupForm extends React.Component {
         });
     }
 
-    getValidationState(id, value) {
+    updateVals(id, value) {
         // Get whether or not the input is valid
         var match = value.match(regex[id]);
 
@@ -117,20 +124,10 @@ export default class SignupForm extends React.Component {
         }
     }
 
-    getRequestString() {
-        return this.state.route;
-            // + this.state['firstName-signup'].value + '/'
-            // + this.state['lastName-signup'].value + '/' 
-            // + this.state['email-signup'].value + '/'
-            // + this.state['userName-signup'].value + '/'
-            // + this.state['userPassword-signup'].value + '/'
-            // + this.state['dob-signup'].value;
-    }
-
     handleClick(e) {
         // THIS IS ALL TEMPORARY SHIT
         
-        var request = this.getRequestString();
+        var request = this.state.route;
         console.log('======request=========*****: ', request)
         console.log('*****************STATE**************');
         console.log(this.state);
@@ -201,7 +198,7 @@ export default class SignupForm extends React.Component {
                         label={'User Name'}
                         placeholder={'User Name'}
                         requiresValidation={true}
-                        getValidationState={this.getValidationState} />
+                        updateVals={this.updateVals} />
                     <FormControl.Feedback />
                     <HelpBlock><Alert bsStyle="danger" hidden={!userNameHelp}>{userNameHelp}</Alert></HelpBlock>
                 </FormGroup>
@@ -215,7 +212,7 @@ export default class SignupForm extends React.Component {
                         label={'Password'}
                         placeholder={'Password'}
                         requiresValidation={true}
-                        getValidationState={this.getValidationState} />
+                        updateVals={this.updateVals} />
                     <FormControl.Feedback />
                     <HelpBlock><Alert bsStyle="danger" hidden={!passwordHelp}>{passwordHelp}</Alert></HelpBlock>
                 </FormGroup>
@@ -229,7 +226,7 @@ export default class SignupForm extends React.Component {
                         label={'firstName'}
                         placeholder={'First Name'}
                         requiresValidation={true}
-                        getValidationState={this.getValidationState} />
+                        updateVals={this.updateVals} />
                 </FormGroup>
 
                 <FormGroup
@@ -241,7 +238,7 @@ export default class SignupForm extends React.Component {
                         label={'lastName'}
                         placeholder={'Last Name'}
                         requiresValidation={true}
-                        getValidationState={this.getValidationState} />
+                        updateVals={this.updateVals} />
                 </FormGroup>
 
                 <FormGroup
@@ -253,7 +250,7 @@ export default class SignupForm extends React.Component {
                         label={'dob'}
                         placeholder={'Date of birth'}
                         requiresValidation={true}
-                        getValidationState={this.getValidationState} />
+                        updateVals={this.updateVals} />
                 </FormGroup>
 
                 <FormGroup
@@ -265,7 +262,7 @@ export default class SignupForm extends React.Component {
                         label={'email'}
                         placeholder={'E-mail Address'}
                         requiresValidation={true}
-                        getValidationState={this.getValidationState} />
+                        updateVals={this.updateVals} />
                 </FormGroup>
 
                 <Button bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.isDisabled}>Sign Up</Button>

@@ -14,27 +14,22 @@ import logo from '../../../images/icons/logo_fill_white.svg';
 
 const authenticate = {
     isAuthenticated: document.cookie.length > 0,
-    path: '/login',
     authenticate(cb) {
-        this.path = '/dashboard';
         this.isAuthenticated = true;
         setTimeout(cb, 100); // fake async
     },
     signout(cb) {
         this.isAuthenticated = false;
-        this.path = '/login';
         deleteAllCookies();
         setTimeout(cb, 100);
-    },
-    getPath() {
-        return this.path;
     }
 };
 
-const App = () => {
+const App = (props) => {
     return (
         <Router>
             <div>
+                <AppNavbar />
                 <AuthButton />
                 <Route path="/login" component={Login} />
                 <PrivateRoute path="/dashboard" component={Dashboard} />
@@ -48,13 +43,11 @@ const App = () => {
 const AuthButton = withRouter(
     ({ history }) => {
         var redirect = !history.location.pathname.includes("login") && !authenticate.isAuthenticated;
-
+        var currPath = history.location.pathname;
+        var authComponent = <button onClick={() => { authenticate.signout(() => history.push("/login")); }}>Sign out</button>;
+        if(currPath === "/" && authenticate.isAuthenticated) authComponent = <Redirect to="/dashboard" from="/" />
         return (
-            authenticate.isAuthenticated ? (
-                <button onClick={() => { authenticate.signout(() => history.push("/login")); }}>
-                    Sign out
-                    </button>
-            ) : (redirect ? <Redirect to="/login" /> : <span></span>)
+            authenticate.isAuthenticated ? ( authComponent ) : (redirect ? <Redirect to="/login" /> : <span></span>)
         )
     })
 
@@ -62,20 +55,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route
         {...rest}
         render={props =>
-            authenticate.isAuthenticated ? (
-                <div>
-                    <Component {...props} />
-                </div>
-
-            ) : (
-                    <Redirect
-                        to={{
-                            pathname: "/login",
-                            state: { from: props.location }
-                        }}
-                    />
-                )
-        }
+            authenticate.isAuthenticated ? ( <div><Component {...props} /></div>) : ( <Redirect to={{ pathname: "/login", state: { from: props.location }}} /> )}
     />
 );
 
@@ -86,28 +66,24 @@ class Login extends React.Component {
             redirectToReferrer: false,
             message: ''
         }
-
         this.login = this.login.bind(this);
     }
 
     login = (response) => {
-        console.log("GOT TO LOGIN 'auth' with DATA: ", response);
-        var message = response.message;
         var isSuccess = response.status === "SUCCESS";
-        authenticate.authenticate(() => {
-            this.setState({ message: message });
-            this.setState({ redirectToReferrer: isSuccess });
-        });
+        isSuccess && authenticate.authenticate();
+        this.setState({ message: response.message });
+        this.setState({ redirectToReferrer: isSuccess });
     };
 
     render() {
-        const { from } = this.props.location.state || { from: { pathname: "/dashboard" } };
+        // const { from } = this.props.location.state || { from: { pathname: "/dashboard" } };
         const { redirectToReferrer } = this.state;
         var logoUrl = window.location.origin + '/' + logo;
         var isLogin = this.props.location.pathname === "/login";
 
         if (redirectToReferrer) {
-            return <Redirect to={from} />;
+            return <Redirect to="/dashboard" />;
         }
 
         return (
@@ -137,7 +113,7 @@ class Login extends React.Component {
                         <div>
                             <p>
                                 <LinkContainer to="/login"><Button bsStyle="link" disabled={isLogin}>Login</Button></LinkContainer> or
-                                    <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
+                                <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
                             </p>
                             <Route exact path="/login" render={(props) => <LoginForm {...props} btnFunc={this.login} />} />
                             <Route path="/login/signup" render={(props) => <SignupForm {...props} />} btnFunc={this.login} />

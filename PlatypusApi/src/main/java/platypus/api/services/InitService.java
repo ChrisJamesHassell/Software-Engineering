@@ -1,0 +1,67 @@
+package platypus.api.services;
+
+import java.util.Properties;
+
+import com.zaxxer.hikari.HikariDataSource;
+
+import platypus.api.handlers.CorsFilter;
+import spark.Spark;
+
+public class InitService {
+	
+	public static HikariDataSource initDatabase() {
+		HikariDataSource ds = new HikariDataSource();
+		ds.setMaximumPoolSize(8);
+		ds.setDriverClassName("org.mariadb.jdbc.Driver");
+		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/platypus");
+		ds.addDataSourceProperty("user", "root");
+		ds.addDataSourceProperty("password", "lamepassword");
+		ds.setAutoCommit(true); // Changed to true
+		return ds;
+	}
+	
+	public static Properties initEmailConfig() {
+		Properties emailConfig = new Properties();
+		emailConfig.put("mail.smtp.auth", true);
+		emailConfig.put("mail.smtp.starttls.enable", "true");
+		emailConfig.put("mail.smtp.host", "smtp.gmail.com"); // TODO
+		emailConfig.put("mail.smtp.port", "465");
+		// emailConfig.put("username", "someuser"); // TODO: set this
+		// emailConfig.put("password", "somepass"); // TODO: set this
+		return emailConfig;
+	}
+	
+	public static void initSparkConfig() {
+		// Force the server to only listen on localhost:8080. Nginx will forward to this
+		// interface / port.
+
+		Spark.ipAddress("127.0.0.1");
+		Spark.port(8080);	// TODO: This will probably need to be changed
+		CorsFilter.apply();
+		Spark.options("/*",
+		        (request, response) -> {
+
+		            String accessControlRequestHeaders = request
+		                    .headers("Access-Control-Request-Headers");
+		            if (accessControlRequestHeaders != null) {
+		                response.header("Access-Control-Allow-Headers",
+		                        accessControlRequestHeaders);
+		            }
+
+		            String accessControlRequestMethod = request
+		                    .headers("Access-Control-Request-Method");
+		            if (accessControlRequestMethod != null) {
+		                response.header("Access-Control-Allow-Methods",
+		                        accessControlRequestMethod);
+		            }
+
+		            return "OK";
+		        });
+
+		Spark.before((request, response) -> {
+			response.header("Access-Control-Allow-Origin", request.headers("Origin"));
+			response.header("Access-Control-Allow-Credentials", "true");
+			response.header("Vary", "Origin");
+		});
+	}
+}

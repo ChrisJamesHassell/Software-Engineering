@@ -1,7 +1,5 @@
 import React from 'react';
-import { FormGroup, Button, FormControl, HelpBlock, Alert } from 'react-bootstrap';
-import { withRouter } from 'react-router-dom';
-import { Dashboard } from '../Pages/Dashboard';
+import { FormGroup, Button, Alert } from 'react-bootstrap';
 import TextInput from './TextInput';
 import { path, fetchJSON } from '../../fetchHelpers';
 
@@ -9,8 +7,7 @@ export default class LoginForm extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            cookie: null,
-            route: path + '/user/login/',
+            route: path + '/user/login',
             username: '',
             password: '',
             error: ''
@@ -43,7 +40,6 @@ export default class LoginForm extends React.Component {
     }
 
     validateResponse(result) {
-        this.setState({ cookie: document.cookie });
         if (!result.ok) throw Error(result.statusText);
         return result;
 
@@ -56,38 +52,41 @@ export default class LoginForm extends React.Component {
     }
 
     logError(error) {
-        this.setState({ error: error });
+        this.setState({ error: error.toString() });
     }
 
     render() {
         return (
-            <form action={this.state.route} method="POST">
-                <FormGroup controlId="userName">
+            <form action={this.state.route} method="POST" encType="multipart/form-data" onKeyUp={ev => ev.keyCode === 13 && this.handleClick()}>
+                <FormGroup controlId="username">
                     <TextInput
                         type={'text'}
                         name={'username'}
                         label={'User Name'}
+                        required={true}
+                        maxLength={"32"}
                         placeholder={'Enter your user name'}
                         updateVals={this.updateVals} />
                 </FormGroup>
 
-                <FormGroup controlId="userPassword" >
+                <FormGroup controlId="password" >
                     <TextInput
                         type={'password'}
                         name={'password'}
                         label={'Password'}
+                        required={true}
+                        maxLength={"32"}
                         placeholder={'Enter your password'}
                         updateVals={this.updateVals} />
                 </FormGroup>
-                <Button bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)}>Login</Button>
-
-                    <Alert bsStyle="danger" hidden={!(this.state.error.length > 0)}>
-                        <p>
-                            {this.state.error.length}
-                            {this.state.error}
-                        </p>
-                    </Alert>
-
+                <Button type="button" bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.username.length < 1 || this.state.password.length < 1}>Login</Button>
+                {/* <Button bsStyle='success' type="submit" style={{ width: '100%' }} disabled={this.state.username.length < 1 || this.state.password.length < 1}>Login</Button> */}
+                <Alert bsStyle="danger" hidden={!(this.state.error.length > 0)}>
+                    <p>
+                        {this.state.error.length}
+                        {this.state.error}
+                    </p>
+                </Alert>
             </form>
         );
     }

@@ -6,7 +6,7 @@ const AppLogoHeader = (props) => (
     <Navbar.Header>
         <Navbar.Brand id='logo-brand'>
             <img src={props.logo}  alt="white logo"></img>
-            <Link to="/login/login"><span id='brand-platy'>platy</span><span id='brand-pus'>pus</span></Link>
+            <Link to="/"><span id='brand-platy'>platy</span><span id='brand-pus'>pus</span></Link>
         </Navbar.Brand>
         <Navbar.Toggle />
     </Navbar.Header>

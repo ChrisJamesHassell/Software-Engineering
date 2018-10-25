@@ -20,20 +20,21 @@ export default class TextInput extends React.Component {
 
     handleChange(e) {
         this.setState({ value: e.target.value });
-        // If it requires validation, then set the validation state
-        this.state.requiresValidation && this.props.getValidationState(e.target.id, e.target.value);
-        this.props.updateVals && this.props.updateVals(this.props.name, e.target.value);
+        this.props.updateVals(e.target.id, e.target.value);
     }
 
     render() {
         return (
             <FormControl
-                ref={this.props.inputRef}
                 type={this.props.type}
                 name={this.props.name}
-                value={this.state.value}
+                label={this.props.label}
+                required={this.props.required}
+                pattern={this.props.pattern}
+                maxLength={this.props.maxLength || 32}
                 placeholder={this.props.placeholder}
                 onChange={this.handleChange}
+                value={this.state.value}
             />
         );
     }
