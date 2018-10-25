@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect, withRouter, Link } from "react-router-dom";
 import { RouteWithSubRoutes, routes } from '../../routes';
 import { Dashboard } from './Dashboard';
+import { deleteAllCookies} from '../../fetchHelpers';
 import AppNavbar from '../Navbar/AppNavbar';
 // import Login from './Login';
 
@@ -10,24 +11,6 @@ import { LinkContainer } from 'react-router-bootstrap';
 import LoginForm from '../Forms/LoginForm';
 import SignupForm from '../Forms/SignupForm';
 import logo from '../../../images/icons/logo_fill_white.svg';
-
-
-function deleteAllCookies() {
-    var cookies = document.cookie.split(";");
-
-    for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i];
-        var eqPos = cookie.indexOf("=");
-        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    }
-}
-/**************************************/
-//  We want to:
-// ----------------------------------- //
-//  1. Check to see if user is logged in (dash)
-//  2. If not, display login page
-//  3. If yes, display Dashboard
 
 const authenticate = {
     isAuthenticated: document.cookie.length > 0,
@@ -53,7 +36,6 @@ const App = () => {
         <Router>
             <div>
                 <AuthButton />
-                {/* <Redirect to={authenticate.path} from="/" /> */}
                 <Route path="/login" component={Login} />
                 <PrivateRoute path="/dashboard" component={Dashboard} />
             </div>
@@ -66,10 +48,6 @@ const App = () => {
 const AuthButton = withRouter(
     ({ history }) => {
         var redirect = !history.location.pathname.includes("login") && !authenticate.isAuthenticated;
-        // console.log("AuthButton auth.isAuth: ", authenticate.isAuthenticated);
-        // console.log("AuthButton history: ", history);
-        // console.log("Auth path: ", history.location.pathname);
-        // console.log("Auth redirect: ", redirect);
 
         return (
             authenticate.isAuthenticated ? (
@@ -127,7 +105,6 @@ class Login extends React.Component {
         const { redirectToReferrer } = this.state;
         var logoUrl = window.location.origin + '/' + logo;
         var isLogin = this.props.location.pathname === "/login";
-        var buttonLabel = isLogin ? "Login" : "Submit";
 
         if (redirectToReferrer) {
             return <Redirect to={from} />;
@@ -162,8 +139,8 @@ class Login extends React.Component {
                                 <LinkContainer to="/login"><Button bsStyle="link" disabled={isLogin}>Login</Button></LinkContainer> or
                                     <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
                             </p>
-                            <Route exact path="/login" render={(props) => <LoginForm {...props} btnFunc={this.login} buttonLabel={buttonLabel} />} />
-                            <Route path="/login/signup" render={(props) => <SignupForm {...props} />} btnFunc={this.login} buttonLabel={buttonLabel} />
+                            <Route exact path="/login" render={(props) => <LoginForm {...props} btnFunc={this.login} />} />
+                            <Route path="/login/signup" render={(props) => <SignupForm {...props} />} btnFunc={this.login} />
                         </div>
                     </Col>
                 </Row>
