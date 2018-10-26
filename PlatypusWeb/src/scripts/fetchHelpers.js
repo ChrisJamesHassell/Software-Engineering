@@ -23,8 +23,11 @@ function fetchJSON(pathToResource, validateResponse, logError, handleJsonRespons
         .catch(logError);
 }
 
+var hasCookie = document.cookie.length > 0;
+
 export {
     path,
+    hasCookie,
     fetchJSON,
     readResponseAsJSON,
     deleteAllCookies

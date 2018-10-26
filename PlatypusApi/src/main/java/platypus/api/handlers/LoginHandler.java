@@ -26,18 +26,7 @@ public class LoginHandler implements Route {
 
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
-//		System.out.println("=========");
-//		System.out.println(request.body());
 		User u = JsonParser.getObject(User.class, request.body());
-//		
-		//User u = new User(request.params(":username"), request.params(":password"));
-//		System.out.println(request.queryParams("username"));
-//		System.out.println(request.queryParams("password"));
-		
-		
-		//User u = new User(request.queryParams("username"), request.queryParams("password"));
-		// Set up connection to db
-
 		Connection dbconn = null;
 
 		try {
