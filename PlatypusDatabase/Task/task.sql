@@ -11,15 +11,15 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table project_database.task
+-- Dumping structure for table platypus.task
 CREATE TABLE IF NOT EXISTS `task` (
-  `taskID` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key for item table, unique, self-incrementing identifier for user created tasks',
+  `taskID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `taskType` enum('task','event','doc') NOT NULL DEFAULT 'task',
-  `name` varchar(32) NOT NULL COMMENT 'Name of the user created item',
-  `description` varchar(250) NOT NULL COMMENT 'Short description of the user created item',
-  `category` enum('Medical','Auto','Home','ToDo') NOT NULL COMMENT 'Enumerated type that allows for differentiation of categories of user created items by medical, auto, home, or todo.',
+  `name` varchar(32) NOT NULL,
+  `description` varchar(250) NOT NULL,
+  `category` enum('Auto','Medical','Home','ToDo','Miscellaneous') NOT NULL,
   `deadline` date NOT NULL,
-  `priority` enum('0','1','2') NOT NULL,
+  `priority` int(1) unsigned NOT NULL,
   PRIMARY KEY (`taskID`),
   KEY `taskType` (`taskType`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
