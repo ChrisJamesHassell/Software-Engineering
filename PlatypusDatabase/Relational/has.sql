@@ -11,23 +11,23 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table project_database.has
+-- Dumping structure for table platypus.has
 CREATE TABLE IF NOT EXISTS `has` (
-  `GroupID` int(11) unsigned NOT NULL,
+  `groupID` int(11) unsigned NOT NULL,
   `itemID` int(11) unsigned NOT NULL,
-  `type` enum('task','event','doc') NOT NULL,
+  `itemType` enum('task','event','doc') NOT NULL,
   `pinned` binary(1) NOT NULL DEFAULT '0',
-  `notify` date NOT NULL,
-  PRIMARY KEY (`GroupID`),
-  KEY `itemID_type_GroupID` (`itemID`,`type`,`GroupID`),
-  KEY `FK_has_task_2` (`type`),
+  `notification` date NOT NULL,
+  PRIMARY KEY (`groupID`),
+  KEY `FK_has_task` (`itemID`),
+  KEY `FK_has_task_2` (`itemType`),
   CONSTRAINT `FK_has_document` FOREIGN KEY (`itemID`) REFERENCES `document` (`documentID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_has_document_2` FOREIGN KEY (`type`) REFERENCES `document` (`docType`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_has_document_2` FOREIGN KEY (`itemType`) REFERENCES `document` (`docType`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_has_event` FOREIGN KEY (`itemID`) REFERENCES `event` (`eventID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_has_event_2` FOREIGN KEY (`type`) REFERENCES `event` (`eventType`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_has_group` FOREIGN KEY (`GroupID`) REFERENCES `group` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_has_event_2` FOREIGN KEY (`itemType`) REFERENCES `event` (`eventType`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_has_group` FOREIGN KEY (`groupID`) REFERENCES `group` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_has_task` FOREIGN KEY (`itemID`) REFERENCES `task` (`taskID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_has_task_2` FOREIGN KEY (`type`) REFERENCES `task` (`taskType`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_has_task_2` FOREIGN KEY (`itemType`) REFERENCES `task` (`taskType`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
