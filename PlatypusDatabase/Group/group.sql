@@ -11,11 +11,16 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table project_database.group
+
+-- Dumping database structure for platypus
+CREATE DATABASE IF NOT EXISTS `platypus` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `platypus`;
+
+-- Dumping structure for table platypus.group
 CREATE TABLE IF NOT EXISTS `group` (
-  `GroupID` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Database generated GroupID',
-  `GroupName` varchar(50) NOT NULL COMMENT 'Name of the user created group',
-  PRIMARY KEY (`GroupID`)
+  `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `groupName` varchar(50) NOT NULL,
+  PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
