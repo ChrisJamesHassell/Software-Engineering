@@ -12,21 +12,21 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 
--- Dumping database structure for project_database
-CREATE DATABASE IF NOT EXISTS `project_database` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `project_database`;
+-- Dumping database structure for platypus
+CREATE DATABASE IF NOT EXISTS `platypus` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `platypus`;
 
--- Dumping structure for table project_database.user
+-- Dumping structure for table platypus.user
 CREATE TABLE IF NOT EXISTS `user` (
-  `user_id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Database generated userID',
-  `first_name` varchar(32) NOT NULL COMMENT 'User''s first name',
-  `last_name` varchar(32) NOT NULL COMMENT 'User''s last name',
-  `username` varchar(32) NOT NULL COMMENT 'User''s username',
-  `password` varchar(32) NOT NULL COMMENT 'User''s password (will be changed for encryption)',
-  `email` varchar(32) NOT NULL COMMENT 'User''s email address',
-  `date_of_birth` date NOT NULL COMMENT 'User''s date of birth',
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=latin1;
+  `userID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(32) NOT NULL,
+  `firstName` varchar(32) NOT NULL,
+  `lastName` varchar(32) NOT NULL,
+  `email` varchar(32) NOT NULL,
+  `password` varchar(32) NOT NULL,
+  `dateOfBirth` date NOT NULL,
+  PRIMARY KEY (`userID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
