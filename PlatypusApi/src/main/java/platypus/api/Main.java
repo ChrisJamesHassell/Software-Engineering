@@ -11,12 +11,11 @@ import platypus.api.handlers.AuthFilter;
 import platypus.api.handlers.CreateHandler;
 import platypus.api.services.*;
 import platypus.api.models.*;
-import platypus.api.handlers.*;
+import platypus.api.handlers.EventApi;
 import spark.Spark;
 
 
 import java.util.Properties;
-
 
 public class Main {
 
@@ -48,9 +47,9 @@ public class Main {
 					});
 					Spark.path("/task", () -> {
 						//Spark.post("/add/", new AddTaskHandler(ds), gson::toJson);
-						Spark.post("/add/", (req, res) -> TaskApi.AddTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
-						Spark.post("/update/", (req, res) -> TaskApi.EditTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
-						Spark.post("/delete/", (req, res) -> TaskApi.RemoveTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
+			//			Spark.post("/add/", (req, res) -> TaskApi.AddTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
+			//			Spark.post("/update/", (req, res) -> TaskApi.EditTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
+			//			Spark.post("/delete/", (req, res) -> TaskApi.RemoveTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
 						//Spark.post("/delete/", new DeleteTaskHandler(ds), gson::toJson);
 					});
 					Spark.path("/event/", () -> {
