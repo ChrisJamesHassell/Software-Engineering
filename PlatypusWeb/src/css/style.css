@@ -4,7 +4,6 @@
 }
 
 @import url('https://fonts.googleapis.com/css?family=Raleway:300,800|Roboto:300,700');
-
 html, body, #root, #container {
     height: 100%;
     background: #47B5AB;
@@ -33,7 +32,6 @@ h1 {
 #login button {
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
-
 }
 
 .navbar-brand {
@@ -44,7 +42,6 @@ h1 {
 #logo-brand a {
     color: white;
 }
-
 #logo-brand img {
     max-height: 30px;
     display: inline;
@@ -81,68 +78,91 @@ button:disabled, button[disabled] {
     border-color: #e65d4fed;
 }
 
-/* Small devices (landscape phones, 576px and up) */    
-@media (min-width: 0px) { 
+/* Small devices (landscape phones, 576px and up) */
+
+@media (min-width: 0px) {
     #row-space {
         display: none;
     }
-
     #row-container {
         height: 100%;
     }
-
     .container {
         height: 100%;
     }
-
     #container {
         overflow: hidden;
     }
-
     #login {
         height: 100%;
-        background: linear-gradient(
-            var(--bg-overlay), 
-            var(--bg-overlay)
-          ),url('../images/loginbg.webp') no-repeat;
-        background-size: cover;
+        background: rgb(44, 62, 80);
         display: flex;
         flex-flow: column;
         justify-content: end;
         padding: 5vw;
     }
-
+    img#logo-hidden {
+        height: 100px;
+    }
+    #login-logo {
+        display: flex;
+        flex-grow: 0;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 10vw;
+    }
+    #login-logo-brand {
+        color: white;
+        padding-top: 10px;
+        font-size: 2.5em;
+    }
+    #login-links{
+        padding-top: 10%;
+    }
     #login-creds {
         color: #ffffff;
         display: flex;
         flex-direction: column;
     }
-
     #login-creds div {
         text-align: center;
     }
- }
-
+    span.input-group>input {
+        background: transparent;
+        color: #929db1;
+        border-radius: 0;
+        border-style: none none solid none;
+        border-width: 1px;
+        border-color: #929db1;
+    }
+    span.input-group-addon {
+        background: transparent;
+        color: #929db1;
+        border-radius: 0;
+        border-style: none none solid none;
+        border-color: #929db1;
+    }
+}
 
 /* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) { 
+
+@media (min-width: 768px) {
     #row-space {
         display: inline-block;
         height: 20vh;
     }
-
     #login {
         height: auto;
         display: flex;
         flex-flow: row;
         padding: 0;
+        max-height: 60%;
     }
-
     #login-extra {
         display: flex;
         align-items: stretch;
     }
-
     #login-creds {
         background: #ffffff;
         color: var(--text);
@@ -150,28 +170,39 @@ button:disabled, button[disabled] {
         flex-basis: auto;
         flex-direction: column;
         align-items: stretch;
-        justify-content: center;
+        justify-content: space-between;
         padding: 5vh;
+        overflow-y: auto;
     }
-
     a.active.btn.btn-link.disabled {
         color: #333;
     }
- }
+    span.input-group-addon {
+        background: transparent;
+        color: #929db1;
+        border-radius: 0;
+        border-style: none none solid none;
+        border-width: 1px;
+    }
+    span.input-group>input {
+        color: #929db1;
+        border-radius: 0;
+        border-style: none none solid none;
+        border-width: 1px;
+    }
+}
 
 /* Large devices (desktops, 992px and up) */
-@media (min-width: 992px) { 
+
+@media (min-width: 992px) {
     #login {
-        background: linear-gradient(
-            var(--bg-overlay), 
-            var(--bg-overlay)
-          ),url('../images/loginbg.webp') no-repeat;
+        background: linear-gradient( var(--bg-overlay), var(--bg-overlay)), url('../images/loginbg.webp') no-repeat;
         background-size: contain;
     }
- }
- /* *src\images\loginbg.jpg/
+}
+
+/* *src\images\loginbg.jpg/
 
 /* Extra large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) { 
 
- }
+@media (min-width: 1200px) {}
