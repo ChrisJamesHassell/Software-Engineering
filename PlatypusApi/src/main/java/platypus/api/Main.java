@@ -52,12 +52,12 @@ public class Main {
 			//			Spark.post("/delete/", (req, res) -> TaskApi.RemoveTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
 						//Spark.post("/delete/", new DeleteTaskHandler(ds), gson::toJson);
 					});
-					Spark.path("/event/", () -> {
+					Spark.path("/event", () -> {
 						Spark.post("/add/", (req, res) -> EventApi.AddEvent(JsonParser.getObject(Event.class, req.body()), ds), gson::toJson);
 						Spark.post("/update/", (req, res) -> EventApi.EditEvent(JsonParser.getObject(Event.class, req.body()), ds), gson::toJson);
 						Spark.post("/delete/", (req, res) -> EventApi.RemoveEvent(JsonParser.getObject(Event.class, req.body()), ds), gson::toJson);
 					});
-					Spark.path("/doc/", () -> {
+					Spark.path("/doc", () -> {
 						
 					});
 				});
