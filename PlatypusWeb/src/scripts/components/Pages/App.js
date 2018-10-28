@@ -41,16 +41,28 @@ const App = (props) => {
 }
 
 const Home = withRouter((props) => {
-    console.log("HOME PATH: ", props.home);
-    console.log("CURRENT PATH: ", window.location.pathname);
     var thispath = window.location.pathname;
     var matches = thispath === props.home;
-
+    console.log("THIS PATH: ", thispath);
+    console.log("HOME PROPS: ", props);
+    console.log("MATCHES?: ", matches);
     return (
-        hasCookie ? (!matches && ['/', '/login'].includes(thispath) ? (<Redirect to="/dashboard" />) : (<div></div>)) :
-            (!matches && ['/', '/dashboard'].includes(thispath) ? (<Redirect to="/login" />) : (<div></div>))
+        hasCookie ? (!matches && ['/', '/login'].includes(thispath) ? (<Redirect to="/dashboard" />) : (<span></span>)) :
+            (!matches && !['/login/login', '/login/signup'].includes(thispath) ? (<Redirect to="/login" />) : (<span></span>))
     )
 })
+
+// const Home = withRouter((props) => {
+//     var thispath = window.location.pathname;
+//     var matches = thispath === props.home;
+//     console.log("THIS PATH: ", thispath);
+//     console.log("HOME PROPS: ", props);
+//     console.log("MATCHES?: ", matches);
+//     return (
+//         hasCookie ? (!matches && ['/', '/login'].includes(thispath) ? (<Redirect to="/dashboard" />) : (<div></div>)) :
+//             (!matches && ['/', '/dashboard'].includes(thispath) ? (<Redirect to="/login" />) : (<span></span>))
+//     )
+// })
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={(props) => (
@@ -119,17 +131,48 @@ class Login extends React.Component {
 
 
     render() {
+        var logoUrl = window.location.origin + '/' + logo;
+        var isLogin = this.props.location.pathname === "/login";
         var redirect = this.state.redirect;
-        console.log("REDIRECT?: ", redirect);
-        console.log("HAS COOKIE?: ", hasCookie);
         if (redirect) {
             window.location.reload();
             return <Redirect to="/dashboard" />
         }
         return (
-            <div>LOGIN
-                <div><Button onClick={this.login.bind(this)}>LOGIN</Button></div>
-            </div>
+            <Grid id='row-container'>
+                <Row id='row-space'>
+
+                </Row>
+                <Row id='login'>
+                    <Col id='login-extra' xsHidden md={8}>
+                        <div>
+                            <h1>Organize.</h1>
+                            <h1>Plan.</h1>
+                            <h1>Live.</h1>
+                            <p>
+                                Hey, adulting is hard. We get it. That's why Platypus provides
+                                a sleek, modern interface to help you adult at maximum efficiency.
+                        </p>
+                            <p>
+                                <Button bsStyle='success' bsSize='large'>Learn More</Button>
+                            </p>
+                        </div>
+                    </Col>
+                    <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
+                        <img src={logoUrl} alt="white logo" />
+                    </Col>
+                    <Col id='login-creds' xs={12} md={4}>
+                        <div>
+                            <p>
+                                <LinkContainer to="/login"><Button bsStyle="link" disabled={isLogin}>Login</Button></LinkContainer> or
+                                <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
+                            </p>
+                            <Route exact path="/login" render={(props) => <LoginForm {...props} login={this.login.bind(this)} />} />
+                            <Route path="/login/signup" render={(props) => <SignupForm {...props} />} login={this.login.bind(this)} />
+                        </div>
+                    </Col>
+                </Row>
+            </Grid>
         )
     }
 }

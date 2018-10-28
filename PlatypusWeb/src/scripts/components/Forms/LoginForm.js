@@ -19,40 +19,30 @@ export default class LoginForm extends React.Component {
         this.validateResponse = this.validateResponse.bind(this);
         this.handleJsonResponse = this.handleJsonResponse.bind(this);
         this.logError = this.logError.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     handleClick() {
-        var opts = {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify({
-                'username': this.state.username,
-                'password': this.state.password
-            })
-        };
-        fetch(this.state.route, opts)
-            .then(response => this.validateResponse(response)) // If not valid, skips rest and goes to catch
-            .then(validResponse => { return validResponse.json() })
-            .then(jsonResponse => this.handleJsonResponse(jsonResponse))
-            .catch(error => this.logError(error))
-
-        //fetchJSON(this.state.route, this.validateResponse, this.logError, this.handleJsonResponse, opts);
+        // var opts = {
+        //     method: 'POST',
+        //     credentials: 'include',
+        //     headers: {
+        //         "Content-type": "application/json"
+        //     },
+        //     body: JSON.stringify({
+        //         'username': this.state.username,
+        //         'password': this.state.password
+        //     })
+        // };
+        // fetch(this.state.route, opts)
+        //     .then(response => this.validateResponse(response)) // If not valid, skips rest and goes to catch
+        //     .then(validResponse => { return validResponse.json() })
+        //     .then(jsonResponse => this.handleJsonResponse(jsonResponse))
+        //     .catch(error => this.logError(error))
+        
+        // TEMP
+        this.props.login();
     }
-    /*
-        axios.get('https://api.github.com/users/maecapozzi')
-      .then(response => this.setState({username: response.data.name}))
-  }
-  function fetchJSON(pathToResource, validateResponse, logError, handleJsonResponse, optional) {
-    fetch(pathToResource, optional)
-        .then(validateResponse) // if not valid, skips rest and goes to catch
-        .then(readResponseAsJSON)
-        .then(handleJsonResponse)
-        .catch(logError);
-}
-    */
 
     updateVals(id, value) {
         if (id === "username") this.setState({ username: value })
@@ -78,9 +68,6 @@ export default class LoginForm extends React.Component {
     }
 
     render() {
-        if (!this.state.error) {
-            this.props.login(true);
-        }
         return (
             <form action={this.state.route} method="POST" encType="multipart/form-data" onKeyUp={ev => ev.keyCode === 13 && this.handleClick()}>
                 <FormGroup controlId="username">
@@ -105,6 +92,7 @@ export default class LoginForm extends React.Component {
                         updateVals={this.updateVals} />
                 </FormGroup>
                 <Button type="button" bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.username.length < 1 || this.state.password.length < 1}>Login</Button>
+                <Button onClick={this.handleClick}>LOGIN</Button>
                 {/* <Button bsStyle='success' type="submit" style={{ width: '100%' }} disabled={this.state.username.length < 1 || this.state.password.length < 1}>Login</Button> */}
                 <Alert bsStyle="danger" hidden={!(this.state.error)}>
                     <p>
