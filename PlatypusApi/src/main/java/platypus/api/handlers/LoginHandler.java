@@ -55,8 +55,22 @@ public class LoginHandler implements Route {
 			// The username exists, now validate the password.
 			if (BCrypt.checkpw(u.getPassword(), rows.getString(2))) {
 				// set cookie here
-				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
-						60 * 60 * 24 * 7, false, false);
+				// if request domain is localhost, we are on dev environment
+				// else we are on prod environment
+				System.out.println("Request headers: " + request.headers());
+				String domain = request.headers("Host");
+				
+				if (domain.equalsIgnoreCase("127.0.0.1:8080")) {
+					System.out.println("localhost request: dev environment");
+					response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
+							60 * 60 * 24 * 7, false, false);
+				}
+				else {
+					System.out.println("External request: prod environment");
+					response.cookie(request.headers("Host"), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
+							60 * 60 * 24 * 7, false, false);
+				}
+
 
 
 				return new JsonResponse("SUCCESS", "", "Login success.");
