@@ -8,7 +8,8 @@ import './css/style.css';
 
 
 render(
-    <App routes={routes} />,
+    // <App routes={routes} />,
+    <App />,
     document.getElementById('root')
 );
 

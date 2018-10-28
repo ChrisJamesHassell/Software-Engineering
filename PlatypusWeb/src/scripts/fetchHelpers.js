@@ -24,9 +24,10 @@ function fetchJSON(pathToResource, validateResponse, logError, handleJsonRespons
 }
 
 var hasCookie = document.cookie.length > 0;
-
+var currentPath = window.location.pathname;
 export {
     path,
+    currentPath,
     hasCookie,
     fetchJSON,
     readResponseAsJSON,

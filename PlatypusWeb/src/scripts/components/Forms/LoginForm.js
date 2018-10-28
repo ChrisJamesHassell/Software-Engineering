@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import { FormGroup, Button, Alert } from 'react-bootstrap';
 import TextInput from './TextInput';
 import { path, fetchJSON } from '../../fetchHelpers';
@@ -10,7 +11,9 @@ export default class LoginForm extends React.Component {
             route: path + '/user/login',
             username: '',
             password: '',
-            error: ''
+            response: {},
+            isSuccess: false,
+            error: null
         }
         this.updateVals = this.updateVals.bind(this);
         this.validateResponse = this.validateResponse.bind(this);
@@ -30,9 +33,26 @@ export default class LoginForm extends React.Component {
                 'password': this.state.password
             })
         };
+        fetch(this.state.route, opts)
+            .then(response => this.validateResponse(response)) // If not valid, skips rest and goes to catch
+            .then(validResponse => { return validResponse.json() })
+            .then(jsonResponse => this.handleJsonResponse(jsonResponse))
+            .catch(error => this.logError(error))
 
-        fetchJSON(this.state.route, this.validateResponse, this.logError, this.handleJsonResponse, opts);
+        //fetchJSON(this.state.route, this.validateResponse, this.logError, this.handleJsonResponse, opts);
     }
+    /*
+        axios.get('https://api.github.com/users/maecapozzi')
+      .then(response => this.setState({username: response.data.name}))
+  }
+  function fetchJSON(pathToResource, validateResponse, logError, handleJsonResponse, optional) {
+    fetch(pathToResource, optional)
+        .then(validateResponse) // if not valid, skips rest and goes to catch
+        .then(readResponseAsJSON)
+        .then(handleJsonResponse)
+        .catch(logError);
+}
+    */
 
     updateVals(id, value) {
         if (id === "username") this.setState({ username: value })
@@ -42,20 +62,26 @@ export default class LoginForm extends React.Component {
     validateResponse(result) {
         if (!result.ok) throw Error(result.statusText);
         return result;
-
     }
 
     handleJsonResponse(response) {
+        //(status === "ERROR" || status === "FAIL") && this.setState({ error: response.message });
+        console.log("GOT TO HANDLESONRES: ", response);
         var status = response.status;
-        (status === "ERROR" || status === "FAIL") && this.setState({ error: response.message });
-        this.props.btnFunc(response);
+        var isSuccess = status === "SUCCESS";
+        this.setState({ isSuccess: isSuccess, response: response });
+        !isSuccess && this.logError(response.message);
     }
 
     logError(error) {
-        this.setState({ error: error.toString() });
+        this.setState({ error: error });
     }
 
     render() {
+        if (this.state.isSuccess) {
+            console.log("SUCCESS: ", this.state.isSuccess);
+            this.props.login(this.state.isSuccess);
+        }
         return (
             <form action={this.state.route} method="POST" encType="multipart/form-data" onKeyUp={ev => ev.keyCode === 13 && this.handleClick()}>
                 <FormGroup controlId="username">
@@ -81,9 +107,8 @@ export default class LoginForm extends React.Component {
                 </FormGroup>
                 <Button type="button" bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.username.length < 1 || this.state.password.length < 1}>Login</Button>
                 {/* <Button bsStyle='success' type="submit" style={{ width: '100%' }} disabled={this.state.username.length < 1 || this.state.password.length < 1}>Login</Button> */}
-                <Alert bsStyle="danger" hidden={!(this.state.error.length > 0)}>
+                <Alert bsStyle="danger" hidden={!(this.state.error)}>
                     <p>
-                        {this.state.error.length}
                         {this.state.error}
                     </p>
                 </Alert>

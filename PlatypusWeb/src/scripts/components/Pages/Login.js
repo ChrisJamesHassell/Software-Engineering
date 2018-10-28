@@ -7,18 +7,17 @@ import LoginForm from '../Forms/LoginForm';
 import SignupForm from '../Forms/SignupForm';
 import logo from '../../../images/icons/logo_fill_white.svg';
 
-
 const fakeAuth = {
     isAuthenticated: false,
     authenticate(cb) {
-      this.isAuthenticated = true;
-      setTimeout(cb, 100); // fake async
+        this.isAuthenticated = true;
+        setTimeout(cb, 100); // fake async
     },
     signout(cb) {
-      this.isAuthenticated = false;
-      setTimeout(cb, 100);
+        this.isAuthenticated = false;
+        setTimeout(cb, 100);
     }
-  };
+};
 
 //================================================= //
 
@@ -49,14 +48,14 @@ const Login = (props) => {
                 </Col>
                 <Col id='login-creds' xs={12} md={4}>
                     <div>
-                    <p>
-                            <LinkContainer to="/login/login"><Button bsStyle="link" disabled={this.props.location.pathname==="/login.login"}>Login</Button></LinkContainer> or
+                        <p>
+                            <LinkContainer to="/login/login"><Button bsStyle="link" disabled={props.location.pathname === "/login.login"}>Login</Button></LinkContainer> or
                             <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={false}> Sign Up</Button></LinkContainer>
                         </p>
                         {/* <Switch> */}
-                            <Redirect from="/login" to="/login/login" />
-                            <Route exact path="/login/login" render={(props) => <LoginForm {...props}  authenticate={props.authenticate} />} />
-                            <Route path="/login/signup" render={(props) => <SignupForm {...props} />} />
+                        <Redirect from="/login" to="/login/login" />
+                        <Route exact path="/login/login" render={(props) => <LoginForm {...props} authenticate={props.authenticate} />} />
+                        <Route path="/login/signup" render={(props) => <SignupForm {...props} />} />
                         {/* </Switch> */}
 
                     </div>
