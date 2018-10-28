@@ -29,12 +29,14 @@ const Home = withRouter((props) => {
     )
 })
 
-const PrivateRoute = ({ component: Component, ...rest }) => (
-    <Route {...rest} render={(props) => (
-        hasCookie === true
-            ? <Component {...props} />
-            : <span></span>
-    )} />
-)
+const PrivateRoute = ({ component: Component, ...rest }) => {
+    return (
+        <Route {...rest} render={(props) => (
+            hasCookie === true
+                ? <Component {...props} />
+                : <span></span>
+        )} />
+    )
+}
 
 export default App;

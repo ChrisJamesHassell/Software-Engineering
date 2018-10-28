@@ -1,7 +1,6 @@
 package platypus.api.handlers;
 
 import platypus.api.JsonParser;
-import platypus.api.Main;
 import platypus.api.models.User;
 import spark.Request;
 import spark.Response;

@@ -53,7 +53,7 @@ public class Main {
 		Spark.path("/", () -> {
 			Spark.before("/api/*", authFilter);
 			Spark.path("/user", () -> {
-				Spark.post("/create", new CreateHandler(ds), gson::toJson);
+				Spark.post("/create", new CreateHandler(ds, authFilter), gson::toJson);
 				Spark.get("/settings", new IndexHandler(), gson::toJson); //Update to settings manager
 				Spark.post("/login", new LoginHandler(ds, authFilter), gson::toJson);
 			});

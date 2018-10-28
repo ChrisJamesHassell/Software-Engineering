@@ -1,30 +1,16 @@
 import React from 'react';
-import { FormGroup, Button, FormControl, HelpBlock, ControlLabel, Alert } from 'react-bootstrap';
+import { FormGroup, Button, FormControl, HelpBlock, Alert } from 'react-bootstrap';
 import TextInput from './TextInput';
+import { path } from '../../fetchHelpers'
 
 // This is required to match correctly
 const regex = {
-    'userName-signup': /^(?=.*[a-zA-Z])[A-Za-z\d]{8,32}$/g,
-    'userPassword-signup': /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,32}$/g,
-    'firstName-signup': /^(?=.*[A-Za-z])[A-Za-z]{1,32}$/g,
-    'lastName-signup': /^(?=.*[A-Za-z])[A-Za-z]{1,32}$/g,
-    'email-signup': /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/g,
-    'dob-signup': /^.+$/g
-}
-
-
-const path = window.location.origin.toLowerCase().includes('platypus') ? '' : 'http://localhost:8080';
-
-function readResponseAsJSON(response) {
-    return response.json();
-}
-
-function fetchJSON(pathToResource, validateResponse, logError, handleJsonResponse, optional = null) {
-    fetch(pathToResource, optional)
-        .then(validateResponse) // if not valid, skips rest and goes to catch
-        .then(readResponseAsJSON)
-        .then(handleJsonResponse)
-        .catch(logError);
+    'username': /^(?=.*[a-zA-Z])[A-Za-z\d]{8,32}$/g,
+    'password': /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,32}$/g,
+    'firstName': /^(?=.*[A-Za-z])[A-Za-z]{1,32}$/g,
+    'lastName': /^(?=.*[A-Za-z])[A-Za-z]{1,32}$/g,
+    'email': /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/g,
+    'dateOfBirth': /^.+$/g
 }
 
 export default class SignupForm extends React.Component {
@@ -33,77 +19,70 @@ export default class SignupForm extends React.Component {
         this.state = {
             id: null,
             isDisabled: true,
-            items: null,
             route: path + '/user/create',
-            usernameS: '',
-            passwordS: '',
-            firstName: '',
-            lastName: '',
-            dob: '',
-            email: '',
-
-            'userName-signup': {
-                validation: null,
-                value: null,
-                requirements: 'Must be between 8-32 chars in length with no special chars',
-                helpText: null
+            data: {
+                "username": {
+                    validation: null,
+                    value: null,
+                    requirements: 'Must be between 8-32 chars in length with no special chars',
+                    helpText: null
+                },
+                "password": {
+                    validation: null,
+                    value: null,
+                    requirements: 'Must be between 8-32 chars in length with 1 uppercase, 1 lowercase, 1 number, and no special chars',
+                    helpText: null
+                },
+                "firstName": {
+                    validation: null,
+                    value: null,
+                    requirements: 'Must be between 1-32 chars in length and only contain letters',
+                    helptext: null
+                },
+                "lastName": {
+                    validation: null,
+                    value: null,
+                    requirements: 'Must be between 1-32 chars in length and only contain letters',
+                    helptext: null
+                },
+                "email": {
+                    validation: null,
+                    value: null,
+                    requirements: 'That is not a valid email address',
+                    helptext: null
+                },
+                "dateOfBirth": {
+                    validation: null,
+                    value: null,
+                    requirements: '',
+                    helptext: null
+                }
             },
-            'userPassword-signup': {
-                validation: null,
-                value: null,
-                requirements: 'Must be between 8-32 chars in length with 1 uppercase, 1 lowercase, 1 number, and no special chars',
-                helpText: null
-            },
-            'firstName-signup': {
-                validation: null,
-                value: null,
-                requirements: 'Must be between 1-32 chars in length and only contain letters',
-                helptext: null
-            },
-            'lastName-signup': {
-                validation: null,
-                value: null,
-                requirements: 'Must be between 1-32 chars in length and only contain letters',
-                helptext: null
-            },
-            'dob-signup': {
-                validation: null,
-                value: null,
-                requirements: '',
-                helptext: null
-            },
-            'email-signup': {
-                validation: null,
-                value: null,
-                requirements: 'That is not a valid email address',
-                helptext: null
-            }
+            error: ""
         }
         this.updateVals = this.updateVals.bind(this);
         this.setValidationState = this.setValidationState.bind(this);
-        this.validateResponse = this.validateResponse.bind(this);
-        this.logError = this.logError.bind(this);
-        this.handleJsonResponse = this.handleJsonResponse.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     componentDidUpdate(prevProps, nextProps) {
         var stateChanged = JSON.stringify(nextProps) !== JSON.stringify(this.state);
+        var objCount = Object.keys(this.state.data).length;
         if (stateChanged) {
-            var formValid = this.state['userName-signup'].validation === 'success'
-                && this.state['userPassword-signup'].validation === 'success'
-                && this.state['firstName-signup'].validation === 'success'
-                && this.state['lastName-signup'].validation === 'success'
-                && this.state['email-signup'].validation === 'success'
-                && this.state['dob-signup'].validation === 'success';
-            this.setState({ isDisabled: !formValid });
+            var formValid = 0;
+
+            Object.keys(this.state.data).forEach((item) => {
+                formValid += (this.state.data[item].validation === 'success' ? 1 : 0)
+            })
+            this.setState({ isDisabled: formValid > objCount });
         }
     }
 
     setValidationState(id, validProps) {
-        var mergedProps = { ...this.state[id], ...validProps };
+        var mergedProps = Object.assign(this.state.data[id], validProps);
         this.setState({ id: id });  // set the current input item id we are on
         this.setState((state) => {  // merge the updated properties
-            state[id] = mergedProps;
+            state.data[id] = mergedProps;
         });
     }
 
@@ -111,87 +90,37 @@ export default class SignupForm extends React.Component {
         // Get whether or not the input is valid
         var match = value.match(regex[id]);
 
-        console.log('AT GET VCALID STATE: ', value);
-
         // If there WAS a match:
         if (match) this.setValidationState(id, { validation: 'success', value: value, helpText: null });
 
         // If there was NOT a match
         else {
             let [validation, helpText] = [null, null];  // Clear the error if the field is empty
-            if (value.length > 0) [validation, helpText] = ['error', this.state[id].requirements];
+            if (value.length > 0) [validation, helpText] = ['error', this.state.data[id].requirements];
             this.setValidationState(id, { validation: validation, value: null, helpText: helpText });
         }
     }
 
-    handleClick(e) {
-        // THIS IS ALL TEMPORARY SHIT
-        
-        var request = this.state.route;
-        console.log('======request=========*****: ', request)
-        console.log('*****************STATE**************');
-        console.log(this.state);
-        ///create/:firstname/:lastname/:email/:username/:password/:dateofbirth"
-        var req = new Request(request, {
-            method: 'post',
-            mode: 'cors',
-            redirect: 'follow',
-            credentials: 'include',
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify({
-                'firstName': this.state['firstName-signup'].value,
-                'lastName': this.state['lastName-signup'].value,
-                'email': this.state['email-signup'].value,
-                'username': this.state['userName-signup'].value,
-                'password': this.state['userPassword-signup'].value,
-                'dateOfBirth': this.state['dob-signup'].value
-            })
-        });
-
-        fetchJSON(req, this.validateResponse, this.logError, this.handleJsonResponse);
-    }
-
-    validateResponse(result) {
-        this.setState({ isLoaded: true });
-        if (!result.ok) {
-            throw Error(result.statusText);
-        }
-        else {
-            console.log("shit be fiiiiiiiiiine")
-        }
-        return result;
-
-    }
-
-    handleJsonResponse(response) {
-        console.log("got to 'handleresponse'");
-        console.log(response);
-        this.setState({ items: response });
-
-    }
-
-    logError(error) {
-        console.log("THEY BE AN ERRRRR");
-        console.log(error);
-        var thing = JSON.stringify(error);
-
-        console.log(thing);
-        this.setState({ error: error })
+    handleClick() {
+        var data = {};
+        Object.keys(this.state.data).forEach(key => {
+            data[key] = this.state.data[key].value
+        })
+        this.props.login(this.state.route, data);
     }
 
     render() {
-        var userNameHelp = this.state['userName-signup'].helpText;
-        var passwordHelp = this.state['userPassword-signup'].helpText;
-        // var firstNameHelp = this.state['firstName-signup'].helpText;
-        // var lastNameHelp = this.state['lastName-signup'].helpText;
-        // var emailHelp = this.state['email-signup'].helptext;
+        var userNameHelp = this.state.data['username'].helpText;
+        var passwordHelp = this.state.data['password'].helpText;
+        console.log("SIGNUPFORM(PROPS): ", this.props);
+        // var firstNameHelp = this.state['firstName'].helpText;
+        // var lastNameHelp = this.state['lastName'].helpText;
+        // var emailHelp = this.state['email'].helptext;
         return (
             <form>
                 <FormGroup
-                    controlId="userName-signup"
-                    validationState={this.state['userName-signup'].validation}
+                    controlId="username"
+                    validationState={this.state.data['username'].validation}
                 >
                     <TextInput
                         type={'text'}
@@ -204,8 +133,8 @@ export default class SignupForm extends React.Component {
                 </FormGroup>
 
                 <FormGroup
-                    controlId="userPassword-signup"
-                    validationState={this.state['userPassword-signup'].validation}
+                    controlId="password"
+                    validationState={this.state.data['password'].validation}
                 >
                     <TextInput
                         type={'password'}
@@ -218,8 +147,8 @@ export default class SignupForm extends React.Component {
                 </FormGroup>
 
                 <FormGroup
-                    controlId="firstName-signup"
-                    validationState={this.state['firstName-signup'].validation}
+                    controlId="firstName"
+                    validationState={this.state.data['firstName'].validation}
                 >
                     <TextInput
                         type={'text'}
@@ -230,8 +159,8 @@ export default class SignupForm extends React.Component {
                 </FormGroup>
 
                 <FormGroup
-                    controlId="lastName-signup"
-                    validationState={this.state['lastName-signup'].validation}
+                    controlId="lastName"
+                    validationState={this.state.data['lastName'].validation}
                 >
                     <TextInput
                         type={'text'}
@@ -242,8 +171,8 @@ export default class SignupForm extends React.Component {
                 </FormGroup>
 
                 <FormGroup
-                    controlId="dob-signup"
-                    validationState={this.state['dob-signup'].validation}
+                    controlId="dateOfBirth"
+                    validationState={this.state.data['dateOfBirth'].validation}
                 >
                     <TextInput
                         type={'date'}
@@ -254,8 +183,8 @@ export default class SignupForm extends React.Component {
                 </FormGroup>
 
                 <FormGroup
-                    controlId="email-signup"
-                    validationState={this.state['email-signup'].validation}
+                    controlId="email"
+                    validationState={this.state.data['email'].validation}
                 >
                     <TextInput
                         type={'email'}
@@ -265,7 +194,7 @@ export default class SignupForm extends React.Component {
                         updateVals={this.updateVals} />
                 </FormGroup>
 
-                <Button bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.isDisabled}>Sign Up</Button>
+                <Button bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick} disabled={this.state.isDisabled}>Sign Up</Button>
             </form>
         );
     }

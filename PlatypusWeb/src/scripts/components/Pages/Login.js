@@ -13,9 +13,12 @@ export default class Login extends React.Component {
             redirect: false,
             error: null
         }
+        this.login = this.login.bind(this);
     }
 
     login(route, data) {
+        console.log("ROUTE: ", route);
+        console.log("DATA: ", data);
         var opts = {
             method: 'POST',
             credentials: 'include',
@@ -85,8 +88,8 @@ export default class Login extends React.Component {
                                 <LinkContainer to="/login"><Button bsStyle="link" disabled={isLogin}>Login</Button></LinkContainer> or
                                 <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
                             </p>
-                            <Route exact path="/login" render={(props) => <LoginForm {...props} login={this.login.bind(this)} />} />
-                            <Route path="/login/signup" render={(props) => <SignupForm {...props} />} login={this.login.bind(this)} />
+                            <Route exact path="/login" render={(props) => <LoginForm {...props} login={this.login} />} />
+                            <Route path="/login/signup" render={(props) => <SignupForm {...props} login={this.login} />} />
                         </div>
                     </Col>
                 </Row>
