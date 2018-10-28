@@ -17,8 +17,6 @@ export default class Login extends React.Component {
     }
 
     login(route, data) {
-        console.log("ROUTE: ", route);
-        console.log("DATA: ", data);
         var opts = {
             method: 'POST',
             credentials: 'include',
@@ -40,7 +38,6 @@ export default class Login extends React.Component {
     }
 
     handleJsonResponse(response) {
-        console.log("AT HANDLEJSON RESPONSE: ", response);
         var status = response.status;
         var isSuccess = status === "SUCCESS";
         isSuccess && this.setState({ redirect: true });
@@ -57,7 +54,6 @@ export default class Login extends React.Component {
 
 
     render() {
-        console.log("REDREING LOGIN: ", this.state);
         var logoUrl = window.location.origin + '/' + logo;
         var isLogin = this.props.location.pathname === "/login";
         var redirect = this.state.redirect;

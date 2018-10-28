@@ -87,14 +87,12 @@ export default class SignupForm extends React.Component {
     }
 
     updateVals(id, value) {
-        // Get whether or not the input is valid
-        var match = value.match(regex[id]);
+        var match = value.match(regex[id]);     // Get whether or not the input is valid
+        
+        if (match)      // If there WAS a match, set appropriate values
+            this.setValidationState(id, { validation: 'success', value: value, helpText: null });
 
-        // If there WAS a match:
-        if (match) this.setValidationState(id, { validation: 'success', value: value, helpText: null });
-
-        // If there was NOT a match
-        else {
+        else {      // If there was NOT a match
             let [validation, helpText] = [null, null];  // Clear the error if the field is empty
             value.length < 1 && this.props.clearErrorAlert() // clear whole form error alert if field is cleared
             if (value.length > 0) [validation, helpText] = ['error', this.state.data[id].requirements];
@@ -113,9 +111,6 @@ export default class SignupForm extends React.Component {
     render() {
         var userNameHelp = this.state.data['username'].helpText;
         var passwordHelp = this.state.data['password'].helpText;
-        // var firstNameHelp = this.state['firstName'].helpText;
-        // var lastNameHelp = this.state['lastName'].helpText;
-        // var emailHelp = this.state['email'].helptext;
         return (
             <form>
                 <FormGroup
