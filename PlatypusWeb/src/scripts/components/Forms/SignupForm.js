@@ -74,7 +74,7 @@ export default class SignupForm extends React.Component {
             Object.keys(this.state.data).forEach((item) => {
                 formValid += (this.state.data[item].validation === 'success' ? 1 : 0)
             })
-            this.setState({ isDisabled: formValid > objCount });
+            this.setState({ isDisabled: formValid < objCount });
         }
     }
 
@@ -96,6 +96,7 @@ export default class SignupForm extends React.Component {
         // If there was NOT a match
         else {
             let [validation, helpText] = [null, null];  // Clear the error if the field is empty
+            value.length < 1 && this.props.clearErrorAlert() // clear whole form error alert if field is cleared
             if (value.length > 0) [validation, helpText] = ['error', this.state.data[id].requirements];
             this.setValidationState(id, { validation: validation, value: null, helpText: helpText });
         }
@@ -112,7 +113,6 @@ export default class SignupForm extends React.Component {
     render() {
         var userNameHelp = this.state.data['username'].helpText;
         var passwordHelp = this.state.data['password'].helpText;
-        console.log("SIGNUPFORM(PROPS): ", this.props);
         // var firstNameHelp = this.state['firstName'].helpText;
         // var lastNameHelp = this.state['lastName'].helpText;
         // var emailHelp = this.state['email'].helptext;

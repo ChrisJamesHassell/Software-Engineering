@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormGroup, Button, Alert } from 'react-bootstrap';
+import { FormGroup, Button } from 'react-bootstrap';
 import TextInput from './TextInput';
 import { path } from '../../fetchHelpers';
 
@@ -13,13 +13,13 @@ export default class LoginForm extends React.Component {
                 "password": ""
             },
             response: {},
-            isSuccess: false,
-            error: ""
+            isSuccess: false
         }
         this.updateVals = this.updateVals.bind(this);
     }
 
     updateVals(id, value) {
+        value.length < 1 && this.props.clearErrorAlert() // clear error alert if field is cleared
         var temp = this.state.data;
         temp[id] = value;
         var data = Object.assign(this.state.data, temp);
@@ -55,11 +55,6 @@ export default class LoginForm extends React.Component {
                         updateVals={this.updateVals} />
                 </FormGroup>
                 <Button type="button" bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.data.username.length < 1 || this.state.data.password.length < 1}>Login</Button>
-                <Alert bsStyle="danger" hidden={!(this.state.error)}>
-                    <p>
-                        {this.state.error}
-                    </p>
-                </Alert>
             </form>
         );
     }

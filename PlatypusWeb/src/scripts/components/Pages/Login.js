@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Grid, Row, Col } from 'react-bootstrap';
+import { Button, Grid, Row, Col, Alert } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Route, Redirect } from 'react-router-dom';
 import LoginForm from '../Forms/LoginForm';
@@ -40,6 +40,7 @@ export default class Login extends React.Component {
     }
 
     handleJsonResponse(response) {
+        console.log("AT HANDLEJSON RESPONSE: ", response);
         var status = response.status;
         var isSuccess = status === "SUCCESS";
         isSuccess && this.setState({ redirect: true });
@@ -50,8 +51,13 @@ export default class Login extends React.Component {
         this.setState({ error: error });
     }
 
+    clearErrorAlert() {
+        this.setState({ error: null });
+    }
+
 
     render() {
+        console.log("REDREING LOGIN: ", this.state);
         var logoUrl = window.location.origin + '/' + logo;
         var isLogin = this.props.location.pathname === "/login";
         var redirect = this.state.redirect;
@@ -88,8 +94,13 @@ export default class Login extends React.Component {
                                 <LinkContainer to="/login"><Button bsStyle="link" disabled={isLogin}>Login</Button></LinkContainer> or
                                 <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
                             </p>
-                            <Route exact path="/login" render={(props) => <LoginForm {...props} login={this.login} />} />
-                            <Route path="/login/signup" render={(props) => <SignupForm {...props} login={this.login} />} />
+                            <Route exact path="/login" render={(props) => <LoginForm {...props} login={this.login} clearErrorAlert={this.clearErrorAlert.bind(this)} />} />
+                            <Route path="/login/signup" render={(props) => <SignupForm {...props} login={this.login} clearErrorAlert={this.clearErrorAlert.bind(this)} />} />
+                            <Alert bsStyle="danger" hidden={!(this.state.error)}>
+                                <p>
+                                    {this.state.error}
+                                </p>
+                            </Alert>
                         </div>
                     </Col>
                 </Row>
