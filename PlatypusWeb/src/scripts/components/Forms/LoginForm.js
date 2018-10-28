@@ -69,7 +69,7 @@ export default class LoginForm extends React.Component {
         console.log("GOT TO HANDLESONRES: ", response);
         var status = response.status;
         var isSuccess = status === "SUCCESS";
-        this.setState({ isSuccess: isSuccess, response: response });
+        // this.setState({ isSuccess: isSuccess, response: response });
         !isSuccess && this.logError(response.message);
     }
 
@@ -78,9 +78,8 @@ export default class LoginForm extends React.Component {
     }
 
     render() {
-        if (this.state.isSuccess) {
-            console.log("SUCCESS: ", this.state.isSuccess);
-            this.props.login(this.state.isSuccess);
+        if (!this.state.error) {
+            this.props.login(true);
         }
         return (
             <form action={this.state.route} method="POST" encType="multipart/form-data" onKeyUp={ev => ev.keyCode === 13 && this.handleClick()}>
