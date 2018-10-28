@@ -11,25 +11,12 @@ function deleteAllCookies() {
     }
 }
 
-function readResponseAsJSON(response) {
-    return response.json();
-}
-
-function fetchJSON(pathToResource, validateResponse, logError, handleJsonResponse, optional) {
-    fetch(pathToResource, optional)
-        .then(validateResponse) // if not valid, skips rest and goes to catch
-        .then(readResponseAsJSON)
-        .then(handleJsonResponse)
-        .catch(logError);
-}
-
 var hasCookie = document.cookie.length > 0;
 var currentPath = window.location.pathname;
+
 export {
     path,
     currentPath,
     hasCookie,
-    fetchJSON,
-    readResponseAsJSON,
     deleteAllCookies
 }

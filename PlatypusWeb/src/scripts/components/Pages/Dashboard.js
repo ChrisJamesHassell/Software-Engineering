@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, Route } from 'react-router-dom';
-import { RouteWithSubRoutes } from '../../routes';
 
 const Dashboard = ({ routes }) => (
     <div style={{ background: 'white' }}>

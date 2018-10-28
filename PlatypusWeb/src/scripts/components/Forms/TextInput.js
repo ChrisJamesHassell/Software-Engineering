@@ -31,6 +31,7 @@ export default class TextInput extends React.Component {
                 label={this.props.label}
                 required={this.props.required}
                 pattern={this.props.pattern}
+                autoComplete={'current-password'}
                 maxLength={this.props.maxLength || 32}
                 placeholder={this.props.placeholder}
                 onChange={this.handleChange}

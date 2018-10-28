@@ -108,7 +108,7 @@ button:disabled, button[disabled] {
         background-size: cover;
         display: flex;
         flex-flow: column;
-        justify-content: space-evenly;
+        justify-content: end;
         padding: 5vw;
     }
 

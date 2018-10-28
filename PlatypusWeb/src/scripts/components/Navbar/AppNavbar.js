@@ -2,9 +2,7 @@ import React from 'react';
 import AppLogoHeader from './AppLogoHeader';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { RouteWithSubRoutes, routes } from '../../routes';
 import logo from '../../../images/icons/logo_fill_white.svg';
-import { getHomePath } from '../../fetchHelpers';
 
 const AppNavbar = () => {
     return (
