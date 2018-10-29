@@ -8,6 +8,7 @@ const regex = {
     'userPassword': /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,32}$/g
 }
 
+
 const path = window.location.origin.toLowerCase().includes('platypus') ? '' : 'http://localhost:8080';
 
 function readResponseAsJSON(response) {

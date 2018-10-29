@@ -122,8 +122,6 @@ public class Main {
 				Spark.post("/login/", new LoginHandler(ds, authFilter), gson::toJson);
 			});
 		});
-		
-		
 			
 	}
 }
