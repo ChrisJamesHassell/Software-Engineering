@@ -14,7 +14,7 @@ import platypus.api.models.User;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
+import java.util.HashMap;
 public class CreateHandler implements Route {
 
 	HikariDataSource ds;
@@ -75,8 +75,15 @@ public class CreateHandler implements Route {
 			}
 		} catch (SQLException e) {
 			// return failure to front-end.
-			System.out.println(e.getMessage());
-			return new JsonResponse("ERROR", "", "SQLException occured.");
+			String error = e.getMessage(); // SQLException occurred
+			HashMap<String, Integer> errorMap = new HashMap<>();
+			errorMap.put("email: " + u.getEmail(), error.indexOf("unique_email"));
+			errorMap.put("username: " + u.getUsername(), error.indexOf("unique_username"));
+			for (String key : errorMap.keySet()) {
+			    if(errorMap.get(key) > -1) error = "ERROR: User with " + key + " already exists.";
+			}
+			
+			return new JsonResponse("ERROR", "", error);
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 			return new JsonResponse("ERROR", "", "IllegalArgumentException occured while hashing password.");
