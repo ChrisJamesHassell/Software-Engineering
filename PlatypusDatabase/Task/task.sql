@@ -14,15 +14,13 @@
 -- Dumping structure for table platypus.task
 CREATE TABLE IF NOT EXISTS `task` (
   `taskID` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `taskType` enum('task','event','doc') NOT NULL DEFAULT 'task',
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
   `category` enum('Auto','Medical','Home','ToDo','Miscellaneous') NOT NULL,
   `deadline` date NOT NULL,
   `priority` int(1) unsigned NOT NULL,
-  PRIMARY KEY (`taskID`),
-  KEY `taskType` (`taskType`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`taskID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
