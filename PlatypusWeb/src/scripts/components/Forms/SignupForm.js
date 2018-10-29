@@ -12,12 +12,28 @@ const regex = {
     'dob-signup': /^.+$/g
 }
 
+const path = window.location.origin.toLowerCase().includes('platypus') ? '' : 'http://localhost:8080';
+
+function readResponseAsJSON(response) {
+    return response.json();
+}
+
+function fetchJSON(pathToResource, validateResponse, logError, handleJsonResponse, optional = null) {
+    fetch(pathToResource, optional)
+        .then(validateResponse) // if not valid, skips rest and goes to catch
+        .then(readResponseAsJSON)
+        .then(handleJsonResponse)
+        .catch(logError);
+}
+
 export default class SignupForm extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
             id: null,
             isDisabled: true,
+            items: null,
+            route: path + '/user/create/',
             'userName-signup': {
                 validation: null,
                 value: null,
@@ -33,13 +49,13 @@ export default class SignupForm extends React.Component {
             'firstName-signup': {
                 validation: null,
                 value: null,
-                requirements: 'Must be between 8-32 chars in length and only contain letters',
+                requirements: 'Must be between 1-32 chars in length and only contain letters',
                 helptext: null
             },
             'lastName-signup': {
                 validation: null,
                 value: null,
-                requirements: 'Must be between 8-32 chars in length and only contain letters',
+                requirements: 'Must be between 1-32 chars in length and only contain letters',
                 helptext: null
             },
             'dob-signup': {
@@ -57,17 +73,20 @@ export default class SignupForm extends React.Component {
         }
         this.getValidationState = this.getValidationState.bind(this);
         this.setValidationState = this.setValidationState.bind(this);
+        this.validateResponse = this.validateResponse.bind(this);
+        this.logError = this.logError.bind(this);
+        this.handleJsonResponse = this.handleJsonResponse.bind(this);
     }
 
     componentDidUpdate(prevProps, nextProps) {
         var stateChanged = JSON.stringify(nextProps) !== JSON.stringify(this.state);
         if (stateChanged) {
-            var formValid = this.state['userName-signup'].validation == 'success'
-                && this.state['userPassword-signup'].validation == 'success'
-                && this.state['firstName-signup'].validation == 'success'
-                && this.state['lastName-signup'].validation == 'success'
-                && this.state['email-signup'].validation == 'success'
-                && this.state['dob-signup'].validation=='success';
+            var formValid = this.state['userName-signup'].validation === 'success'
+                && this.state['userPassword-signup'].validation === 'success'
+                && this.state['firstName-signup'].validation === 'success'
+                && this.state['lastName-signup'].validation === 'success'
+                && this.state['email-signup'].validation === 'success'
+                && this.state['dob-signup'].validation === 'success';
             this.setState({ isDisabled: !formValid });
         }
     }
@@ -84,6 +103,8 @@ export default class SignupForm extends React.Component {
         // Get whether or not the input is valid
         var match = value.match(regex[id]);
 
+        console.log('AT GET VCALID STATE: ', value);
+
         // If there WAS a match:
         if (match) this.setValidationState(id, { validation: 'success', value: value, helpText: null });
 
@@ -95,10 +116,71 @@ export default class SignupForm extends React.Component {
         }
     }
 
+    getRequestString() {
+        return this.state.route;
+            // + this.state['firstName-signup'].value + '/'
+            // + this.state['lastName-signup'].value + '/' 
+            // + this.state['email-signup'].value + '/'
+            // + this.state['userName-signup'].value + '/'
+            // + this.state['userPassword-signup'].value + '/'
+            // + this.state['dob-signup'].value;
+    }
+
     handleClick(e) {
+        // THIS IS ALL TEMPORARY SHIT
+        
+        var request = this.getRequestString();
+        console.log('======request=========*****: ', request)
+        console.log('*****************STATE**************');
         console.log(this.state);
-        console.log('loginname: ', this.state['userName-signup'].value);
-        console.log('password: ', this.state['userPassword-signup'].value);
+        ///create/:firstname/:lastname/:email/:username/:password/:dateofbirth"
+        var req = new Request(request, {
+            method: 'post',
+            mode: 'cors',
+            redirect: 'follow',
+            credentials: 'include',
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({
+                'firstName': this.state['firstName-signup'].value,
+                'lastName': this.state['lastName-signup'].value,
+                'email': this.state['email-signup'].value,
+                'username': this.state['userName-signup'].value,
+                'password': this.state['userPassword-signup'].value,
+                'dateOfBirth': this.state['dob-signup'].value
+            })
+        });
+
+        fetchJSON(req, this.validateResponse, this.logError, this.handleJsonResponse);
+    }
+
+    validateResponse(result) {
+        this.setState({ isLoaded: true });
+        if (!result.ok) {
+            throw Error(result.statusText);
+        }
+        else {
+            console.log("shit be fiiiiiiiiiine")
+        }
+        return result;
+
+    }
+
+    handleJsonResponse(response) {
+        console.log("got to 'handleresponse'");
+        console.log(response);
+        this.setState({ items: response });
+
+    }
+
+    logError(error) {
+        console.log("THEY BE AN ERRRRR");
+        console.log(error);
+        var thing = JSON.stringify(error);
+
+        console.log(thing);
+        this.setState({ error: error })
     }
 
     render() {
@@ -185,7 +267,7 @@ export default class SignupForm extends React.Component {
                         getValidationState={this.getValidationState} />
                 </FormGroup>
 
-                <Button type={'submit'} bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.isDisabled}>Sign Up</Button>
+                <Button bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.isDisabled}>Sign Up</Button>
             </form>
         );
     }
