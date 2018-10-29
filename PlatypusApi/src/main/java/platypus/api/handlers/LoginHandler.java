@@ -71,8 +71,6 @@ public class LoginHandler implements Route {
 							60 * 60 * 24 * 7, false, false);
 				}
 
-
-
 				return new JsonResponse("SUCCESS", "", "Login success.");
 			}
 			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");

@@ -11,14 +11,16 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table platypus.belongs_to
-CREATE TABLE IF NOT EXISTS `belongs_to` (
+-- Dumping structure for table platypus.hastask
+CREATE TABLE IF NOT EXISTS `hastask` (
   `groupID` int(11) unsigned NOT NULL,
-  `userID` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`groupID`,`userID`),
-  KEY `FK_belongs_to_user` (`userID`),
-  CONSTRAINT `FK_belongs_to_group` FOREIGN KEY (`groupID`) REFERENCES `groups` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_belongs_to_user` FOREIGN KEY (`userID`) REFERENCES `user` (`userID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  `taskID` int(11) unsigned NOT NULL,
+  `pinned` enum('0','1') NOT NULL DEFAULT '0',
+  `notification` date DEFAULT NULL,
+  PRIMARY KEY (`groupID`,`taskID`),
+  KEY `taskID` (`taskID`),
+  CONSTRAINT `FK_hastask_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_hastask_task` FOREIGN KEY (`taskID`) REFERENCES `task` (`taskID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.

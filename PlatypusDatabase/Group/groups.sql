@@ -11,19 +11,12 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table platypus.event
-CREATE TABLE IF NOT EXISTS `event` (
-  `eventID` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `eventType` enum('task','event','doc') NOT NULL DEFAULT 'event',
-  `name` varchar(32) NOT NULL,
-  `description` varchar(250) NOT NULL,
-  `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
-  `start` date NOT NULL,
-  `end` date NOT NULL,
-  `location` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`eventID`),
-  KEY `eventType` (`eventType`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- Dumping structure for table platypus.groups
+CREATE TABLE IF NOT EXISTS `groups` (
+  `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `groupName` varchar(50) NOT NULL,
+  PRIMARY KEY (`groupID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

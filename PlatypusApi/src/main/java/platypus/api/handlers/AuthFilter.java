@@ -24,7 +24,6 @@ public class AuthFilter implements Filter {
 		sessions.put(token, userName);
 		return token;
 	}
-
 	
 	/* 
 	 *  Returns the username corresponding to the cookie in the sessions map.
@@ -47,6 +46,7 @@ public class AuthFilter implements Filter {
 			throw Spark.halt(401, "This can be JSON later, but means unauthorized");
 		}
 		request.attribute(USERNAME, userName);
+
 	}
 
 }
