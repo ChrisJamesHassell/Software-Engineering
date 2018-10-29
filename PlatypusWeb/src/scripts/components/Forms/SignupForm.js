@@ -6,7 +6,7 @@ import { path } from '../../fetchHelpers'
 // This is required to match correctly
 const regex = {
     'username': /^(?=.*[a-zA-Z])[A-Za-z\d]{8,32}$/g,
-    'password': /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,32}$/g,
+    'pass': /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,32}$/g,
     'firstName': /^(?=.*[A-Za-z])[A-Za-z]{1,32}$/g,
     'lastName': /^(?=.*[A-Za-z])[A-Za-z]{1,32}$/g,
     'email': /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/g,
@@ -27,7 +27,7 @@ export default class SignupForm extends React.Component {
                     requirements: 'Must be between 8-32 chars in length with no special chars',
                     helpText: null
                 },
-                "password": {
+                "pass": {
                     validation: null,
                     value: null,
                     requirements: 'Must be between 8-32 chars in length with 1 uppercase, 1 lowercase, 1 number, and no special chars',
@@ -70,7 +70,6 @@ export default class SignupForm extends React.Component {
         var objCount = Object.keys(this.state.data).length;
         if (stateChanged) {
             var formValid = 0;
-
             Object.keys(this.state.data).forEach((item) => {
                 formValid += (this.state.data[item].validation === 'success' ? 1 : 0)
             })
@@ -82,7 +81,7 @@ export default class SignupForm extends React.Component {
         var mergedProps = Object.assign(this.state.data[id], validProps);
         this.setState({ id: id });  // set the current input item id we are on
         this.setState((state) => {  // merge the updated properties
-            state.data[id] = mergedProps;
+            return state.data[id] = mergedProps;
         });
     }
 
@@ -110,7 +109,7 @@ export default class SignupForm extends React.Component {
 
     render() {
         var userNameHelp = this.state.data['username'].helpText;
-        var passwordHelp = this.state.data['password'].helpText;
+        var passwordHelp = this.state.data['pass'].helpText;
         return (
             <form>
                 <FormGroup
@@ -128,8 +127,8 @@ export default class SignupForm extends React.Component {
                 </FormGroup>
 
                 <FormGroup
-                    controlId="password"
-                    validationState={this.state.data['password'].validation}
+                    controlId="pass"
+                    validationState={this.state.data['pass'].validation}
                 >
                     <TextInput
                         type={'password'}

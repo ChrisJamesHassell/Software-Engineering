@@ -42,6 +42,7 @@ h1 {
 #logo-brand a {
     color: white;
 }
+
 #logo-brand img {
     max-height: 30px;
     display: inline;
@@ -78,7 +79,7 @@ button:disabled, button[disabled] {
     border-color: #e65d4fed;
 }
 
-/* Small devices (landscape phones, 576px and up) */
+/* XSmall devices (landscape phones, 0px and up) */
 
 @media (min-width: 0px) {
     #row-space {
@@ -91,7 +92,8 @@ button:disabled, button[disabled] {
         height: 100%;
     }
     #container {
-        overflow: hidden;
+        height: 100%;
+        overflow-y: hidden;
     }
     #login {
         height: 100%;
@@ -117,13 +119,15 @@ button:disabled, button[disabled] {
         padding-top: 10px;
         font-size: 2.5em;
     }
-    #login-links{
+    #login-links {
         padding-top: 10%;
     }
     #login-creds {
+        height: 100%;
         color: #ffffff;
         display: flex;
         flex-direction: column;
+        overflow-y: auto
     }
     #login-creds div {
         text-align: center;
@@ -153,6 +157,8 @@ button:disabled, button[disabled] {
         height: 20vh;
     }
     #login {
+        background: linear-gradient( var(--bg-overlay), var(--bg-overlay)), url('../images/loginbg.webp') no-repeat;
+        background-size: cover;
         height: auto;
         display: flex;
         flex-flow: row;
@@ -164,6 +170,7 @@ button:disabled, button[disabled] {
         align-items: stretch;
     }
     #login-creds {
+        height: unset;
         background: #ffffff;
         color: var(--text);
         display: flex;
@@ -200,8 +207,6 @@ button:disabled, button[disabled] {
         background-size: contain;
     }
 }
-
-/* *src\images\loginbg.jpg/
 
 /* Extra large devices (large desktops, 1200px and up) */
 

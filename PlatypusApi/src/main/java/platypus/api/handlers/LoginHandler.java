@@ -30,7 +30,7 @@ public class LoginHandler implements Route {
 
 		try {
 			dbconn = ds.getConnection();
-			PreparedStatement stmt = dbconn.prepareStatement("SELECT username, password FROM user WHERE username = ?");
+			PreparedStatement stmt = dbconn.prepareStatement("SELECT username, pass FROM user WHERE username = ?");
 			stmt.setString(1, u.getUsername());
 			ResultSet rows = stmt.executeQuery();
 			stmt.close();

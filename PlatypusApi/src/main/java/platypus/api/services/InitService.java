@@ -23,7 +23,7 @@ public class InitService {
 		ds.setDriverClassName("org.mariadb.jdbc.Driver");
 		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/platypus");
 		ds.addDataSourceProperty("user", "root");
-		ds.addDataSourceProperty("password", "lamepassword");
+		ds.addDataSourceProperty("password", "lamepassword"); // prod: mydogfartsblue!ps
 		ds.setAutoCommit(true); // Changed to true
 		return ds;
 	}

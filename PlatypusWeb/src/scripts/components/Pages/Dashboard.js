@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, Route } from 'react-router-dom';
+import { deleteAllCookies } from '../../fetchHelpers'
 
 const Dashboard = ({ routes }) => (
     <div style={{ background: 'white' }}>
@@ -13,9 +14,16 @@ const Dashboard = ({ routes }) => (
             </li>
         </ul>
         <Route exact path="/dashboard" component={Bus} />
-        {/* {routes.map((route, i) => <RouteWithSubRoutes key={i} {...route} />)} */}
         <Route path="/dashboard/bus" component={Bus} />
         <Route path="/dashboard/cart" component={Cart} />
+        <button
+          onClick={() => {
+            deleteAllCookies();
+            window.location.reload();
+          }}
+        >
+          Sign out
+        </button>
     </div>
 );
 

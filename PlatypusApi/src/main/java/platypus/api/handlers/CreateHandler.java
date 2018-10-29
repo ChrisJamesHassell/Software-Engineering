@@ -54,7 +54,7 @@ public class CreateHandler implements Route {
 
 			// Create account in the database
 			ps = conn.prepareStatement(
-					"INSERT INTO user (first_name, last_name, email, username, password, date_of_birth) VALUES (?,?,?,?,?,?)");
+					"INSERT INTO user (firstName, lastName, email, username, pass, dateOfBirth) VALUES (?,?,?,?,?,?)");
 			ps.setString(1, u.getFirstName());
 			ps.setString(2, u.getLastName());
 			ps.setString(3, u.getEmail());

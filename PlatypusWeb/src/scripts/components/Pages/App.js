@@ -11,7 +11,7 @@ const App = (props) => {
     return (
         <Router>
             <div id="container">
-                <AppNavbar />
+                <AppNavbar isAuth={hasCookie} />
                 <Route path="/login" render={props => <Login {...props} />} />
                 <PrivateRoute path="/dashboard" component={Dashboard} />
                 <Home home={home} />
@@ -33,7 +33,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     return (
         <Route {...rest} render={(props) => (
             hasCookie === true
-                ? <Component {...props} />
+                ? <Component {...props} {...rest}/>
                 : <span></span>
         )} />
     )

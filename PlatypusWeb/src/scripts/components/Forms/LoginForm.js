@@ -10,7 +10,7 @@ export default class LoginForm extends React.Component {
             route: path + '/user/login',
             data: {
                 "username": "",
-                "password": ""
+                "pass": ""
             },
             response: {},
             isSuccess: false
@@ -47,7 +47,7 @@ export default class LoginForm extends React.Component {
                     </InputGroup>
                 </FormGroup>
 
-                <FormGroup controlId="password" >
+                <FormGroup controlId="pass" >
                     <InputGroup>
                         <InputGroup.Addon><Glyphicon glyph="lock" /></InputGroup.Addon>
                         <TextInput
@@ -60,7 +60,7 @@ export default class LoginForm extends React.Component {
                             updateVals={this.updateVals} />
                     </InputGroup>
                 </FormGroup>
-                <Button type="button" bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.data.username.length < 1 || this.state.data.password.length < 1}>Login</Button>
+                <Button type="button" bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.data.username.length < 1 || this.state.data.pass.length < 1}>Login</Button>
             </form>
         );
     }
