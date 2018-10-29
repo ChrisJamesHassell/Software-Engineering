@@ -13,14 +13,14 @@
 
 -- Dumping structure for table platypus.document
 CREATE TABLE IF NOT EXISTS `document` (
-  `documentID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `docID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
   `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
   `filename` varchar(32) NOT NULL,
   `expiryDate` date DEFAULT NULL,
-  PRIMARY KEY (`documentID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`docID`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
