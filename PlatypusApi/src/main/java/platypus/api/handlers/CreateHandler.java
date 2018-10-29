@@ -60,7 +60,6 @@ public class CreateHandler implements Route {
 			ps.setString(3, u.getEmail());
 			ps.setString(4, u.getUsername());
 			ps.setString(5, BCrypt.hashpw(u.getPassword(), BCrypt.gensalt()));
-			System.out.println(BCrypt.hashpw(u.getPassword(), BCrypt.gensalt()));
 			ps.setString(6, u.getDateOfBirth());
 			int ret = ps.executeUpdate();
 			ps.close();
