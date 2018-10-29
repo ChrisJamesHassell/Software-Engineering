@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `hasdocument` (
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`docID`),
-  KEY `docID` (`docID`),
+  UNIQUE KEY `docID` (`docID`),
   CONSTRAINT `FK_hasdocument_document` FOREIGN KEY (`docID`) REFERENCES `document` (`documentID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_hasdocument_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
