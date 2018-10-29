@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `firstName` varchar(32) NOT NULL,
   `lastName` varchar(32) NOT NULL,
   `email` varchar(32) NOT NULL,
-  `userPassword` varchar(32) NOT NULL,
+  `userPassword` varchar(64) NOT NULL,
   `dateOfBirth` date NOT NULL,
   PRIMARY KEY (`userID`),
   UNIQUE KEY `username` (`username`),
