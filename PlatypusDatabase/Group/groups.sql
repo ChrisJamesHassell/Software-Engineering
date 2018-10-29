@@ -11,15 +11,12 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table project_database.item
-CREATE TABLE IF NOT EXISTS `item` (
-  `itemID` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key for item table, unique, self-incrementing identifier for user created items',
-  `type` enum('Task','Event','Document') NOT NULL COMMENT 'Enumerated type that allows for the differentiation of the type of item by task, event, or document',
-  `name` varchar(32) NOT NULL COMMENT 'Name of the user created item',
-  `description` varchar(250) NOT NULL COMMENT 'Short description of the user created item',
-  `category` enum('Medical','Auto','Home','ToDo') NOT NULL COMMENT 'Enumerated type that allows for differentiation of categories of user created items by medical, auto, home, or todo.',
-  PRIMARY KEY (`itemID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- Dumping structure for table platypus.groups
+CREATE TABLE IF NOT EXISTS `groups` (
+  `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `groupName` varchar(50) NOT NULL,
+  PRIMARY KEY (`groupID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

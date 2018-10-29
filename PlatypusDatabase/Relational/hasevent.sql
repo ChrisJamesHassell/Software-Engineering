@@ -11,14 +11,16 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table project_database.belongs_to
-CREATE TABLE IF NOT EXISTS `belongs_to` (
-  `GroupID` int(11) unsigned NOT NULL,
-  `user_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`GroupID`,`user_id`),
-  KEY `user_id` (`user_id`,`GroupID`),
-  CONSTRAINT `GroupID` FOREIGN KEY (`GroupID`) REFERENCES `group` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+-- Dumping structure for table platypus.hasevent
+CREATE TABLE IF NOT EXISTS `hasevent` (
+  `groupID` int(11) unsigned NOT NULL,
+  `eventID` int(11) unsigned NOT NULL,
+  `pinned` enum('0','1') NOT NULL DEFAULT '0',
+  `notification` date DEFAULT NULL,
+  PRIMARY KEY (`groupID`,`eventID`),
+  KEY `eventID` (`eventID`),
+  CONSTRAINT `FK_hasevent_events` FOREIGN KEY (`eventID`) REFERENCES `events` (`eventID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_hasevent_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
