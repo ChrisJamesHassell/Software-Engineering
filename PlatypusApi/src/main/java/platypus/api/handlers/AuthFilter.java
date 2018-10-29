@@ -3,6 +3,7 @@ package platypus.api.handlers;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import platypus.api.models.UserTuple;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
@@ -12,41 +13,46 @@ public class AuthFilter implements Filter {
 	public static final String TOKEN_COOKIE = "tokepi";
 	public static final String USERNAME = "USERNAME";
 
-	private final ConcurrentHashMap<String, String> sessions;
+	private final ConcurrentHashMap<String, UserTuple> sessions;
 
 	public AuthFilter() {
 		this.sessions = new ConcurrentHashMap<>(); // Has to be concurrent cause everything is sharing this filter ==>
 													// Thread safe
 	}
 
-	public String createSession(String userName) {
+	public String createSession(String userName, int id) {
 		String token = UUID.randomUUID().toString() + "." + UUID.randomUUID().toString();
-		sessions.put(token, userName);
+		UserTuple user = new UserTuple(userName, id);
+		sessions.put(token, user);
 		return token;
 	}
-
 	
 	/* 
-	 *  Returns the username corresponding to the cookie in the sessions map.
-	 *  Useful for figuring out what username corresponds to a request.
+	 *  Returns the username + id corresponding to the request cookie.
 	 */ 
-	public String getUsername(String cookie) {
-		String username = sessions.get(cookie);
-		return username;
+	public UserTuple getUser(String cookie) {
+		UserTuple user = sessions.get(cookie);
+		return user;
 	}
 	
 	@Override
 	public void handle(Request request, Response response) throws Exception {
 		String token = request.cookie(TOKEN_COOKIE);
-		System.out.println("Token cookie: " + token);
+	
 		if(token == null) {
 			throw Spark.halt(401, "Cookie not found");
 		}
-		String userName = sessions.get(token);
+		
+		UserTuple user = sessions.get(token);
+		String userName = user.getUsername();
+		
 		if (userName == null) {
 			throw Spark.halt(401, "This can be JSON later, but means unauthorized");
 		}
 		request.attribute(USERNAME, userName);
+		
+		System.out.println(this.sessions.toString());
+		
 	}
 
 }
