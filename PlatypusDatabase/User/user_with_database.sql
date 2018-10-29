@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   `email` varchar(32) NOT NULL,
   `password` varchar(32) NOT NULL,
   `dateOfBirth` date NOT NULL,
-  PRIMARY KEY (`userID`)
+  PRIMARY KEY (`userID`),
+  UNIQUE KEY `username_email` (`username`,`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
