@@ -32,6 +32,10 @@ export default (
             return [...state, action.payload].sort(
                 (a, b) => b.priority - a.priority
             );
+        case 'ADD_TASKS':
+            return [...state, ...action.payload].sort(
+                (a, b) => b.priority - a.priority
+            );
         case 'REMOVE_TASK':
             return [...state].filter(
                 task => task.taskID !== action.payload.taskID
