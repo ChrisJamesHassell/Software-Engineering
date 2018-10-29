@@ -15,7 +15,6 @@ import platypus.api.models.*;
 import platypus.api.handlers.EventApi;
 import spark.Spark;
 
-
 import java.util.Properties;
 
 public class Main {

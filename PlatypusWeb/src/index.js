@@ -6,7 +6,6 @@ import App from './scripts/components/Pages/App';
 import './css/global/bootstrap.css';
 import './css/style.css';
 
-
 render(
     <App routes={routes} />,
     document.getElementById('root')

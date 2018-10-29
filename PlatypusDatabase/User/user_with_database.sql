@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `password` varchar(32) NOT NULL,
   `dateOfBirth` date NOT NULL,
   PRIMARY KEY (`userID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

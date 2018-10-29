@@ -11,23 +11,16 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-
--- Dumping database structure for platypus
-CREATE DATABASE IF NOT EXISTS `platypus` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `platypus`;
-
 -- Dumping structure for table platypus.document
 CREATE TABLE IF NOT EXISTS `document` (
   `documentID` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `docType` enum('task','event','doc') NOT NULL DEFAULT 'doc',
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
   `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
   `filename` varchar(32) NOT NULL,
   `expiryDate` date DEFAULT NULL,
-  PRIMARY KEY (`documentID`),
-  KEY `docType` (`docType`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`documentID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

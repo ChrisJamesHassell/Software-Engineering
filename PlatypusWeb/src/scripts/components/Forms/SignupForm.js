@@ -12,7 +12,6 @@ const regex = {
     'dob-signup': /^.+$/g
 }
 
-
 const path = window.location.origin.toLowerCase().includes('platypus') ? '' : 'http://localhost:8080';
 
 function readResponseAsJSON(response) {
