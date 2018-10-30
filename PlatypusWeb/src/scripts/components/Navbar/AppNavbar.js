@@ -4,9 +4,19 @@ import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import logo from '../../../images/icons/logo_fill_white.svg';
 
-const AppNavbar = () => {
+// #32a78d
+
+
+
+const AppNavbar = (props) => {
+    const navStyle = {
+        'marginBottom': '0',
+        'borderRadius': '0'
+    }
+    if(props.isAuth) navStyle['background'] = '#32a78d';
+
     return (
-        <Navbar collapseOnSelect style={{ marginBottom: '0', borderRadius: '0' }}>
+        <Navbar collapseOnSelect style={navStyle}>
             <AppLogoHeader logo={logo} />
             <Navbar.Collapse>
                 <Nav>
