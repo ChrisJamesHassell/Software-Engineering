@@ -17,11 +17,11 @@ CREATE TABLE IF NOT EXISTS `events` (
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
   `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
-  `start` date NOT NULL,
-  `end` date NOT NULL,
+  `startDate` date NOT NULL,
+  `endDate` date NOT NULL,
   `location` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`eventID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
