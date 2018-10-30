@@ -8,12 +8,14 @@ import com.zaxxer.hikari.HikariDataSource;
 import platypus.api.handlers.IndexHandler;
 import platypus.api.handlers.LoginHandler;
 //import platypus.api.handlers.SettingsHandler;
+import platypus.api.handlers.UserApi;
 import platypus.api.handlers.AuthFilter;
 import platypus.api.handlers.CreateHandler;
 import platypus.api.services.*;
 import platypus.api.models.*;
 import platypus.api.handlers.EventApi;
 import spark.Spark;
+
 
 import java.util.Properties;
 
@@ -43,7 +45,9 @@ public class Main {
 					Spark.get("/api/test", (req, res) -> {return "hi " + req.attribute(AuthFilter.USERNAME);});
 					Spark.path("/user", () -> {
 						Spark.post("/create/", new CreateHandler(ds, authFilter), gson::toJson);
-			//			Spark.get("/settings", new SettingsHandler(ds, authFilter), gson::toJson); 
+						//TODO: User needs a GET route to return a User object with all of its groups.
+			//			Spark.get("/settings", new SettingsHandler(ds, authFilter), gson::toJson);
+						Spark.get("/userstuff/", (req, res) -> UserApi.getUserInfo(ds, authFilter.getUser(req.cookie(authFilter.TOKEN_COOKIE))), gson::toJson);
 						Spark.post("/login/", new LoginHandler(ds, authFilter), gson::toJson);
 					});
 					Spark.path("/task", () -> {
