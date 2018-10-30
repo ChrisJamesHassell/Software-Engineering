@@ -22,8 +22,25 @@ public class InitService {
 		ds.setMaximumPoolSize(8);
 		ds.setDriverClassName("org.mariadb.jdbc.Driver");
 		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/platypus");
-		ds.addDataSourceProperty("user", "root");
-		ds.addDataSourceProperty("password", "lamepassword"); // prod: mydogfartsblue!ps
+		ds.addDataSourceProperty("user", "platypus");
+		ds.addDataSourceProperty("password", "mydogfartsblue!ps");
+		/* To create a mysql user in terminal:
+			
+			sudo su #swaps to root user
+			mysql --user=root mysql #launches a local connection to the mysql database as root
+
+			MariaDB [mysql]> DROP USER platypus@localhost;
+			Query OK, 0 rows affected (0.00 sec)
+			
+			MariaDB [mysql]> FLUSH PRIVILEGES;
+			Query OK, 0 rows affected (0.00 sec)
+			
+			MariaDB [mysql]> CREATE USER 'platypus'@'localhost' IDENTIFIED BY 'mydogfartsblue!ps';
+			Query OK, 0 rows affected (0.00 sec)
+			
+			MariaDB [mysql]> GRANT ALL PRIVILEGES ON platypus.* TO 'platypus'@'localhost' WITH GRANT OPTION;
+			Query OK, 0 rows affected (0.00 sec)
+		 */
 		ds.setAutoCommit(true); // Changed to true
 		return ds;
 	}
@@ -44,7 +61,6 @@ public class InitService {
 		// interface / port.
 		Spark.ipAddress("127.0.0.1");
 		Spark.port(8080); // TODO: This will probably need to be changed
-		CorsFilter.apply();
 		Spark.options("/*", (request, response) -> {
 
 			String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");

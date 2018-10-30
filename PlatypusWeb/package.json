@@ -1,5 +1,6 @@
 {
   "name": "redux-cra",
+  "homepage": "https://platypus.null-terminator.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

@@ -6,6 +6,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import org.mindrot.jbcrypt.BCrypt;
+
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,7 +29,7 @@ public class LoginHandler implements Route {
 	public Object handle(Request request, Response response) throws Exception {
 		User u = JsonParser.getObject(User.class, request.body());
 		Connection dbconn = null;
-
+		
 		try {
 			dbconn = ds.getConnection();
 			PreparedStatement stmt = dbconn.prepareStatement("SELECT username, pass FROM user WHERE username = ?");
@@ -43,9 +45,14 @@ public class LoginHandler implements Route {
 			// The username exists, now validate the password.
 			if (BCrypt.checkpw(u.getPassword(), rows.getString(2))) {
 				// set cookie here
-				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
-						60 * 60 * 24 * 7, false, false);
-				return new JsonResponse("SUCCESS", "", "Login success.");
+				final URI uri = new URI(request.headers("Origin"));
+				if("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())) {
+					response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
+							60 * 60 * 24 * 7, false, false);
+					return new JsonResponse("SUCCESS", "", "Login success.");	
+				}
+				return new JsonResponse("ERROR", "", "The request is from an unknown origin");
+
 			}
 			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");
 

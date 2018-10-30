@@ -1,5 +1,6 @@
 package platypus.api.handlers;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,10 +66,15 @@ public class CreateHandler implements Route {
 			ps.close();
 			if (ret == 1) {
 				// set cookie here
-				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
-						60 * 60 * 24 * 7, false, false);
-				// Insert success, return success
-				return new JsonResponse("SUCCESS", "", "Account created successfully.");
+				final URI uri = new URI(request.headers("Origin"));
+				if("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())){
+					response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
+							60 * 60 * 24 * 7, false, false);
+					// Insert success, return success
+					return new JsonResponse("SUCCESS", "", "Account created successfully.");
+				}
+				return new JsonResponse("ERROR", "", "The request is from an unknown origin");
+
 			} else {
 				// Insert failed, return failure
 				return new JsonResponse("FAIL", "", "Account creation failed. PreparedStatement returned non-1 value.");

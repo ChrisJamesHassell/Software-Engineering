@@ -21,6 +21,7 @@ import spark.staticfiles.StaticFilesConfiguration;
 import spark.Spark;
 
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,10 +49,10 @@ public class Main {
 		InitService.initSparkConfig();
  
 		final AuthFilter authFilter = new AuthFilter();
-		
+
 		// Setting up the path groups.
-		Spark.path("/", () -> {
-			Spark.before("/api/*", authFilter);
+		Spark.path("/api", () -> {
+			Spark.before(authFilter);
 			Spark.path("/user", () -> {
 				Spark.post("/create", new CreateHandler(ds, authFilter), gson::toJson);
 				Spark.get("/settings", new IndexHandler(), gson::toJson); //Update to settings manager
