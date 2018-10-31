@@ -69,7 +69,7 @@ export default class Login extends React.Component {
             return <Redirect to="/dashboard" />
         }
         return (
-            <div>
+            <div id='login-container'>
                 <Modal show={this.state.loading}>
                     <Modal.Body>
                         <b>Loading...</b>
@@ -88,14 +88,14 @@ export default class Login extends React.Component {
                                 <p>
                                     Hey, adulting is hard. We get it. That's why Platypus provides
                                     a sleek, modern interface to help you adult at maximum efficiency.
-                        </p>
+                                </p>
                                 <p>
                                     <Button bsStyle='success' bsSize='large'>Learn More</Button>
                                 </p>
                             </div>
                         </Col>
                         <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
-                            <img src={logoUrl} id="logo-hidden" alt="white logo" />
+                            <div><img src={logoUrl} id="logo-hidden" alt="white logo" /></div>
                             <div id='login-logo-brand'>
                                 <span id='brand-platy'>platy</span><span id='brand-pus'>pus</span>
                             </div>
@@ -109,7 +109,7 @@ export default class Login extends React.Component {
                                 </Alert>
                                 <div id='login-links'>
                                     <LinkContainer to="/login"><Button bsStyle="link" disabled={isLogin}>Login</Button></LinkContainer> or
-                                <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
+                                    <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
                                 </div>
                             </div>
                         </Col>

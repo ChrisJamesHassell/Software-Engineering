@@ -51,7 +51,7 @@ const routes = [
 
 function Dashboard() {
     return (
-        <div style={{ display: "flex", height: "100%" }}>
+        <div style={{ display: "flex", height: "100%", maxWidth: "100%" }}>
             <div
                 style={{
                     padding: "10px",
@@ -87,7 +87,7 @@ function Dashboard() {
                 ))}
             </div>
 
-            <div style={{ flex: 1, padding: "10px", background: "#f2f5f8" }}>
+            <div style={{ flex: 1, padding: "10px", background: "#f2f5f8", maxWidth: "85%" }}>
                 {routes.map((route, index) => (
                     // Render more <Route>s with the same paths as
                     // above, but different components this time.

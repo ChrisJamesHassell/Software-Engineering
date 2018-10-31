@@ -9,10 +9,12 @@ import logo from '../../../images/icons/logo_fill_white.svg';
 
 
 const AppNavbar = (props) => {
+    var availWidth = window.screen.availWidth; //768px
     const navStyle = {
         'marginBottom': '0',
         'borderRadius': '0'
     }
+    if(!props.isAuth && availWidth < 768) navStyle['display'] = 'none';
     if(props.isAuth) navStyle['background'] = '#32a78d';
 
     return (

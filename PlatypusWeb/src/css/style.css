@@ -9,6 +9,7 @@ html, body, #root, #container {
     background: #47B5AB;
     font-family: 'Roboto', sans-serif;
     font-weight: 300;
+    max-width: 100%;
 }
 
 h1 {
@@ -102,6 +103,9 @@ button:disabled, button[disabled] {
         justify-content: end;
         padding: 5vw;
     }
+    #login-container {
+        height: 100%;
+    }
     img#logo-hidden {
         height: 100px;
     }
@@ -111,11 +115,11 @@ button:disabled, button[disabled] {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 10vw;
+        padding: 15%;
     }
     #login-logo-brand {
         color: white;
-        padding-top: 10px;
+        padding: 10px;
         font-size: 2.5em;
     }
     #login-links {
@@ -172,8 +176,7 @@ button:disabled, button[disabled] {
         height: unset;
         background: #ffffff;
         color: var(--text);
-        display: flex;
-        flex-basis: auto;
+        /* display: flex; */
         flex-direction: column;
         align-items: stretch;
         justify-content: space-between;
