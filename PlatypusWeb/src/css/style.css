@@ -11,7 +11,6 @@ html, body, #root, #container {
     font-weight: 300;
     max-width: 100%;
 }
-
 h1 {
     font-size: 4em;
 }
@@ -33,6 +32,9 @@ h1 {
 #login button {
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
+}
+.navbar-inverse .navbar-toggle{
+    border-color: transparent;
 }
 .navbar-brand {
     display: inline-flex;
