@@ -11,6 +11,31 @@ html, body, #root, #container {
     font-weight: 300;
     max-width: 100%;
 }
+
+#container > nav > div{
+    margin: 0;
+    width: 100%;
+}
+#content, #main-grid, #main-grid-row, #left-nav{
+    height: 100%;
+}
+#content, #main-grid, #main-grid-row, #main-div {
+    padding: 0;
+    margin: 0;
+}
+#content, #main-grid, #main-grid-row {
+    width: 100%;
+    max-width: 100%;
+}
+#content, #main-div {
+    background: #f2f5f8;
+}
+#left-nav {
+    padding: 10px;
+    margin: 0;
+    background: #33363b;
+}
+
 h1 {
     font-size: 4em;
 }
@@ -33,6 +58,27 @@ h1 {
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
 }
+
+#nav-profile-dropdown {
+    padding: 0;
+    margin: 0;
+}
+#nav-profile {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    margin: 0 10px 0 0;
+    background: url('../images/icons/profile_default.png');
+    background-size: cover; 
+  }
+  #basic-nav-dropdown > span.caret {
+      margin-top: -15px;
+  }
+  a#basic-nav-dropdown{
+      padding: 15px 15px 8px 15px;
+  }
 .navbar-inverse .navbar-toggle{
     border-color: transparent;
 }
@@ -159,7 +205,7 @@ button:disabled, button[disabled] {
 @media (min-width: 768px) {
     #row-space {
         display: inline-block;
-        height: 20vh;
+        height: 17vh;
     }
     #login {
         background: linear-gradient( var(--bg-overlay), var(--bg-overlay)), url('../images/loginbg.webp') no-repeat;

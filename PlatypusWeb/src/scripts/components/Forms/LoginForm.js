@@ -35,7 +35,7 @@ export default class LoginForm extends React.Component {
             <form action={this.state.route} method="POST" encType="multipart/form-data" onKeyUp={ev => ev.keyCode === 13 && this.handleClick()}>
                 <FormGroup controlId="username">
                     <InputGroup>
-                    <InputGroup.Addon><Glyphicon glyph="user" /></InputGroup.Addon>
+                        <InputGroup.Addon><Glyphicon glyph="user" /></InputGroup.Addon>
                         <TextInput
                             type={'text'}
                             name={'username'}

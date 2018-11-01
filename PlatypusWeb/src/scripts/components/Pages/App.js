@@ -8,8 +8,6 @@ import Login from './Login';
 
 const App = (props) => {
     var home = hasCookie ? "/dashboard" : "/login";
-    // var style = hasCookie && {padding: 0, margin: 0}
-    // console.log("STYLE: ", style);
     return (
         <Router>
             <div id="container">
