@@ -99,6 +99,7 @@ public class CreateHandler implements Route {
 				ps = conn.prepareStatement("SELECT userID FROM user WHERE username = ?");
 				ps.setString(1, u.getUsername());
 				ResultSet rows = ps.executeQuery();
+				ps.close();
 				int id;
 				if (!rows.next()) {
 					System.out.println("Some fuckywucky here");
@@ -109,8 +110,10 @@ public class CreateHandler implements Route {
 				// set cookie here
 				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 						60 * 60 * 24 * 7, false, false);
+				rows.close();
+				
 				// Insert success, return success
-				return new JsonResponse("SUCCESS", CacheUtil.buildCacheUtil(request, conn), "Account created successfully.");
+				return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn), "Account created successfully.");
 				// set cookie here
         // TODO, this portion works on the server. Above works on postman locally.
     /*

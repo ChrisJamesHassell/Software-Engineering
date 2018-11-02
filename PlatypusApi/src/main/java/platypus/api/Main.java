@@ -46,7 +46,7 @@ public class Main {
 						Spark.post("/create/", new CreateHandler(ds, authFilter), gson::toJson);
 						//TODO: User needs a GET route to return a User object with all of its groups.
 			//			Spark.get("/settings", new SettingsHandler(ds, authFilter), gson::toJson);
-						Spark.get("/userstuff/", (req, res) -> UserApi.getUserInfo(ds, authFilter.getUser(req.cookie(authFilter.TOKEN_COOKIE))), gson::toJson);
+						//Spark.get("/userstuff/", (req, res) -> UserApi.getUserInfo(ds, authFilter.getUser(req.cookie(authFilter.TOKEN_COOKIE))), gson::toJson);
 						Spark.post("/login/", new LoginHandler(ds, authFilter), gson::toJson);
 					});
 					Spark.path("/task", () -> {
@@ -57,9 +57,9 @@ public class Main {
 						//Spark.post("/delete/", new DeleteTaskHandler(ds), gson::toJson);
 					});
 					Spark.path("/event", () -> {
-						Spark.post("/add/", (req, res) -> EventApi.AddEvent(JsonParser.getObject(Event.class, req.body()), ds, authFilter.getUser(req.cookie(authFilter.TOKEN_COOKIE))), gson::toJson);
-						Spark.post("/update/", (req, res) -> EventApi.EditEvent(JsonParser.getObject(Event.class, req.body()), ds), gson::toJson);
-						Spark.post("/delete/", (req, res) -> EventApi.RemoveEvent(JsonParser.getObject(Event.class, req.body()), ds), gson::toJson);
+						Spark.post("/add/", (req, res) -> EventApi.AddEvent(ds, req), gson::toJson);
+						Spark.post("/update/", (req, res) -> EventApi.EditEvent(ds, req), gson::toJson);
+						Spark.post("/delete/", (req, res) -> EventApi.RemoveEvent(ds, req), gson::toJson);
 					});
 					Spark.path("/doc", () -> {
 						
