@@ -251,23 +251,10 @@ CREATE TABLE IF NOT EXISTS `document` (
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
   `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
-  `filename` varchar(32) NOT NULL,
-  `expiryDate` date DEFAULT NULL,
+  `fileName` varchar(128) NOT NULL,
+  `expirationDate` date DEFAULT NULL,
   PRIMARY KEY (`docID`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
-
--- Data exporting was unselected.
--- Dumping structure for table platypus.events
-CREATE TABLE IF NOT EXISTS `events` (
-  `eventID` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) NOT NULL,
-  `description` varchar(250) NOT NULL,
-  `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
-  `startDate` date NOT NULL,
-  `endDate` date NOT NULL,
-  `location` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`eventID`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.groups
@@ -278,8 +265,8 @@ CREATE TABLE IF NOT EXISTS `groups` (
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
--- Dumping structure for table platypus.hasdocument
-CREATE TABLE IF NOT EXISTS `hasdocument` (
+-- Dumping structure for table platypus.has_document
+CREATE TABLE IF NOT EXISTS `has_document` (
   `groupID` int(11) unsigned NOT NULL,
   `docID` int(11) unsigned NOT NULL,
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
@@ -291,21 +278,21 @@ CREATE TABLE IF NOT EXISTS `hasdocument` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
--- Dumping structure for table platypus.hasevent
-CREATE TABLE IF NOT EXISTS `hasevent` (
+-- Dumping structure for table platypus.has_event
+CREATE TABLE IF NOT EXISTS `has_event` (
   `groupID` int(11) unsigned NOT NULL,
   `eventID` int(11) unsigned NOT NULL,
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`eventID`),
   UNIQUE KEY `eventID` (`eventID`),
-  CONSTRAINT `FK_hasevent_events` FOREIGN KEY (`eventID`) REFERENCES `events` (`eventID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_hasevent_events` FOREIGN KEY (`eventID`) REFERENCES `userevents` (`eventID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_hasevent_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
--- Dumping structure for table platypus.hastask
-CREATE TABLE IF NOT EXISTS `hastask` (
+-- Dumping structure for table platypus.has_task
+CREATE TABLE IF NOT EXISTS `has_task` (
   `groupID` int(11) unsigned NOT NULL,
   `taskID` int(11) unsigned NOT NULL,
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
@@ -320,14 +307,20 @@ CREATE TABLE IF NOT EXISTS `hastask` (
 -- Dumping structure for procedure platypus.insertDoc
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertDoc`(
-IN pinned enum('0', '1'),
-IN notification DATE,
-IN groupID int(11),
-IN name VARCHAR(32),
-IN description VARCHAR(250),
-IN category enum('Auto','Medical','Home','ToDo','Miscellaneous'),
-IN fileName VARCHAR(32),
-IN expiration DATE
+	IN `pinned` enum('0', '1'),
+	IN `notification` DATE,
+	IN `groupID` int(11),
+	IN `name` VARCHAR(32),
+	IN `description` VARCHAR(250),
+	IN `category` enum('Auto','Medical','Home','ToDo','Miscellaneous'),
+	IN `fileName` VARCHAR(32),
+	IN `expirationDate` DATE
+
+
+
+
+
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -337,16 +330,12 @@ BEGIN
     
     SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
     
-    INSERT INTO document VALUES (
-    name,  
-    description, 
-    category, 
-    fileName, 
-    expiration);
+    INSERT INTO document (name, description, category, fileName, expirationDate)
+	 VALUES (name, description, category, fileName, expirationDate);
     
-    SELECT @docID = last_insert_id(); -- get last inserted task's ID
+    SET @docID = last_insert_id(); -- get last inserted task's ID
     
-    INSERT INTO hasdocument VALUES (
+    INSERT INTO has_document VALUES (
      groupID,
      @docID,
      pinned,
@@ -363,15 +352,19 @@ DELIMITER ;
 -- Dumping structure for procedure platypus.insertEvent
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertEvent`(
-IN pinned enum('0', '1'),
-IN notification DATE,
-IN groupID int(11),
-IN name VARCHAR(32),
-IN description VARCHAR(250),
-IN category enum('Auto','Medical','Home','ToDo','Miscellaneous'),
-IN startDate DATE,
-IN endDate DATE,
-IN location VARCHAR(100)
+	IN `pinned` enum('0', '1'),
+	IN `notification` DATE,
+	IN `groupID` int(11),
+	IN `name` VARCHAR(32),
+	IN `description` VARCHAR(250),
+	IN `category` enum('Auto','Medical','Home','ToDo','Miscellaneous'),
+	IN `startDate` DATE,
+	IN `endDate` DATE,
+	IN `location` VARCHAR(100)
+
+
+
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -381,17 +374,12 @@ BEGIN
     
     SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
     
-    INSERT INTO events VALUES (
-    name,  
-    description, 
-    category, 
-    startDate, 
-    endDate,
-     location);
+    INSERT INTO userevents(name, description, category, startDate, endDate, location)
+	 VALUES (name, description, category, startDate, endDate, location);
     
-    SELECT @eventID = last_insert_id(); -- get last inserted task's ID
+    SET @eventID = last_insert_id(); -- get last inserted task's ID
     
-    INSERT INTO hasevent VALUES (
+    INSERT INTO has_event VALUES (
      groupID,
      @eventID,
      pinned,
@@ -408,14 +396,17 @@ DELIMITER ;
 -- Dumping structure for procedure platypus.insertTask
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertTask`(
-IN pinned enum('0', '1'),
-IN notification DATE,
-IN groupID int(11),
-IN name VARCHAR(32),
-IN description VARCHAR(250),
-IN category enum('Auto','Medical','Home','ToDo','Miscellaneous'),
-IN deadline DATE,
-IN priority int(1)
+	IN `pinned` enum('0', '1'),
+	IN `notification` DATE,
+	IN `groupID` int(11),
+	IN `name` VARCHAR(32),
+	IN `description` VARCHAR(250),
+	IN `category` enum('Auto','Medical','Home','ToDo','Miscellaneous'),
+	IN `deadline` DATE,
+	IN `priority` int(1)
+
+
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -425,16 +416,12 @@ BEGIN
     
     SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
     
-    INSERT INTO tasks VALUES (
-    name,  
-    description, 
-    category, 
-    deadline, 
-    priority);
+    INSERT INTO task (name, description, category, deadline, priority)
+	 VALUES (name, description, category, deadline, priority);
     
-    SELECT @taskID = last_insert_id(); -- get last inserted task's ID
+    SET @taskID = last_insert_id(); -- get last inserted task's ID
     
-    INSERT INTO hasTask VALUES (
+    INSERT INTO has_task VALUES (
      groupID,
      @taskID,
      pinned,
@@ -450,7 +437,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure platypus.insertUser
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insertuser`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertUser`(
 IN username VARCHAR(32),
 IN firstName VARCHAR(32),
 IN lastName VARCHAR(32),
@@ -500,9 +487,22 @@ CREATE TABLE IF NOT EXISTS `task` (
   `description` varchar(250) NOT NULL,
   `category` enum('Auto','Medical','Home','ToDo','Miscellaneous') NOT NULL,
   `deadline` date NOT NULL,
-  `priority` int(1) unsigned NOT NULL,
+  `priority` enum('Low','Mid','High') NOT NULL,
   PRIMARY KEY (`taskID`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+-- Data exporting was unselected.
+-- Dumping structure for table platypus.userevents
+CREATE TABLE IF NOT EXISTS `userevents` (
+  `eventID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL,
+  `description` varchar(250) NOT NULL,
+  `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
+  `startDate` date NOT NULL,
+  `endDate` date NOT NULL,
+  `location` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`eventID`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.users
@@ -517,9 +517,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`userID`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+
