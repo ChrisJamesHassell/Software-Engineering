@@ -20,10 +20,12 @@ USE `platypus`;
 CREATE TABLE IF NOT EXISTS `belongs_to` (
   `groupID` int(11) unsigned NOT NULL,
   `userID` int(11) unsigned NOT NULL,
+  `self` enum('0','1') DEFAULT NULL,
+  `owner` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`groupID`,`userID`),
   KEY `FK_belongs_to_user` (`userID`),
   CONSTRAINT `FK_belongs_to_group` FOREIGN KEY (`groupID`) REFERENCES `groups` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_belongs_to_user` FOREIGN KEY (`userID`) REFERENCES `user` (`userID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_belongs_to_user` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
@@ -271,9 +273,9 @@ CREATE TABLE IF NOT EXISTS `events` (
 -- Dumping structure for table platypus.groups
 CREATE TABLE IF NOT EXISTS `groups` (
   `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `groupName` varchar(50) NOT NULL,
+  `groupName` varchar(50) NOT NULL DEFAULT '"Me"',
   PRIMARY KEY (`groupID`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.hasdocument
@@ -285,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `hasdocument` (
   PRIMARY KEY (`groupID`,`docID`),
   UNIQUE KEY `docID` (`docID`),
   CONSTRAINT `FK_hasdocument_document` FOREIGN KEY (`docID`) REFERENCES `document` (`docID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_hasdocument_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_hasdocument_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
@@ -298,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `hasevent` (
   PRIMARY KEY (`groupID`,`eventID`),
   UNIQUE KEY `eventID` (`eventID`),
   CONSTRAINT `FK_hasevent_events` FOREIGN KEY (`eventID`) REFERENCES `events` (`eventID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_hasevent_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_hasevent_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
@@ -310,11 +312,187 @@ CREATE TABLE IF NOT EXISTS `hastask` (
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`taskID`),
   UNIQUE KEY `taskID` (`taskID`),
-  CONSTRAINT `FK_hastask_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_hastask_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_hastask_task` FOREIGN KEY (`taskID`) REFERENCES `task` (`taskID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
+-- Dumping structure for procedure platypus.insertDoc
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertDoc`(
+IN pinned enum('0', '1'),
+IN notification DATE,
+IN groupID int(11),
+IN name VARCHAR(32),
+IN description VARCHAR(250),
+IN category enum('Auto','Medical','Home','ToDo','Miscellaneous'),
+IN fileName VARCHAR(32),
+IN expiration DATE
+)
+BEGIN
+    DECLARE `_rollback` BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+    
+    START TRANSACTION;
+    
+    SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
+    
+    INSERT INTO document VALUES (
+    name,  
+    description, 
+    category, 
+    fileName, 
+    expiration);
+    
+    SELECT @docID = last_insert_id(); -- get last inserted task's ID
+    
+    INSERT INTO hasdocument VALUES (
+     groupID,
+     @docID,
+     pinned,
+     notification);
+        
+    IF `_rollback` THEN
+        ROLLBACK;
+    ELSE
+        COMMIT;
+    END IF;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure platypus.insertEvent
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertEvent`(
+IN pinned enum('0', '1'),
+IN notification DATE,
+IN groupID int(11),
+IN name VARCHAR(32),
+IN description VARCHAR(250),
+IN category enum('Auto','Medical','Home','ToDo','Miscellaneous'),
+IN startDate DATE,
+IN endDate DATE,
+IN location VARCHAR(100)
+)
+BEGIN
+    DECLARE `_rollback` BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+    
+    START TRANSACTION;
+    
+    SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
+    
+    INSERT INTO events VALUES (
+    name,  
+    description, 
+    category, 
+    startDate, 
+    endDate,
+     location);
+    
+    SELECT @eventID = last_insert_id(); -- get last inserted task's ID
+    
+    INSERT INTO hasevent VALUES (
+     groupID,
+     @eventID,
+     pinned,
+     notification);
+        
+    IF `_rollback` THEN
+        ROLLBACK;
+    ELSE
+        COMMIT;
+    END IF;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure platypus.insertTask
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertTask`(
+IN pinned enum('0', '1'),
+IN notification DATE,
+IN groupID int(11),
+IN name VARCHAR(32),
+IN description VARCHAR(250),
+IN category enum('Auto','Medical','Home','ToDo','Miscellaneous'),
+IN deadline DATE,
+IN priority int(1)
+)
+BEGIN
+    DECLARE `_rollback` BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+    
+    START TRANSACTION;
+    
+    SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
+    
+    INSERT INTO tasks VALUES (
+    name,  
+    description, 
+    category, 
+    deadline, 
+    priority);
+    
+    SELECT @taskID = last_insert_id(); -- get last inserted task's ID
+    
+    INSERT INTO hasTask VALUES (
+     groupID,
+     @taskID,
+     pinned,
+     notification);
+        
+    IF `_rollback` THEN
+        ROLLBACK;
+    ELSE
+        COMMIT;
+    END IF;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure platypus.insertUser
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertuser`(
+IN username VARCHAR(32),
+IN firstName VARCHAR(32),
+IN lastName VARCHAR(32),
+IN email VARCHAR(32),
+IN userPassword VARCHAR(64),
+IN dateOfBirth DATE)
+BEGIN
+    DECLARE `_rollback` BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+    START TRANSACTION;
+    INSERT INTO users (username, firstName, lastName, email, userPassword, dateOfBirth) 
+	 VALUES (
+    username, 
+    firstName, 
+    lastName, 
+    email, 
+    userPassword, 
+    dateOfBirth
+	 );
+    
+    SET @user_id = last_insert_id(); -- retrieve userID
+    
+    INSERT INTO groups (groupName) VALUES ("Me");
+    
+
+    SET @group_id = last_insert_id(); -- retrieve groupID
+    
+    INSERT INTO belongs_to VALUES (
+	 @group_id,
+	 @user_id,
+	 "1",
+	 @user_id
+	 );
+    
+    IF `_rollback` THEN
+        ROLLBACK;
+     ELSE
+        COMMIT;
+    END IF;
+END//
+DELIMITER ;
+
 -- Dumping structure for table platypus.task
 CREATE TABLE IF NOT EXISTS `task` (
   `taskID` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -327,14 +505,14 @@ CREATE TABLE IF NOT EXISTS `task` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
--- Dumping structure for table platypus.user
-CREATE TABLE IF NOT EXISTS `user` (
+-- Dumping structure for table platypus.users
+CREATE TABLE IF NOT EXISTS `users` (
   `userID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(32) NOT NULL,
   `firstName` varchar(32) NOT NULL,
   `lastName` varchar(32) NOT NULL,
   `email` varchar(32) NOT NULL,
-  `userPassword` varchar(32) NOT NULL,
+  `userPassword` varchar(64) NOT NULL COMMENT 'Changed to 64 length',
   `dateOfBirth` date NOT NULL,
   PRIMARY KEY (`userID`),
   UNIQUE KEY `username` (`username`),
