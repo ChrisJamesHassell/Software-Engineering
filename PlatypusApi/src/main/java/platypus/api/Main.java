@@ -1,4 +1,3 @@
-
 package platypus.api;
 
 import com.google.gson.Gson;
@@ -7,29 +6,16 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.handlers.IndexHandler;
 import platypus.api.handlers.LoginHandler;
-import platypus.api.handlers.SettingsHandler;
-import platypus.api.models.Event;
+//import platypus.api.handlers.SettingsHandler;
+import platypus.api.handlers.UserApi;
 import platypus.api.handlers.AuthFilter;
 import platypus.api.handlers.CreateHandler;
-import platypus.api.handlers.EventApi;
 import platypus.api.services.*;
-import spark.Service.StaticFiles;
-import spark.embeddedserver.EmbeddedServers;
-import spark.embeddedserver.jetty.EmbeddedJettyServer;
-import spark.embeddedserver.jetty.JettyHandler;
-import spark.http.matching.MatcherFilter;
-import spark.route.Routes;
-import spark.servlet.SparkApplication;
-import spark.staticfiles.StaticFilesConfiguration;
+import platypus.api.models.*;
+import platypus.api.handlers.EventApi;
 import spark.Spark;
 
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
+
 import java.util.Properties;
 
 public class Main {
@@ -50,6 +36,7 @@ public class Main {
  
 		final AuthFilter authFilter = new AuthFilter();
 		
+		
 		// Setting up the path groups.
 		// Setting up the path groups.
 				Spark.path("/", () -> {
@@ -57,7 +44,9 @@ public class Main {
 					Spark.get("/api/test", (req, res) -> {return "hi " + req.attribute(AuthFilter.USERNAME);});
 					Spark.path("/user", () -> {
 						Spark.post("/create/", new CreateHandler(ds, authFilter), gson::toJson);
-			//			Spark.get("/settings", new SettingsHandler(ds, authFilter), gson::toJson); 
+						//TODO: User needs a GET route to return a User object with all of its groups.
+			//			Spark.get("/settings", new SettingsHandler(ds, authFilter), gson::toJson);
+						Spark.get("/userstuff/", (req, res) -> UserApi.getUserInfo(ds, authFilter.getUser(req.cookie(authFilter.TOKEN_COOKIE))), gson::toJson);
 						Spark.post("/login/", new LoginHandler(ds, authFilter), gson::toJson);
 					});
 					Spark.path("/task", () -> {
@@ -68,8 +57,7 @@ public class Main {
 						//Spark.post("/delete/", new DeleteTaskHandler(ds), gson::toJson);
 					});
 					Spark.path("/event", () -> {
-						// TODO, write json deserializer to be used in static API calls.
-						Spark.post("/add/", (req, res) -> /* TODO: deserialize json into objects beforehand and pass them all in */EventApi.AddEvent(JsonParser.getObject(Event.class, req.body()), ds, authFilter.getUsername(req.cookie("tokepi"))), gson::toJson);
+						Spark.post("/add/", (req, res) -> EventApi.AddEvent(JsonParser.getObject(Event.class, req.body()), ds, authFilter.getUser(req.cookie(authFilter.TOKEN_COOKIE))), gson::toJson);
 						Spark.post("/update/", (req, res) -> EventApi.EditEvent(JsonParser.getObject(Event.class, req.body()), ds), gson::toJson);
 						Spark.post("/delete/", (req, res) -> EventApi.RemoveEvent(JsonParser.getObject(Event.class, req.body()), ds), gson::toJson);
 					});
