@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, Route, Router } from 'react-router-dom';
 import { Panel, Grid, Row, Col, Table } from 'react-bootstrap';
-import { deleteAllCookies } from '../../fetchHelpers'
-import routes from '../../routes'
+import { deleteAllCookies } from '../../fetchHelpers';
+import routes from '../../routes';
 
 // function Dashboard() {
 //     var mainHeight = (100 - ((60/(60 + window.screen.availHeight)) * 100)).toString() + "%"
@@ -22,11 +22,12 @@ import routes from '../../routes'
 //     );
 // }
 function Dashboard() {
-    var mainHeight = (100 - ((60 / (60 + window.screen.availHeight)) * 100)).toString() + "%"
+    var mainHeight =
+        (100 - (60 / (60 + window.screen.availHeight)) * 100).toString() + '%';
     return (
-        <div id='content'>
-            <Grid id='main-grid'>
-                <Row id='main-grid-row'>
+        <div id="content">
+            <Grid id="main-grid">
+                <Row id="main-grid-row">
                     <LeftNav />
                     <Main mainHeight={mainHeight} />
                 </Row>
@@ -35,18 +36,26 @@ function Dashboard() {
     );
 }
 
-const LeftNav = (props) => {
+const LeftNav = props => {
     return (
-        <Col id='left-nav' xsHidden smHidden md={1}>
-            <ul style={{ listStyleType: "none", padding: 0 }}>
-                {routes.map((route) =>
+        <Col id="left-nav" xsHidden smHidden md={1}>
+            <ul style={{ listStyleType: 'none', padding: 0 }}>
+                {routes.map(route => (
                     <li key={route.name}>
-                        <Link key={route.name} to={route.path}>{route.name}</Link>
-                    </li>)}
+                        <Link key={route.name} to={route.path}>
+                            {route.name}
+                        </Link>
+                    </li>
+                ))}
             </ul>
-            <button onClick={() => { deleteAllCookies(); window.location.reload(); }}>
+            <button
+                onClick={() => {
+                    deleteAllCookies();
+                    window.location.reload();
+                }}
+            >
                 Sign out
-        </button>
+            </button>
 
             {routes.map((route, index) => (
                 <Route
@@ -57,13 +66,22 @@ const LeftNav = (props) => {
                 />
             ))}
         </Col>
-    )
-}
+    );
+};
 
-const Main = (props) => {
+const Main = props => {
     return (
-        <Col xs={12} md={11} style={{ height: props.mainHeight, padding: "20px", margin: "0px", overflowY: "auto" }}>
-            <div id='main-div'>
+        <Col
+            xs={12}
+            md={11}
+            style={{
+                height: props.mainHeight,
+                padding: '20px',
+                margin: '0px',
+                overflowY: 'auto',
+            }}
+        >
+            <div id="main-div">
                 {routes.map((route, index) => (
                     <Route
                         key={index}
@@ -74,10 +92,7 @@ const Main = (props) => {
                 ))}
             </div>
         </Col>
-    )
-}
+    );
+};
 
-
-export {
-    Dashboard
-}
+export { Dashboard };

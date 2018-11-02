@@ -9,13 +9,14 @@ export default class TextInput extends React.Component {
 
         this.state = {
             value: '',
-            requiresValidation: false
+            requiresValidation: false,
         };
     }
 
     componentDidMount() {
         // If the input requires validation, reflect in the state
-        this.props.requiresValidation && this.setState({ requiresValidation: true });
+        this.props.requiresValidation &&
+            this.setState({ requiresValidation: true });
     }
 
     handleChange(e) {

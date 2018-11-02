@@ -1,7 +1,7 @@
 import React from 'react';
 import { Panel, Grid, Row, Col, Table } from 'react-bootstrap';
 
-const Tasks = (props) => {
+const Tasks = props => {
     return (
         <div id="my-tasks">
             <Panel bsStyle="success">
@@ -208,6 +208,6 @@ const Tasks = (props) => {
                 </Panel.Body>
             </Panel>
         </div>
-    )
-}
+    );
+};
 export default Tasks;
