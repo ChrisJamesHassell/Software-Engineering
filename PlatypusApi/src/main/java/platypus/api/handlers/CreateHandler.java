@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
@@ -16,6 +17,10 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import java.util.HashMap;
+
+import com.google.gson.Gson;
+import com.google.gson.*;
+
 public class CreateHandler implements Route {
 
 	HikariDataSource ds;
@@ -30,7 +35,30 @@ public class CreateHandler implements Route {
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
 		User u = JsonParser.getObject(User.class, request.body());
-
+		
+		/*
+		 
+		 How the input from FE will look.
+		 
+		 {
+		 	"user": {
+		 		"id":1234
+		 		"name":"MYNAME"
+		 	}
+		 	"group": {
+		 		"id":1234
+		 		"name":"GROUPIE NAME"
+		 	}
+		 	"task": {
+		 		"id":123
+		 		"name":"name"
+		 		"desc":"desc123"
+		 		"other shit":""
+		 	}
+		 }
+		 
+		 */
+		
 		if (!matchesRegexRequirements(u)) {
 			return new JsonResponse("ERROR", "", "Fields do not match regex requirements.");
 		}
