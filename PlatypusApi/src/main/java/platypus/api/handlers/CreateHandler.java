@@ -76,7 +76,7 @@ public class CreateHandler implements Route {
 					id = rows.getInt(1);
 				}
 				// set cookie here
-				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername(), id),
+				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 						60 * 60 * 24 * 7, false, false);
 				// Insert success, return success
 				return new JsonResponse("SUCCESS", "", "Account created successfully.");

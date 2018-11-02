@@ -2,6 +2,7 @@ package platypus.api.handlers;
 
 import platypus.api.JsonParser;
 import platypus.api.models.User;
+import platypus.api.models.CacheEntry;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -50,16 +51,17 @@ public class LoginHandler implements Route {
 				String domain = request.headers("Host");
 				if (domain.equalsIgnoreCase("localhost:8080") || domain.equalsIgnoreCase("127.0.0.1:8080")) {
 					//Dev environment
-					response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername(), rows.getInt(3)),
+					response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 							60 * 60 * 24 * 7, false, false);
 				}
 				else {
 					//Prod environment
-					response.cookie(request.headers("Origin"), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername(), rows.getInt(3)),
+					response.cookie(request.headers("Origin"), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 							60 * 60 * 24 * 7, false, false);
 				}
 
 				//System.out.println("Request username should now be : " + this.authFilter.getUsername());
+				
 				return new JsonResponse("SUCCESS", "", "Login success.");
 			}
 			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");
