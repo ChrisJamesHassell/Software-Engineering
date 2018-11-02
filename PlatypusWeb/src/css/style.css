@@ -1,33 +1,46 @@
 :root {
-    --text: #3F5261;
+    --text: #3f5261;
     --bg-overlay: rgba(63, 82, 97, 0.8);
 }
 
 @import url('https://fonts.googleapis.com/css?family=Raleway:300,800|Roboto:300,700');
-html, body, #root, #container {
+
+html,
+body,
+#root,
+#container {
     height: 100%;
-    background: #47B5AB;
+    background: #47b5ab;
     font-family: 'Roboto', sans-serif;
     font-weight: 300;
     max-width: 100%;
 }
 
-#container > nav > div{
+#container > nav > div {
     margin: 0;
     width: 100%;
 }
-#content, #main-grid, #main-grid-row, #left-nav{
+#content,
+#main-grid,
+#main-grid-row,
+#left-nav {
     height: 100%;
 }
-#content, #main-grid, #main-grid-row, #main-div {
+#content,
+#main-grid,
+#main-grid-row,
+#main-div {
     padding: 0;
     margin: 0;
 }
-#content, #main-grid, #main-grid-row {
+#content,
+#main-grid,
+#main-grid-row {
     width: 100%;
     max-width: 100%;
 }
-#content, #main-div {
+#content,
+#main-div {
     background: #f2f5f8;
 }
 #left-nav {
@@ -71,15 +84,15 @@ h1 {
     padding: 0;
     margin: 0 10px 0 0;
     background: url('../images/icons/profile_default.png');
-    background-size: cover; 
-  }
-  #basic-nav-dropdown > span.caret {
-      margin-top: -15px;
-  }
-  a#basic-nav-dropdown{
-      padding: 15px 15px 8px 15px;
-  }
-.navbar-inverse .navbar-toggle{
+    background-size: cover;
+}
+#basic-nav-dropdown > span.caret {
+    margin-top: -15px;
+}
+a#basic-nav-dropdown {
+    padding: 15px 15px 8px 15px;
+}
+.navbar-inverse .navbar-toggle {
     border-color: transparent;
 }
 .navbar-brand {
@@ -112,12 +125,14 @@ a.active.btn.btn-link.disabled {
     font-weight: 300;
 }
 
-a.active.btn.btn-link, a.btn.btn-link {
+a.active.btn.btn-link,
+a.btn.btn-link {
     padding: 0;
     font-weight: 700;
 }
 
-button:disabled, button[disabled] {
+button:disabled,
+button[disabled] {
     background: #929db1;
     border-color: #929db1;
 }
@@ -127,8 +142,24 @@ button:disabled, button[disabled] {
     border-color: #e65d4fed;
 }
 
+.task-list,
+.task {
+    /* background-color: white; */
+    border: solid 1px lightgrey;
+    padding: 8px;
+}
+
+.task-list .task {
+    margin-bottom: 0.5em;
+}
+
+.task-list .task:last-child {
+    margin-bottom: 0;
+}
+
 /* XSmall devices (landscape phones, 0px and up) */
 
+/* Small devices (landscape phones, 576px and up) */
 @media (min-width: 0px) {
     #row-space {
         display: none;
@@ -145,7 +176,9 @@ button:disabled, button[disabled] {
     }
     #login {
         height: 100%;
-        background: rgb(44, 62, 80);
+        background: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+            url('../images/loginbg.webp') no-repeat;
+        background-size: cover;
         display: flex;
         flex-flow: column;
         justify-content: end;
@@ -178,37 +211,22 @@ button:disabled, button[disabled] {
         color: #ffffff;
         display: flex;
         flex-direction: column;
-        overflow-y: auto
+        overflow-y: auto;
     }
     #login-creds div {
         text-align: center;
     }
-    span.input-group>input {
-        background: transparent;
-        color: #929db1;
-        border-radius: 0;
-        border-style: none none solid none;
-        border-width: 1px;
-        border-color: #929db1;
-    }
-    span.input-group-addon {
-        background: transparent;
-        color: #929db1;
-        border-radius: 0;
-        border-style: none none solid none;
-        border-color: #929db1;
-    }
 }
 
 /* Medium devices (tablets, 768px and up) */
-
 @media (min-width: 768px) {
     #row-space {
         display: inline-block;
         height: 17vh;
     }
     #login {
-        background: linear-gradient( var(--bg-overlay), var(--bg-overlay)), url('../images/loginbg.webp') no-repeat;
+        background: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+            url('../images/loginbg.webp') no-repeat;
         background-size: cover;
         height: auto;
         display: flex;
@@ -234,30 +252,18 @@ button:disabled, button[disabled] {
     a.active.btn.btn-link.disabled {
         color: #333;
     }
-    span.input-group-addon {
-        background: transparent;
-        color: #929db1;
-        border-radius: 0;
-        border-style: none none solid none;
-        border-width: 1px;
-    }
-    span.input-group>input {
-        color: #929db1;
-        border-radius: 0;
-        border-style: none none solid none;
-        border-width: 1px;
-    }
 }
 
 /* Large devices (desktops, 992px and up) */
-
 @media (min-width: 992px) {
     #login {
-        background: linear-gradient( var(--bg-overlay), var(--bg-overlay)), url('../images/loginbg.webp') no-repeat;
+        background: linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+            url('../images/loginbg.webp') no-repeat;
         background-size: contain;
     }
 }
+/* *src\images\loginbg.jpg/
 
 /* Extra large devices (large desktops, 1200px and up) */
-
-@media (min-width: 1200px) {}
+@media (min-width: 1200px) {
+}
