@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { Dashboard, Bus, Cart } from './components/Pages/Dashboard';
+import { Dashboard } from './components/Pages/Dashboard';
 import Category from './components/Pages/Category';
 import Login from './components/Pages/Login';
 import LoginForm from './components/Forms/LoginForm';
@@ -28,14 +28,6 @@ const routes = [
         path: '/dashboard',
         component: Dashboard,
         routes: [
-            {
-                path: '/dashboard/bus',
-                component: Bus,
-            },
-            {
-                path: '/dashboard/cart',
-                component: Cart,
-            },
             {
                 path: '/dashboard/:category',
                 component: Category,
