@@ -1,5 +1,6 @@
 package platypus.api.handlers;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,6 +8,7 @@ import java.sql.SQLException;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
@@ -14,6 +16,11 @@ import platypus.api.models.User;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import java.util.HashMap;
+import util.*;
+
+import com.google.gson.Gson;
+import com.google.gson.*;
 
 public class CreateHandler implements Route {
 
@@ -29,6 +36,29 @@ public class CreateHandler implements Route {
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
 		User u = JsonParser.getObject(User.class, request.body());
+		
+		/*
+		 
+		 How the input from FE will look.
+		 
+		 {
+		 	"user": {
+		 		"id":1234
+		 		"name":"MYNAME"
+		 	}
+		 	"group": {
+		 		"id":1234
+		 		"name":"GROUPIE NAME"
+		 	}
+		 	"task": {
+		 		"id":123
+		 		"name":"name"
+		 		"desc":"desc123"
+		 		"other shit":""
+		 	}
+		 }
+		 
+		 */
 		
 		if (!matchesRegexRequirements(u)) {
 			return new JsonResponse("ERROR", "", "Fields do not match regex requirements.");
@@ -53,6 +83,7 @@ public class CreateHandler implements Route {
 			rs.close();
 
 			// Create account in the database
+      // TODO, convert to stored procs
 			ps = conn.prepareStatement(
 					"INSERT INTO user (firstName, lastName, email, username, userPassword, dateOfBirth) VALUES (?,?,?,?,?,?)");
 			ps.setString(1, u.getFirstName());
@@ -79,15 +110,34 @@ public class CreateHandler implements Route {
 				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 						60 * 60 * 24 * 7, false, false);
 				// Insert success, return success
-				return new JsonResponse("SUCCESS", "", "Account created successfully.");
+				return new JsonResponse("SUCCESS", CacheUtil.buildCacheUtil(request, conn), "Account created successfully.");
+				// set cookie here
+        // TODO, this portion works on the server. Above works on postman locally.
+    /*
+				final URI uri = new URI(request.headers("Origin"));
+				if("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())){
+					response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
+							60 * 60 * 24 * 7, false, false);
+					// Insert success, return success
+					return new JsonResponse("SUCCESS", CacheUtil.buildCacheUtil(request, conn), "Account created successfully.");
+				}
+				return new JsonResponse("ERROR", "", "The request is from an unknown origin");
+    */
 			} else {
 				// Insert failed, return failure
 				return new JsonResponse("FAIL", "", "Account creation failed. PreparedStatement returned non-1 value.");
 			}
 		} catch (SQLException e) {
 			// return failure to front-end.
-			System.out.println(e.getMessage());
-			return new JsonResponse("ERROR", "", "SQLException occured.");
+			String error = e.getMessage(); // SQLException occurred
+			HashMap<String, Integer> errorMap = new HashMap<>();
+			errorMap.put("email: " + u.getEmail(), error.indexOf("unique_email"));
+			errorMap.put("username: " + u.getUsername(), error.indexOf("unique_username"));
+			for (String key : errorMap.keySet()) {
+			    if(errorMap.get(key) > -1) error = "ERROR: User with " + key + " already exists.";
+			}
+			
+			return new JsonResponse("ERROR", "", error);
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 			return new JsonResponse("ERROR", "", "IllegalArgumentException occured while hashing password.");

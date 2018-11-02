@@ -62,7 +62,7 @@ public class LoginHandler implements Route {
 
 				//System.out.println("Request username should now be : " + this.authFilter.getUsername());
 				
-				return new JsonResponse("SUCCESS", "", "Login success.");
+				return new JsonResponse("SUCCESS", CacheUtil.buildCacheUtil(request, dbconn), "Login success.");
 			}
 			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");
 

@@ -1,4 +1,3 @@
-
 package platypus.api;
 
 import com.google.gson.Gson;
