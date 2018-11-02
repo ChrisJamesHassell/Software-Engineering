@@ -1,5 +1,7 @@
 package platypus.api.handlers;
 import platypus.api.models.Event;
+import platypus.api.models.UserTuple;
+import spark.Request;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -9,11 +11,11 @@ import com.zaxxer.hikari.HikariDataSource;
 
 public class EventApi {
 	
-	public static JsonResponse AddEvent(Event e, HikariDataSource ds, String username) throws Exception  {
+	public static JsonResponse AddEvent(HikariDataSource ds, Request req) throws SQLException  {
 		Connection conn = null;
 		CallableStatement stmt = null;
-		System.out.println("USER PLS WORK: " + username);
-		
+		//System.out.println("USER PLS WORK: " + userSess.toString());
+		System.out.println("User Token: " + req.cookie("tokepi").toString());
 		try {
 			conn = ds.getConnection();
 
@@ -26,12 +28,12 @@ public class EventApi {
 		} 
 	}
 	
-	public static JsonResponse EditEvent(Event e, HikariDataSource ds) throws Exception {
+	public static JsonResponse EditEvent(HikariDataSource ds, Request req) throws SQLException {
 
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", "", "Success Edit event");
+			return new JsonResponse("SUCCESS", "", "EditEvent");
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in EditEvent");
 		}
@@ -41,11 +43,11 @@ public class EventApi {
 	}
 	
 	
-	public static JsonResponse RemoveEvent(Event e, HikariDataSource ds) throws Exception {
+	public static JsonResponse RemoveEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", "", "Success remove event");
+			return new JsonResponse("SUCCESS", "", "RemoveEvent");
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in RemoveEvent");
 		}
