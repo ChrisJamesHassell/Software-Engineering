@@ -5,6 +5,8 @@ import platypus.api.models.User;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import util.CacheUtil;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.net.URI;
@@ -49,7 +51,7 @@ public class LoginHandler implements Route {
 				if("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())) {
 					response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 							60 * 60 * 24 * 7, false, false);
-					return new JsonResponse("SUCCESS", "", "Login success.");	
+					return new JsonResponse("SUCCESS", CacheUtil.buildCacheUtil(request, dbconn), "Login success.");	
 				}
 				return new JsonResponse("ERROR", "", "The request is from an unknown origin");
 

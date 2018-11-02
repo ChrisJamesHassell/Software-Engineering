@@ -17,6 +17,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import java.util.HashMap;
+import util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.*;
@@ -99,7 +100,7 @@ public class CreateHandler implements Route {
 					response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 							60 * 60 * 24 * 7, false, false);
 					// Insert success, return success
-					return new JsonResponse("SUCCESS", "", "Account created successfully.");
+					return new JsonResponse("SUCCESS", CacheUtil.buildCacheUtil(request, conn), "Account created successfully.");
 				}
 				return new JsonResponse("ERROR", "", "The request is from an unknown origin");
 
