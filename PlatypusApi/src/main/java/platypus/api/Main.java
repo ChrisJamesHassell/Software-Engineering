@@ -1,13 +1,14 @@
+
 package platypus.api;
 
 import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariDataSource;
 
-import platypus.api.handlers.HelloHandler;
+
 import platypus.api.handlers.IndexHandler;
 import platypus.api.handlers.LoginHandler;
+import platypus.api.handlers.SettingsHandler;
 import platypus.api.handlers.AuthFilter;
-import platypus.api.handlers.CorsFilter;
 import platypus.api.handlers.CreateHandler;
 import platypus.api.services.*;
 import spark.Service.StaticFiles;
@@ -28,9 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
 
@@ -49,15 +47,32 @@ public class Main {
 		InitService.initSparkConfig();
  
 		final AuthFilter authFilter = new AuthFilter();
-
+		
 		// Setting up the path groups.
-		Spark.path("/api", () -> {
-			Spark.before(authFilter);
-			Spark.path("/user", () -> {
-				Spark.post("/create", new CreateHandler(ds, authFilter), gson::toJson);
-				Spark.get("/settings", new IndexHandler(), gson::toJson); //Update to settings manager
-				Spark.post("/login", new LoginHandler(ds, authFilter), gson::toJson);
-			});
-		});	
+		// Setting up the path groups.
+				Spark.path("/", () -> {
+					Spark.before("/api/*", authFilter);
+					Spark.get("/api/test", (req, res) -> {return "hi " + req.attribute(AuthFilter.USERNAME);});
+					Spark.path("/user", () -> {
+						Spark.post("/create/", new CreateHandler(ds, authFilter), gson::toJson);
+			//			Spark.get("/settings", new SettingsHandler(ds, authFilter), gson::toJson); 
+						Spark.post("/login/", new LoginHandler(ds, authFilter), gson::toJson);
+					});
+					Spark.path("/task", () -> {
+						//Spark.post("/add/", new AddTaskHandler(ds), gson::toJson);
+			//			Spark.post("/add/", (req, res) -> TaskApi.AddTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
+			//			Spark.post("/update/", (req, res) -> TaskApi.EditTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
+			//			Spark.post("/delete/", (req, res) -> TaskApi.RemoveTask(JsonParser.getObject(Task.class, req.body())), gson::toJson);
+						//Spark.post("/delete/", new DeleteTaskHandler(ds), gson::toJson);
+					});
+					Spark.path("/event", () -> {
+						Spark.post("/add/", (req, res) -> EventApi.AddEvent(JsonParser.getObject(Event.class, req.body()), ds, authFilter.getUsername(req.cookie("tokepi"))), gson::toJson);
+						Spark.post("/update/", (req, res) -> EventApi.EditEvent(JsonParser.getObject(Event.class, req.body()), ds), gson::toJson);
+						Spark.post("/delete/", (req, res) -> EventApi.RemoveEvent(JsonParser.getObject(Event.class, req.body()), ds), gson::toJson);
+					});
+					Spark.path("/doc", () -> {
+						
+					});
+				});
 	}
 }

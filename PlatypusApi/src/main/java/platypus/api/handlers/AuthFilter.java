@@ -24,10 +24,20 @@ public class AuthFilter implements Filter {
 		sessions.put(token, userName);
 		return token;
 	}
-
+	
+	/* 
+	 *  Returns the username corresponding to the cookie in the sessions map.
+	 *  Useful for figuring out what username corresponds to a request.
+	 */ 
+	public String getUsername(String cookie) {
+		String username = sessions.get(cookie);
+		return username;
+	}
+	
 	@Override
 	public void handle(Request request, Response response) throws Exception {
 		String token = request.cookie(TOKEN_COOKIE);
+		System.out.println("Token cookie: " + token);
 		if(token == null) {
 			throw Spark.halt(401, "Cookie not found");
 		}
