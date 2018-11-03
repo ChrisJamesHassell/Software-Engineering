@@ -49,7 +49,7 @@ public class Main {
 		
 						//TODO: User needs a GET route to return a User object with all of its groups.
 			//			Spark.get("/settings", new SettingsHandler(ds, authFilter), gson::toJson);
-				//		Spark.post("/login/", (req, res) -> UserApi.login(JsonParser.getObject(User.class, req.body(), ds), gson::toJson);
+						//Spark.get("/userstuff/", (req, res) -> UserApi.getUserInfo(ds, authFilter.getUser(req.cookie(authFilter.TOKEN_COOKIE))), gson::toJson);
 						Spark.post("/login/", new LoginHandler(ds, authFilter), gson::toJson);
 					});
 					Spark.path("/task", () -> {

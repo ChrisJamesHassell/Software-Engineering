@@ -25,22 +25,8 @@ public class SettingsHandler implements Route {
 	
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
-		/* 
-		 * Needs to return the Groups that a User is part of. 
-		 */	
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		String userName = authFilter.getUsername(request.cookie("tokepi"));
-		System.out.println("Username: " + userName);
-		
 		try {
-			conn = ds.getConnection();
-			
-			/* Need to query the belongs_to to find all Groups that the parameter User is part of. Return big user object */
-			String sql = "SELECT * FROM belongs_to WHERE groupID = ?";
-			stmt.setString(1, userName);
-			
-			
+			Connection conn = ds.getConnection();
 		} catch (SQLException e) {
 			return new JsonResponse("ERROR", "", "SettingsHandler SQL error");
 		}
