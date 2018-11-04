@@ -92,7 +92,10 @@ class Tasks extends React.Component {
     },
   });
 
-  onTaskDeleteClick = id => () => this.onTaskDelete(id);
+  onTaskDeleteClick = id => (event) => {
+    event.preventDefault();
+    this.onTaskDelete(id);
+  };
 
   render() {
     const { tasks } = this.props;
