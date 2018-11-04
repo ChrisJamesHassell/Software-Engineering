@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `belongs_to` (
   `owner` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`groupID`,`userID`),
   KEY `FK_belongs_to_user` (`userID`),
-  CONSTRAINT `FK_belongs_to_group` FOREIGN KEY (`groupID`) REFERENCES `groups` (`GroupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_belongs_to_group` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_belongs_to_user` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -262,7 +262,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `groupName` varchar(50) NOT NULL DEFAULT '"Me"',
   PRIMARY KEY (`groupID`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_document
@@ -438,15 +438,22 @@ DELIMITER ;
 -- Dumping structure for procedure platypus.insertUser
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertUser`(
-IN username VARCHAR(32),
-IN firstName VARCHAR(32),
-IN lastName VARCHAR(32),
-IN email VARCHAR(32),
-IN userPassword VARCHAR(64),
-IN dateOfBirth DATE)
+	IN `username` VARCHAR(32),
+	IN `firstName` VARCHAR(32),
+	IN `lastName` VARCHAR(32),
+	IN `email` VARCHAR(32),
+	IN `userPassword` VARCHAR(64),
+	IN `dateOfBirth` DATE
+
+)
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
-    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+    DECLARE CONTINUE HANDLER 
+	 FOR SQLEXCEPTION 
+	 BEGIN	 
+		 SET `_rollback` = 1;
+		 RESIGNAL;
+	 END;		 
     START TRANSACTION;
     INSERT INTO users (username, firstName, lastName, email, userPassword, dateOfBirth) 
 	 VALUES (
@@ -462,7 +469,6 @@ BEGIN
     
     INSERT INTO groups (groupName) VALUES ("Me");
     
-
     SET @group_id = last_insert_id(); -- retrieve groupID
     
     INSERT INTO belongs_to VALUES (
@@ -517,10 +523,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`userID`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-
