@@ -9,7 +9,7 @@ export default class LoginForm extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      route: `${path}/user/login/`,
+      route: `${path}/user/login`,
       data: {
         username: '',
         pass: '',
