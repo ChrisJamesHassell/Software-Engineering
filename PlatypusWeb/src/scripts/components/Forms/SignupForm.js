@@ -25,7 +25,7 @@ export default class SignupForm extends React.Component {
         this.state = {
             id: null,
             isDisabled: true,
-            route: path + '/user/create',
+            route: path + '/user/create/',
             data: {
                 username: {
                     validation: null,
