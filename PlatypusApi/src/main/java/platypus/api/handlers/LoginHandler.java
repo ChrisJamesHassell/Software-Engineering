@@ -6,6 +6,8 @@ import platypus.api.models.CacheEntry;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import util.CacheUtil;
+
 import org.mindrot.jbcrypt.BCrypt;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,6 +49,7 @@ public class LoginHandler implements Route {
 
 			// The username exists, now validate the password.
 			if (BCrypt.checkpw(u.getPassword(), rows.getString(2))) {
+				u.setUserId(rows.getInt(3));
 
 				String domain = request.headers("Host");
 				if (domain.equalsIgnoreCase("localhost:8080") || domain.equalsIgnoreCase("127.0.0.1:8080")) {
@@ -62,7 +65,7 @@ public class LoginHandler implements Route {
 
 				//System.out.println("Request username should now be : " + this.authFilter.getUsername());
 				
-				return new JsonResponse("SUCCESS", CacheUtil.buildCacheUtil(request, dbconn), "Login success.");
+				return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), u.getUserId(), dbconn), "Login success.");
 			}
 			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");
 

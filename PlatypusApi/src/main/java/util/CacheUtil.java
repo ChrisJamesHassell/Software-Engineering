@@ -8,11 +8,13 @@ import java.sql.SQLException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import platypus.api.models.CacheEntry;
+import platypus.api.models.GroupyWrapper;
 import spark.Request;
 
 public class CacheUtil {
 
-	public static CacheEntry buildCacheUtil(Request req, Connection conn) {
+	public static CacheEntry buildCacheEntry(Request req, Connection conn) throws SQLException {
 		
 		// Parse request to fill the bulk of the CacheEntry object.
 		JsonObject o = new JsonParser().parse(req.body()).getAsJsonObject();
@@ -21,34 +23,40 @@ public class CacheUtil {
 		int groupId = o.get("groupId").getAsInt();
 		String groupName = o.get("groupName").getAsString();
 		
-		// Use request info to get a list of all groups associated with the user.
-		try {
-			
-			/* Write SQL statement where group/user relation is joined with group to get fields groupID and groupName */
-			PreparedStatement ps = conn.prepareStatement("SELECT groupID, groupName from groups join belongs_to WHERE userID = ?");
-			ps.setInt(1, userId);
-			ResultSet rs = ps.executeQuery();
-			ps.close();
-			
-			GroupyWrapper[] groupyWrappers = new GroupyWrapper[getResultSetSize(rs)];
-						
-			int ct = 0;
-			while (rs.next()) {
-				groupyWrappers[0] = new GroupyWrapper(rs.getInt(0), rs.getString(1));
-			}
-			
-			return new CacheEntry(userId, userName, groupId, groupName, groupyWrappers);
-			
-		}
-		catch (SQLException e) {
-			conn.close();
-			e.printStackTrace();
-			// TODO, throw proper error;
-		}
-		finally {
-			conn.close();
+		// Use request info to get a list of all groups associated with the user.		
+		PreparedStatement ps = conn.prepareStatement("SELECT groupId, groupName FROM belongs_to inner join groups on groupId where userID = ?");
+		ps.setInt(1, userId);
+		ResultSet rs = ps.executeQuery();
+		ps.close();
+		
+		GroupyWrapper[] groupyWrappers = new GroupyWrapper[getResultSetSize(rs)];
+					
+		int ct = 0;
+		while (rs.next()) {
+			groupyWrappers[0] = new GroupyWrapper(rs.getInt(1), rs.getString(2));
 		}
 		
+		return new CacheEntry(userName, userId, groupId, groupName, groupyWrappers);
+				
+	}
+	
+	public static CacheEntry buildCacheEntry(String userName, int id, Connection conn) throws SQLException {
+		
+		// Use userId to get groupId & groupName for the user's self group.
+		PreparedStatement ps = conn.prepareStatement("SELECT groupId, groupName FROM belongs_to inner join groups on groupId where userID = ?");
+		ps.setInt(1, id);
+		ResultSet rs = ps.executeQuery();
+		ps.close();
+		
+		// Get id and name
+		rs.next();
+		int groupId = rs.getInt(1);
+		String groupName = rs.getString(2);
+		
+		rs.close();
+		
+		return new CacheEntry(userName, id, groupId, groupName, new GroupyWrapper[] {new GroupyWrapper(groupId, groupName)});
+	
 	}
 	
 	private static int getResultSetSize(ResultSet rs) throws SQLException {
