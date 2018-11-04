@@ -1,23 +1,30 @@
 import React from 'react';
 import {
-  Button, Modal, ModalHeader, ModalBody, Panel, Table,
+  Button, Glyphicon, Modal, ModalHeader, ModalBody, Panel, Table,
 } from 'react-bootstrap';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { connect } from 'react-redux';
 
 import TaskForm from '../Forms/TaskForm';
 
-const Task = ({ index, onClick, task: { description, id, name } }) => (
+const Task = ({
+  index, onTaskClick, onTaskDeleteClick, task: { description, id, name },
+}) => (
   <Draggable draggableId={id} index={index}>
     {provided => (
       <div
         {...provided.draggableProps}
         {...provided.dragHandleProps}
         className="task"
-        onClick={onClick}
+        onClick={onTaskClick}
         ref={provided.innerRef}
       >
-        <h4>{name}</h4>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <h4>{name}</h4>
+          <a href="#remove" onClick={onTaskDeleteClick}>
+            <Glyphicon glyph="remove" />
+          </a>
+        </div>
         <p>{description}</p>
       </div>
     )}
@@ -32,8 +39,14 @@ export class TaskList extends React.Component {
       <Droppable droppableId="tasks">
         {provided => (
           <div {...provided.droppableProps} className="task-list" ref={provided.innerRef}>
-            {tasks.map(({ onTaskClick, ...task }, index) => (
-              <Task index={index} key={index} onClick={onTaskClick} task={task} />
+            {tasks.map(({ onTaskClick, onTaskDeleteClick, ...task }, index) => (
+              <Task
+                index={index}
+                key={index}
+                onTaskClick={onTaskClick}
+                onTaskDeleteClick={onTaskDeleteClick}
+                task={task}
+              />
             ))}
             {provided.placeholder}
           </div>
@@ -49,8 +62,6 @@ class Tasks extends React.Component {
   };
 
   changeModal = value => this.setState({ activeModal: value });
-
-  onCreateTaskClick = () => this.changeModal('create-task');
 
   onHideModal = () => this.changeModal(null);
 
@@ -71,6 +82,18 @@ class Tasks extends React.Component {
     this.onHideModal();
   };
 
+  onTaskCreateClick = () => this.changeModal('create-task');
+
+  // TODO: Add delete confirmation
+  onTaskDelete = taskID => this.props.dispatch({
+    type: 'REMOVE_TASK',
+    payload: {
+      taskID,
+    },
+  });
+
+  onTaskDeleteClick = id => () => this.onTaskDelete(id);
+
   render() {
     const { tasks } = this.props;
     const { activeModal } = this.state;
@@ -80,7 +103,7 @@ class Tasks extends React.Component {
         <Panel bsStyle="success">
           <Panel.Heading style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Panel.Title componentClass="h3">My Tasks</Panel.Title>
-            <Button bsSize="sm" bsStyle="primary" onClick={this.onCreateTaskClick}>
+            <Button bsSize="sm" bsStyle="primary" onClick={this.onTaskCreateClick}>
               Create Task
             </Button>
             <Modal onHide={this.onHideModal} show={activeModal === 'create-task'}>
@@ -99,6 +122,7 @@ class Tasks extends React.Component {
                   ...task,
                   id: task.taskID,
                   onTaskClick: this.onTaskClick(task),
+                  onTaskDeleteClick: this.onTaskDeleteClick(task.taskID),
                 }))}
               />
             </DragDropContext>
