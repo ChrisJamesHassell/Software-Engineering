@@ -44,9 +44,9 @@ public class CacheUtil {
 	public static CacheEntry buildCacheEntry(String userName, int id, Connection conn) throws SQLException {
 		
 		// Use userId to get groupId & groupName for the user's self group.
-		PreparedStatement ps = conn.prepareStatement("SELECT belongs_to.userId, groups.groupID, groups.groupName FROM belongs_to "
+		PreparedStatement ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
 													+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
-													+ "WHERE belongs_to.userId = ?");
+													+ "WHERE belongs_to.userID = ?");
 		ps.setInt(1, id);
 		ResultSet rs = ps.executeQuery();
 		ps.close();
