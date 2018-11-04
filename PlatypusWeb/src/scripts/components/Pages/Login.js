@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  Button, Grid, Row, Col, Alert, Modal,
-} from 'react-bootstrap';
+import { Button, Grid, Row, Col, Alert, Modal } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Route, Redirect } from 'react-router-dom';
 import LoginForm from '../Forms/LoginForm';
@@ -15,50 +13,46 @@ export default class Login extends React.Component {
     this.state = {
       redirect: false,
       error: '',
-      loading: false,
-    };
+      loading: false
+    }
     this.login = this.login.bind(this);
   }
 
   login(route, data) {
     this.setState({ loading: true });
-    const opts = {
+    var opts = {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'Content-type': 'application/json',
+        'Content-type': 'application/json'
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     };
     fetch(route, opts)
-      // If not valid, skips rest and goes to catch
-      .then(response => this.validateResponse(response))
-      .then(validResponse => validResponse.json())
+      .then(response => this.validateResponse(response)) // If not valid, skips rest and goes to catch
+      .then(validResponse => { return validResponse.json() })
       .then(jsonResponse => this.handleJsonResponse(jsonResponse))
       .catch(error => this.logError(error));
   }
 
-  validateResponse = (result) => {
+  validateResponse(result) {
     if (!result.ok) throw Error(result.statusText);
     return result;
   }
 
-  handleJsonResponse = (response) => {
+  handleJsonResponse(response) {
     this.setState({ loading: false });
     const { status } = response;
     const isSuccess = status === 'SUCCESS';
-    if (isSuccess) {
-      return this.setState({ redirect: true });
-    }
-
-    return this.logError(response.message);
+    if (isSuccess) this.setState({ redirect: true });
+    else this.logError(response.message);
   }
 
   logError(error) {
     this.setState({ loading: false });
-    let text = error.toString();
-    if (text.includes('Failed to fetch')) text = 'There was a problem connecting to the server. Please contact the service administrator.';
-    this.setState({ error });
+    var err = error.toString();
+    if (err.includes('Failed to fetch')) err = 'There was a problem connecting to the server. Please contact the service administrator.';
+    this.setState({ error: err });
   }
 
   clearErrorAlert() {
@@ -108,16 +102,16 @@ export default class Login extends React.Component {
   }
 }
 
-const LoginMobileContent = props => (
+const LoginMobileContent = (props) => (
   <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
-    <div><img src={props.logoUrl} id="logo-hidden" alt="white logo" /></div>
+    <div><img src={props.logoUrl} id='logo-hidden' alt='white logo' /></div>
     <div id='login-logo-brand'>
       <span id='brand-platy'>platy</span><span id='brand-pus'>pus</span>
     </div>
   </Col>
 );
 
-const LoadingModal = props => (
+const LoadingModal = (props) => (
   <Modal show={props.loading}>
     <Modal.Body>
       <b>Loading...</b>
