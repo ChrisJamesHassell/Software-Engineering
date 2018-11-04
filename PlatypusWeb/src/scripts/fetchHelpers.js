@@ -1,6 +1,6 @@
 const path = window.location.origin.toLowerCase().includes('platypus')
     ? '/api'
-    : 'http://localhost:8080/api';
+    : 'http://localhost:8080';
 
 function deleteAllCookies() {
     var cookies = document.cookie.split(';');
