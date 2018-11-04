@@ -8,7 +8,11 @@ import { connect } from 'react-redux';
 import TaskForm from '../Forms/TaskForm';
 
 const Task = ({
-  index, onTaskClick, onTaskDeleteClick, task: { description, id, name },
+  index,
+  onTaskClick,
+  onTaskDeleteClick,
+  onTaskEditClick,
+  task: { description, id, name },
 }) => (
   <Draggable draggableId={id} index={index}>
     {provided => (
@@ -21,9 +25,14 @@ const Task = ({
       >
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <h4>{name}</h4>
-          <a href="#remove" onClick={onTaskDeleteClick}>
-            <Glyphicon glyph="remove" />
-          </a>
+          <div style={{ display: 'flex' }}>
+            <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
+              <Glyphicon glyph="pencil" />
+            </a>
+            <a href="#remove" onClick={onTaskDeleteClick}>
+              <Glyphicon glyph="remove" />
+            </a>
+          </div>
         </div>
         <p>{description}</p>
       </div>
@@ -39,12 +48,15 @@ export class TaskList extends React.Component {
       <Droppable droppableId="tasks">
         {provided => (
           <div {...provided.droppableProps} className="task-list" ref={provided.innerRef}>
-            {tasks.map(({ onTaskClick, onTaskDeleteClick, ...task }, index) => (
+            {tasks.map(({
+              onTaskClick, onTaskDeleteClick, onTaskEditClick, ...task
+            }, index) => (
               <Task
                 index={index}
                 key={index}
                 onTaskClick={onTaskClick}
                 onTaskDeleteClick={onTaskDeleteClick}
+                onTaskEditClick={onTaskEditClick}
                 task={task}
               />
             ))}
@@ -97,6 +109,19 @@ class Tasks extends React.Component {
     this.onTaskDelete(id);
   };
 
+  onTaskEditClick = id => (event) => {
+    event.preventDefault();
+    this.changeModal(`edit-${id}`);
+  };
+
+  onTaskUpdate = (values) => {
+    this.props.dispatch({
+      type: 'UPDATE_TASK',
+      payload: values,
+    });
+    this.onHideModal();
+  };
+
   render() {
     const { tasks } = this.props;
     const { activeModal } = this.state;
@@ -126,8 +151,26 @@ class Tasks extends React.Component {
                   id: task.taskID,
                   onTaskClick: this.onTaskClick(task),
                   onTaskDeleteClick: this.onTaskDeleteClick(task.taskID),
+                  onTaskEditClick: this.onTaskEditClick(task.taskID),
                 }))}
               />
+              <Modal onHide={this.onHideModal} show={activeModal && activeModal.startsWith('edit')}>
+                <ModalHeader closeButton={true} onHide={this.onHideModal}>
+                  Edit Task
+                </ModalHeader>
+                <ModalBody>
+                  <TaskForm
+                    onSubmit={this.onTaskUpdate}
+                    task={
+                      activeModal
+                      && activeModal.startsWith('edit')
+                      && this.props.tasks.find(
+                        task => task.taskID === Number(activeModal.split('-')[1]),
+                      )
+                    }
+                  />
+                </ModalBody>
+              </Modal>
             </DragDropContext>
           </Panel.Body>
         </Panel>
