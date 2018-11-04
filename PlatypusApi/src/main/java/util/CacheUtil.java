@@ -24,7 +24,8 @@ public class CacheUtil {
 		String groupName = o.get("groupName").getAsString();
 		
 		// Use request info to get a list of all groups associated with the user.		
-		PreparedStatement ps = conn.prepareStatement("SELECT groupId, groupName FROM belongs_to inner join groups on groupId where userID = ?");
+		// TODO: Update to retrieve all correct info later.
+		PreparedStatement ps = conn.prepareStatement("SELECT groupId, groupName FROM belongs_to inner join groups on groupId where belongs_to.userID = ?");
 		ps.setInt(1, userId);
 		ResultSet rs = ps.executeQuery();
 		ps.close();
@@ -43,15 +44,18 @@ public class CacheUtil {
 	public static CacheEntry buildCacheEntry(String userName, int id, Connection conn) throws SQLException {
 		
 		// Use userId to get groupId & groupName for the user's self group.
-		PreparedStatement ps = conn.prepareStatement("SELECT groupId, groupName FROM belongs_to inner join groups on groupId where userID = ?");
+		PreparedStatement ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
+													+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
+													+ "WHERE belongs_to.userID = ?");
 		ps.setInt(1, id);
 		ResultSet rs = ps.executeQuery();
 		ps.close();
 		
+		
 		// Get id and name
 		rs.next();
-		int groupId = rs.getInt(1);
-		String groupName = rs.getString(2);
+		int groupId = rs.getInt(2);
+		String groupName = rs.getString(3);
 		
 		rs.close();
 		

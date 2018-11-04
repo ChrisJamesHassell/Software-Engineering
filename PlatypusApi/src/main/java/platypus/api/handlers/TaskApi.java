@@ -1,6 +1,5 @@
 package platypus.api.handlers;
 
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -18,8 +17,6 @@ public class TaskApi {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			
-			CallableStatement cs = conn.prepareCall("{call }");
 			
 			
 			return new JsonResponse("SUCCESS", "", "Success Edit event");

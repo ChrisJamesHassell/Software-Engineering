@@ -1,6 +1,7 @@
 package platypus.api.handlers;
 
 import java.net.URI;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,17 +37,30 @@ public class CreateHandler implements Route {
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
 		User u = JsonParser.getObject(User.class, request.body());
-
+		
 		/*
-		 * 
-		 * How the input from FE will look.
-		 * 
-		 * { "user": { "id":1234 "name":"MYNAME" } "group": { "id":1234
-		 * "name":"GROUPIE NAME" } "task": { "id":123 "name":"name" "desc":"desc123"
-		 * "other shit":"" } }
-		 * 
+		 
+		 How the input from FE will look.
+		 
+		 {
+		 	"user": {
+		 		"id":1234
+		 		"name":"MYNAME"
+		 	}
+		 	"group": {
+		 		"id":1234
+		 		"name":"GROUPIE NAME"
+		 	}
+		 	"task": {
+		 		"id":123
+		 		"name":"name"
+		 		"desc":"desc123"
+		 		"other shit":""
+		 	}
+		 }
+		 
 		 */
-
+		
 		if (!matchesRegexRequirements(u)) {
 			return new JsonResponse("ERROR", "", "Fields do not match regex requirements.");
 		}
@@ -57,7 +71,7 @@ public class CreateHandler implements Route {
 			conn = ds.getConnection();
 
 			// Check DB for existing username, break out early if invalid
-			PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) AS total FROM user WHERE username = ?");
+			PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) AS total FROM users WHERE username = ?");
 			ps.setString(1, u.getUsername());
 
 			ResultSet rs = ps.executeQuery();
@@ -70,20 +84,23 @@ public class CreateHandler implements Route {
 			rs.close();
 
 			// Create account in the database
-			// TODO, convert to stored procs
-			ps = conn.prepareStatement(
-					"INSERT INTO user (firstName, lastName, email, username, userPassword, dateOfBirth) VALUES (?,?,?,?,?,?)");
-			ps.setString(1, u.getFirstName());
-			ps.setString(2, u.getLastName());
-			ps.setString(3, u.getEmail());
-			ps.setString(4, u.getUsername());
-			ps.setString(5, BCrypt.hashpw(u.getPassword(), BCrypt.gensalt()));
-			ps.setString(6, u.getDateOfBirth());
-			int ret = ps.executeUpdate();
-			ps.close();
-			if (ret == 1) {
-				// Get user id for cookie
-				ps = conn.prepareStatement("SELECT userID FROM user WHERE username = ?");
+			CallableStatement st = conn.prepareCall("{call insertUser(?, ?, ?, ?, ?, ?)}");
+			st.setString(1, u.getUsername());
+			st.setString(2, u.getFirstName());
+			st.setString(3, u.getLastName());
+			st.setString(4, u.getEmail());
+			st.setString(5, BCrypt.hashpw(u.getPassword(), BCrypt.gensalt()));
+			st.setString(6, u.getDateOfBirth());
+			
+			/*
+			 *  executeUpdate for CallableStatements will return 1 if and only if the stored procedure has an OUT parameter inside it.
+			 *  Otherwise it just returns 0.
+			 */
+			int ret = st.executeUpdate();
+			//System.out.println(ret);
+			try  {
+				//Get user id for cookie
+				ps = conn.prepareStatement("SELECT userID FROM users WHERE username = ?");
 				ps.setString(1, u.getUsername());
 				ResultSet rows = ps.executeQuery();
 				ps.close();
@@ -98,24 +115,24 @@ public class CreateHandler implements Route {
 				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 						60 * 60 * 24 * 7, false, false);
 				rows.close();
-
+				
 				// Insert success, return success
-				return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn),
-						"Account created successfully.");
+				return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn), "Account created successfully.");
+				
 				// set cookie here
-				// TODO, this portion works on the server. Above works on postman locally.
-				/*
-				 * final URI uri = new URI(request.headers("Origin"));
-				 * if("localhost".equals(uri.getHost()) ||
-				 * "platypus.null-terminator.com".equals(uri.getHost())){
-				 * response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE,
-				 * authFilter.createSession(u.getUsername()), 60 * 60 * 24 * 7, false, false);
-				 * // Insert success, return success return new JsonResponse("SUCCESS",
-				 * CacheUtil.buildCacheUtil(request, conn), "Account created successfully."); }
-				 * return new JsonResponse("ERROR", "",
-				 * "The request is from an unknown origin");
-				 */
-			} else {
+        // TODO, this portion works on the server. Above works on postman locally.
+    /*
+				final URI uri = new URI(request.headers("Origin"));
+				if("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())){
+					response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
+							60 * 60 * 24 * 7, false, false);
+					// Insert success, return success
+					return new JsonResponse("SUCCESS", CacheUtil.buildCacheUtil(request, conn), "Account created successfully.");
+				}
+				return new JsonResponse("ERROR", "", "The request is from an unknown origin");
+    */
+				
+			} catch(SQLException e) {
 				// Insert failed, return failure
 				return new JsonResponse("FAIL", "", "Account creation failed. PreparedStatement returned non-1 value.");
 			}

@@ -24,7 +24,9 @@ public class AuthFilter implements Filter {
 		sessions.put(token, userName);
 		return token;
 	}
+	
 
+	
 	@Override
 	public void handle(Request request, Response response) throws Exception {
 		String token = request.cookie(TOKEN_COOKIE);
