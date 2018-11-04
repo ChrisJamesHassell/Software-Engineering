@@ -50,8 +50,6 @@ public class EventApi {
 			conn.close();
 		}
 	}
-	
-	public static JsonResponse EditEvent(HikariDataSource ds, Request req) throws SQLException {
 
 
 	public static JsonResponse EditEvent(HikariDataSource ds, Request req) throws SQLException {
