@@ -33,12 +33,13 @@ CREATE TABLE IF NOT EXISTS `belongs_to` (
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delDoc`(
 	IN `docIDparam` INT
+
 )
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
-		Delete from hasdocument Where docID = docIDparam;
+		Delete from has_document Where docID = docIDparam;
 		Delete from document Where docID = docIDparam;
 		IF `_rollback`
 			then ROLLBACK;
@@ -52,13 +53,15 @@ DELIMITER ;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delEvent`(
 	IN `eventIDparam` INT
+
+
 )
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
-		Delete from hasevent Where eventID = eventIDparam;
-		Delete from events Where eventID = eventIDparam;
+		Delete from has_event Where eventID = eventIDparam;
+		Delete from userevents Where eventID = eventIDparam;
 		IF `_rollback`
 			then ROLLBACK;
 		else
@@ -74,6 +77,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `delGroup`(
 
 
 
+
 )
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
@@ -84,35 +88,35 @@ BEGIN
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
 	
-			Set `counter` = (Select Count(groupID) from hasevent where groupID = groupIDparam);
+			Set `counter` = (Select Count(groupID) from has_event where groupID = groupIDparam);
 			if `counter` > 0
 			then
-				While (Select Count(groupID) from hasevent where groupID = groupIDparam) > 0
+				While (Select Count(groupID) from has_event where groupID = groupIDparam) > 0
 				DO
-		   		Set eventCount = (Select MIN(eventID) from hasevent where groupID = groupIDparam);
-					Delete from hasevent Where eventID = eventCount;
-					Delete from events Where eventID = eventCount;
+		   		Set eventCount = (Select MIN(eventID) from has_event where groupID = groupIDparam);
+					Delete from has_event Where eventID = eventCount;
+					Delete from userevents Where eventID = eventCount;
 				end while;
 			end if;	
 			
-			Set `counter` = (Select Count(groupID) from hasdocument where groupID = groupIDparam);	
+			Set `counter` = (Select Count(groupID) from has_document where groupID = groupIDparam);	
 			if `counter` > 0
 			then
-				While (Select Count(groupID) from hasdocument where groupID = groupIDparam) > 0
+				While (Select Count(groupID) from has_document where groupID = groupIDparam) > 0
 				DO
-		   		Set docCount = (Select MIN(docID) from hasdocument where groupID = groupIDparam);
-					Delete from hasdocument Where docID = docCount;
+		   		Set docCount = (Select MIN(docID) from has_document where groupID = groupIDparam);
+					Delete from has_document Where docID = docCount;
 					Delete from document Where docID = docCount;
 				end while;
 			end if;
 	
-			Set `counter` = (Select Count(groupID) from hastask where groupID = groupIDparam);
+			Set `counter` = (Select Count(groupID) from has_task where groupID = groupIDparam);
 			if `counter` > 0
 			then
-				While (Select Count(groupID) from hastask where groupID = groupIDparam) > 0
+				While (Select Count(groupID) from has_task where groupID = groupIDparam) > 0
 				DO
-			   	Set taskCount = (Select MIN(taskID) from hastask where groupID = groupIDparam);
-					Delete from hastask Where taskID = taskCount;
+			   	Set taskCount = (Select MIN(taskID) from has_task where groupID = groupIDparam);
+					Delete from has_task Where taskID = taskCount;
 					Delete from task Where taskID = taskCount;
 
 				end while;
@@ -139,12 +143,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `delTask`(
 
 
 
+
 )
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
-		Delete from hastask Where taskID = taskIDparam;
+		Delete from has_task Where taskID = taskIDparam;
 		Delete from task Where taskID = taskIDparam;
 		IF `_rollback`
 			then ROLLBACK;
@@ -158,6 +163,11 @@ DELIMITER ;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delUser`(
 	IN `userIDparam` INT
+
+
+
+
+
 
 
 
@@ -182,7 +192,7 @@ BEGIN
 		SELECT groupID, userID
 		FROM belongs_to
 		Group by groupID
-		HAVING COUNT(groupID) = 1 and userID = 1) as T);
+		HAVING COUNT(groupID) = 1 and userID = userIDparam) as T);
 		
 		While `deleteCount` > 0
 		DO
@@ -191,37 +201,37 @@ BEGIN
 			SELECT groupID, userID
 			FROM belongs_to
 			Group by groupID
-			HAVING COUNT(groupID) = 1 and userID = 1) as M);	
+			HAVING COUNT(groupID) = 1 and userID = userIDparam) as M);	
 		
-			Set `counter` = (Select Count(groupID) from hasevent where groupID = groupIDcheck);
+			Set `counter` = (Select Count(groupID) from has_event where groupID = groupIDcheck);
 			if `counter` > 0
 			then
-				While (Select Count(groupID) from hasevent where groupID = groupIDcheck) > 0
+				While (Select Count(groupID) from has_event where groupID = groupIDcheck) > 0
 				DO
-		   		Set eventCount = (Select MIN(eventID) from hasevent where groupID = groupIDcheck);
-					Delete from hasevent Where eventID = eventCount;
-					Delete from events Where eventID = eventCount;
+		   		Set eventCount = (Select MIN(eventID) from has_event where groupID = groupIDcheck);
+					Delete from has_event Where eventID = eventCount;
+					Delete from userevents Where eventID = eventCount;
 				end while;
 			end if;	
 			
-			Set `counter` = (Select Count(groupID) from hasdocument where groupID = groupIDcheck);	
+			Set `counter` = (Select Count(groupID) from has_document where groupID = groupIDcheck);	
 			if `counter` > 0
 			then
-				While (Select Count(groupID) from hasdocument where groupID = groupIDcheck) > 0
+				While (Select Count(groupID) from has_document where groupID = groupIDcheck) > 0
 				DO
-		   		Set docCount = (Select MIN(docID) from hasdocument where groupID = groupIDcheck);
-					Delete from hasdocument Where docID = docCount;
+		   		Set docCount = (Select MIN(docID) from has_document where groupID = groupIDcheck);
+					Delete from has_document Where docID = docCount;
 					Delete from document Where docID = docCount;
 				end while;
 			end if;
 	
-			Set `counter` = (Select Count(groupID) from hastask where groupID = groupIDcheck);
+			Set `counter` = (Select Count(groupID) from has_task where groupID = groupIDcheck);
 			if `counter` > 0
 			then
-				While (Select Count(groupID) from hastask where groupID = groupIDcheck) > 0
+				While (Select Count(groupID) from has_task where groupID = groupIDcheck) > 0
 				DO
-			   	Set taskCount = (Select MIN(taskID) from hastask where groupID = groupIDcheck);
-					Delete from hastask Where taskID = taskCount;
+			   	Set taskCount = (Select MIN(taskID) from has_task where groupID = groupIDcheck);
+					Delete from has_task Where taskID = taskCount;
 					Delete from task Where taskID = taskCount;
 				end while;
 			end if;
@@ -229,12 +239,13 @@ BEGIN
 			Delete from belongs_to where groupID = groupIDcheck;
 			Delete from groups Where groupID = groupIDcheck;
 
+
 			Set `deleteCount` = `deleteCount` - 1;
 			
 		end while;
 		
 		Delete from belongs_to where userID = userIDparam;
-		Delete from user where userID = userIDparam;
+		Delete from users where userID = userIDparam;
 	
 	IF `_rollback`
 		then ROLLBACK;
@@ -262,7 +273,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `groupName` varchar(50) NOT NULL DEFAULT '"Me"',
   PRIMARY KEY (`groupID`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_document
@@ -494,6 +505,7 @@ CREATE TABLE IF NOT EXISTS `task` (
   `category` enum('Auto','Medical','Home','ToDo','Miscellaneous') NOT NULL,
   `deadline` date NOT NULL,
   `priority` enum('Low','Mid','High') NOT NULL,
+  `completed` enum('0','1') NOT NULL DEFAULT '0',
   PRIMARY KEY (`taskID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
@@ -523,7 +535,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`userID`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
