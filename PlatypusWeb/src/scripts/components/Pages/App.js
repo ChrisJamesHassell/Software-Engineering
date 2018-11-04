@@ -1,42 +1,42 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from "react-router-dom";
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
-import { RouteWithSubRoutes, routes } from '../../routes';
+import { BrowserRouter as Router, Route, Redirect, withRouter } from "react-router-dom";
 import { Dashboard } from './Dashboard';
+import { hasCookie } from '../../fetchHelpers';
+import AppNavbar from '../Navbar/AppNavbar';
 import Login from './Login';
-import AppLogoHeader from '../Navbar/AppLogoHeader';
-
-/**************************************/
-//  We want to:
-// ----------------------------------- //
-//  1. Check to see if user is logged in (dash)
-//  2. If not, display login page
-//  3. If yes, display Dashboard
 
 
-const App = (props) => (
-    <Router>
-        <div id="container">
-            <Navbar collapseOnSelect style={{ marginBottom: '0', borderRadius: '0' }}>
-                <AppLogoHeader logo={props.logo} />
-                <Navbar.Collapse>
-                    <Nav>
-                        <LinkContainer to="/dashboard"><NavItem eventKey={1}>Dashboard</NavItem></LinkContainer>
-                        <LinkContainer to="/"><NavItem eventKey={2}>Home (login)</NavItem></LinkContainer>
-                        <NavDropdown eventKey={3} title='Dropdown' id='basic-nav-dropdown'>
-                            <MenuItem eventKey={3.1}>Something1</MenuItem>
-                            <MenuItem eventKey={3.2}>Something2</MenuItem>
-                            <MenuItem divider />
-                            <MenuItem eventKey={3.3}>Something3</MenuItem>
-                        </NavDropdown>
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-            <Route exact path="/" component={Login} logo={props.logo} />
-            {routes.map((route, i) => <RouteWithSubRoutes key={i} {...route} />)}
-        </div>
-    </Router>
-);
+const App = (props) => {
+    var home = hasCookie ? "/dashboard" : "/login";
+    return (
+        <Router>
+            <div id="container">
+                <AppNavbar isAuth={hasCookie} />
+                <Route path="/login" render={props => <Login {...props} />} />
+                <PrivateRoute path="/dashboard" component={Dashboard} />
+                <Home home={home} />
+            </div>
+        </Router>
+    );
+}
+
+const Home = withRouter((props) => {
+    var thispath = window.location.pathname;
+    var matches = thispath === props.home;
+    return (
+        hasCookie ? (!matches && ['/', '/login'].includes(thispath) ? (<Redirect to="/dashboard" />) : (<span hidden></span>)) :
+            (!matches && !['/login/login', '/login/signup'].includes(thispath) ? (<Redirect to="/login" />) : (<span hidden></span>))
+    )
+})
+
+const PrivateRoute = ({ component: Component, ...rest }) => {
+    return (
+        <Route {...rest} render={(props) => (
+            hasCookie === true
+                ? <Component {...props} {...rest}/>
+                : <span></span>
+        )} />
+    )
+}
 
 export default App;

@@ -1,40 +1,43 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import AppLogoHeader from './AppLogoHeader';
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon } from 'react-bootstrap';
+import { Route } from 'react-router-dom';
+import { LinkContainer } from 'react-router-bootstrap';
 import logo from '../../../images/icons/logo_fill_white.svg';
-export default class AppNavbar extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+import routes from '../../routes';
+// #32a78d
 
-    render() {
-        return (
-            <Navbar collapseOnSelect style={{ marginBottom: '0', borderRadius: '0' }}>
-                <Navbar.Header>
-                    <Navbar.Brand id='logo-brand'>
-                        <img src={logo}></img>
-                        <a href='#brand'><span id='brand-platy'>platy</span><span id='brand-pus'>pus</span></a>
-                    </Navbar.Brand>
-                    <Navbar.Toggle />
-                </Navbar.Header>
-                <Navbar.Collapse>
-                    <Nav>
-                        <NavItem eventKey={1} href='#'>Link</NavItem>
-                        <NavItem eventKey={2} href='#'>Link</NavItem>
-                        <NavDropdown eventKey={3} title='Dropdown' id='basic-nav-dropdown'>
-                            <MenuItem eventKey={3.1}>Action</MenuItem>
-                            <MenuItem eventKey={3.2}>Another action</MenuItem>
-                            <MenuItem eventKey={3.3}>Something else here</MenuItem>
-                            <MenuItem divider />
-                            <MenuItem eventKey={3.3}>Separated link</MenuItem>
-                        </NavDropdown>
-                    </Nav>
-                    <Nav pullRight>
-                        <NavItem eventKey={1} href='#'>Link Right</NavItem>
-                        <NavItem eventKey={2} href='#'>Link Right</NavItem>
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-        )
+
+
+const AppNavbar = (props) => {
+    var availWidth = window.screen.availWidth;
+    var mobileNav = props.isAuth && availWidth < 768;
+    const navStyle = {
+        'marginBottom': '0',
+        'borderRadius': '0'
     }
+    if (!props.isAuth && availWidth < 768) navStyle['display'] = 'none';
+
+    return (
+        <Navbar collapseOnSelect style={navStyle} bsStyle={props.isAuth ? "inverse" : "default"}>
+            <AppLogoHeader logo={logo} />
+            <Navbar.Collapse>
+                <Nav pullRight>
+                    {!mobileNav && props.isAuth && <LinkContainer to="/"><NavItem eventKey={1}><Glyphicon glyph="home" /></NavItem></LinkContainer>}
+                    {mobileNav && routes.map((route, index) =>
+                        <LinkContainer key={route.name} to={route.path}><NavItem eventKey={index + 1}>{route.name}</NavItem></LinkContainer>)}
+                    {mobileNav && routes.map((route, index) =>
+                    <Route key={index} path={route.path} exact={route.exact} component={route.sidebar} />)}
+                    <NavDropdown id='nav-profile-dropdown' eventKey={10} title={<span id='nav-profile'></span>} id='basic-nav-dropdown'>
+                        <MenuItem eventKey={10.1}>Something1</MenuItem>
+                        <MenuItem eventKey={10.2}>Something2</MenuItem>
+                        <MenuItem divider />
+                        <MenuItem eventKey={10.3}>Something3</MenuItem>
+                    </NavDropdown>
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
+    );
 }
+
+export default AppNavbar;

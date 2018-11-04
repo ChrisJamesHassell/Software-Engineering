@@ -12,7 +12,7 @@ import spark.http.matching.MatcherFilter;
 import spark.route.Routes;
 import spark.staticfiles.StaticFilesConfiguration;
 
-public class IndexHandler implements Route {
+public class IndexHandler implements Route { // TODO: Remove this, it's no longer needed
 
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
