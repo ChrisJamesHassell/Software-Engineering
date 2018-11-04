@@ -207,6 +207,9 @@ const Tasks = (props) => {
                     </Table>
                 </Panel.Body>
             </Panel>
+            <div>
+                Tasks
+            </div>
         </div>
     )
 }

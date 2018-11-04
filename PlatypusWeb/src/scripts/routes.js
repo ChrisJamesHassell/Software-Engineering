@@ -4,44 +4,51 @@ import Tasks from './components/Pages/Tasks';
 const routes = [
     {
         path: "/dashboard",
-        name: "Dashboard",
+        name: "Dash",
         exact: true,
+        glyph: "dashboard",
         sidebar: () => <div></div>,
         main: () => <b>Main Dash Stuff</b>
     },
     {
         path: "/dashboard/tasks",
         name: "Tasks",
+        glyph: "tasks",
         sidebar: () => <div></div>,
         main: () => <Tasks />
     },
     {
         path: "/dashboard/events",
         name: "Events",
+        glyph: "calendar",
         sidebar: () => <div></div>,
         main: () => <b>Events Page</b>
     },
     {
         path: "/dashboard/appliances",
         name: "Appliances",
+        glyph: "lamp",
         sidebar: () => <div></div>,
         main: () => <b>Home and Appliances Page</b>
     },
     {
         path: "/dashboard/medical",
         name: "Medical",
+        glyph: "heart",
         sidebar: () => <div></div>,
         main: () => <b>Medical Page</b>
     },
     {
         path: "/dashboard/auto",
         name: "Auto",
+        glyph: "road",
         sidebar: () => <div></div>,
         main: () => <b>Home and Appliances Page</b>
     },
     {
         path: "/dashboard/meals",
         name: "Meals",
+        glyph: "cutlery",
         sidebar: () => <div></div>,
         main: () => <b>Meals</b>
     }
