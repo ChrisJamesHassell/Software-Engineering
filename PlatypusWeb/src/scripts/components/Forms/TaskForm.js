@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import moment from 'moment';
 import React from 'react';
 import { Button, FormControl, FormGroup } from 'react-bootstrap';
 import Select from 'react-select';
@@ -30,13 +31,21 @@ export default class TaskForm extends React.Component {
   };
 
   render() {
+    const { task } = this.props;
+
     return (
       <Formik
-        initialValues={{
+        initialValues={task ? {
+          ...task,
+          category: categoryOptions.find(op => op.value === task.category),
+          deadline: moment(task.deadline).format('YYYY-MM-DD'),
+          priority: priorityOptions.find(op => op.value === task.priority),
+        } : {
           category: null,
           deadline: '',
           description: '',
           name: '',
+          priority: null,
         }}
         onSubmit={this.onSubmit}
       >
@@ -85,7 +94,7 @@ export default class TaskForm extends React.Component {
               />
             </FormGroup>
             <Button bsSize="sm" bsStyle="primary" disabled={isSubmitting} type="submit">
-              Create
+              Submit
             </Button>
           </Form>
         )}
