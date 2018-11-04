@@ -23,8 +23,8 @@
   },
   "eslintConfig": {
     "extends": [
-      "airbnb-base",
-      "react-app"
+      "react-app",
+      "airbnb-base"
     ]
   },
   "browserslist": [
