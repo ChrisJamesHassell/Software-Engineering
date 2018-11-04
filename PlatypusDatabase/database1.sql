@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `belongs_to` (
 -- Data exporting was unselected.
 -- Dumping structure for procedure platypus.delDoc
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `delDoc`(
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delDoc`(
 	IN `docIDparam` INT
 
 )
@@ -51,7 +51,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure platypus.delEvent
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `delEvent`(
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delEvent`(
 	IN `eventIDparam` INT
 
 
@@ -72,7 +72,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure platypus.delGroup
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `delGroup`(
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delGroup`(
 	IN `groupIDparam` INT
 
 
@@ -136,7 +136,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure platypus.delTask
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `delTask`(
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delTask`(
 	IN `taskIDparam` INT
 
 
@@ -161,7 +161,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure platypus.delUser
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `delUser`(
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delUser`(
 	IN `userIDparam` INT
 
 
@@ -317,7 +317,7 @@ CREATE TABLE IF NOT EXISTS `has_task` (
 -- Data exporting was unselected.
 -- Dumping structure for procedure platypus.insertDoc
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insertDoc`(
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
 	IN `pinned` enum('0', '1'),
 	IN `notification` DATE,
 	IN `groupID` int(11),
@@ -362,7 +362,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure platypus.insertEvent
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insertEvent`(
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
 	IN `pinned` enum('0', '1'),
 	IN `notification` DATE,
 	IN `groupID` int(11),
@@ -406,7 +406,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure platypus.insertTask
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insertTask`(
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
 	IN `pinned` enum('0', '1'),
 	IN `notification` DATE,
 	IN `groupID` int(11),
@@ -448,7 +448,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure platypus.insertUser
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `insertUser`(
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertUser`(
 	IN `username` VARCHAR(32),
 	IN `firstName` VARCHAR(32),
 	IN `lastName` VARCHAR(32),
