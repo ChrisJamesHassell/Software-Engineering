@@ -29,37 +29,32 @@ public class Main {
 		InitService.initSparkConfig();
 
 		final AuthFilter authFilter = new AuthFilter();
+		
+			Spark.path("/api", () -> {
+		            Spark.path("/user", () -> {
+		                Spark.post("/create", new CreateHandler(ds, authFilter), gson::toJson);
+		                Spark.post("/login", new LoginHandler(ds, authFilter), gson::toJson);
+		            });
+		            Spark.before("/app/*", authFilter);
+		            Spark.path("/app", () -> {
+			            Spark.get("/test", (req, res) -> {
+			                return "hi " + req.attribute(AuthFilter.USERNAME);
+			            });
 
-		Spark.path("/api", () -> {
-			Spark.path("/user", () -> {
-				Spark.post("/create", new CreateHandler(ds, authFilter), gson::toJson);
+			            Spark.path("/task", () -> {
 
-				// TODO: User needs a GET route to return a User object with all of its groups.
-				// Spark.get("/settings", new SettingsHandler(ds, authFilter), gson::toJson);
-				// Spark.get("/userstuff/", (req, res) -> UserApi.getUserInfo(ds,
-				// authFilter.getUser(req.cookie(authFilter.TOKEN_COOKIE))), gson::toJson);
-				Spark.post("/login", new LoginHandler(ds, authFilter), gson::toJson);
-			});
-			Spark.path("/app", () -> {
-				Spark.before(authFilter);
-				Spark.get("/test", (req, res) -> {
-					return "hi " + req.attribute(AuthFilter.USERNAME);
-				});
+			            });
+			            Spark.path("/event", () -> {
+			                Spark.post("/add", (req, res) -> EventApi.AddEvent(ds, req), gson::toJson);
+			                Spark.post("/update", (req, res) -> EventApi.EditEvent(ds, req), gson::toJson);
+		                    Spark.post("/delete", (req, res) -> EventApi.RemoveEvent(ds, req), gson::toJson);
+			            });
+			            Spark.path("/doc", () -> {
 
-				Spark.path("/task", () -> {
+		                });
 
-				});
-				Spark.path("/event", () -> {
-					Spark.post("/add", (req, res) -> EventApi.AddEvent(ds, req), gson::toJson);
-					Spark.post("/update", (req, res) -> EventApi.EditEvent(ds, req), gson::toJson);
-					Spark.post("/delete", (req, res) -> EventApi.RemoveEvent(ds, req), gson::toJson);
-				});
-				Spark.path("/doc", () -> {
-
-				});
-
-			});
-		});
-
+			        }); //end app path grouping
+			    });	//End api path grouping
+				
 	}
 }
