@@ -171,6 +171,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `delUser`(
 
 
 
+
+
+
+
 )
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
@@ -188,7 +192,7 @@ BEGIN
 		SELECT groupID, userID
 		FROM belongs_to
 		Group by groupID
-		HAVING COUNT(groupID) = 1 and userID = 1) as T);
+		HAVING COUNT(groupID) = 1 and userID = userIDparam) as T);
 		
 		While `deleteCount` > 0
 		DO
@@ -197,7 +201,7 @@ BEGIN
 			SELECT groupID, userID
 			FROM belongs_to
 			Group by groupID
-			HAVING COUNT(groupID) = 1 and userID = 1) as M);	
+			HAVING COUNT(groupID) = 1 and userID = userIDparam) as M);	
 		
 			Set `counter` = (Select Count(groupID) from has_event where groupID = groupIDcheck);
 			if `counter` > 0
@@ -235,12 +239,13 @@ BEGIN
 			Delete from belongs_to where groupID = groupIDcheck;
 			Delete from groups Where groupID = groupIDcheck;
 
+
 			Set `deleteCount` = `deleteCount` - 1;
 			
 		end while;
 		
 		Delete from belongs_to where userID = userIDparam;
-		Delete from user where userID = userIDparam;
+		Delete from users where userID = userIDparam;
 	
 	IF `_rollback`
 		then ROLLBACK;
@@ -268,7 +273,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `groupName` varchar(50) NOT NULL DEFAULT '"Me"',
   PRIMARY KEY (`groupID`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_document
@@ -530,7 +535,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`userID`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
