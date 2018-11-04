@@ -21,7 +21,7 @@ export default class LoginForm extends React.Component {
   }
 
   updateVals(id, value) {
-    value.length < 1 && this.props.clearErrorAlert(); // clear error alert if field is cleared
+    if (value.length < 1) this.props.clearErrorAlert(); // clear error alert if field is cleared
     const temp = this.state.data;
     temp[id] = value;
     const data = Object.assign(this.state.data, temp);

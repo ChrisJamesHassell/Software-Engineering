@@ -2,49 +2,49 @@ import React from 'react';
 import Tasks from './components/Pages/Tasks';
 
 const routes = [
-    {
-        path: "/dashboard",
-        name: "Dashboard",
-        exact: true,
-        sidebar: () => <div></div>,
-        main: () => <b>Main Dash Stuff</b>
-    },
-    {
-        path: "/dashboard/tasks",
-        name: "Tasks",
-        sidebar: () => <div></div>,
-        main: () => <Tasks />
-    },
-    {
-        path: "/dashboard/events",
-        name: "Events",
-        sidebar: () => <div></div>,
-        main: () => <b>Events Page</b>
-    },
-    {
-        path: "/dashboard/appliances",
-        name: "Appliances",
-        sidebar: () => <div></div>,
-        main: () => <b>Home and Appliances Page</b>
-    },
-    {
-        path: "/dashboard/medical",
-        name: "Medical",
-        sidebar: () => <div></div>,
-        main: () => <b>Medical Page</b>
-    },
-    {
-        path: "/dashboard/auto",
-        name: "Auto",
-        sidebar: () => <div></div>,
-        main: () => <b>Home and Appliances Page</b>
-    },
-    {
-        path: "/dashboard/meals",
-        name: "Meals",
-        sidebar: () => <div></div>,
-        main: () => <b>Meals</b>
-    }
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    exact: true,
+    sidebar: () => <div></div>,
+    main: () => <b>Main Dash Stuff</b>,
+  },
+  {
+    path: '/dashboard/tasks',
+    name: 'Tasks',
+    sidebar: () => <div></div>,
+    main: () => <Tasks />,
+  },
+  {
+    path: '/dashboard/events',
+    name: 'Events',
+    sidebar: () => <div></div>,
+    main: () => <b>Events Page</b>,
+  },
+  {
+    path: '/dashboard/appliances',
+    name: 'Appliances',
+    sidebar: () => <div></div>,
+    main: () => <b>Home and Appliances Page</b>,
+  },
+  {
+    path: '/dashboard/medical',
+    name: 'Medical',
+    sidebar: () => <div></div>,
+    main: () => <b>Medical Page</b>,
+  },
+  {
+    path: '/dashboard/auto',
+    name: 'Auto',
+    sidebar: () => <div></div>,
+    main: () => <b>Home and Appliances Page</b>,
+  },
+  {
+    path: '/dashboard/meals',
+    name: 'Meals',
+    sidebar: () => <div></div>,
+    main: () => <b>Meals</b>,
+  },
 ];
 export default routes;
 // const routes = [

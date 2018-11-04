@@ -5,7 +5,7 @@ import eventsReducer from './eventsReducer';
 import tasksReducer from './tasksReducer';
 
 export default combineReducers({
-    documents: documentsReducer,
-    events: eventsReducer,
-    tasks: tasksReducer,
+  documents: documentsReducer,
+  events: eventsReducer,
+  tasks: tasksReducer,
 });

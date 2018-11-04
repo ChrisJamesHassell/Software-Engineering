@@ -82,16 +82,24 @@ export default class SignupForm extends React.Component {
   setValidationState(id, validProps) {
     const mergedProps = Object.assign(this.state.data[id], validProps);
     this.setState({ id }); // set the current input item id we are on
-    this.setState(state => state.data[id] = mergedProps);
+    this.setState(state => ({
+      data: {
+        ...state.data,
+        [id]: mergedProps,
+      },
+    }));
   }
 
   updateVals(id, value) {
     const match = value.match(regex[id]); // Get whether or not the input is valid
 
-    if (match) // If there WAS a match, set appropriate values
-    { this.setValidationState(id, { validation: 'success', value, helpText: null }); } else { // If there was NOT a match
+    // If there WAS a match, set appropriate values
+    if (match) { this.setValidationState(id, { validation: 'success', value, helpText: null }); } else { // If there was NOT a match
       let [validation, helpText] = [null, null]; // Clear the error if the field is empty
-      value.length < 1 && this.props.clearErrorAlert(); // clear whole form error alert if field is cleared
+
+      if (value.length < 1) {
+        this.props.clearErrorAlert(); // clear whole form error alert if field is cleared
+      }
       if (value.length > 0) [validation, helpText] = ['error', this.state.data[id].requirements];
       this.setValidationState(id, { validation, value: null, helpText });
     }
@@ -109,85 +117,85 @@ export default class SignupForm extends React.Component {
     const userNameHelp = this.state.data.username.helpText;
     const passwordHelp = this.state.data.pass.helpText;
     return (
-            <form>
-                <FormGroup
-                    controlId="username"
-                    validationState={this.state.data.username.validation}
-                >
-                    <TextInput
-                        type={'text'}
-                        label={'User Name'}
-                        placeholder={'User Name'}
-                        requiresValidation={true}
-                        updateVals={this.updateVals} />
-                    <FormControl.Feedback />
-                    <HelpBlock><Alert bsStyle="danger" hidden={!userNameHelp}>{userNameHelp}</Alert></HelpBlock>
-                </FormGroup>
+      <form>
+        <FormGroup
+          controlId="username"
+          validationState={this.state.data.username.validation}
+        >
+          <TextInput
+            type={'text'}
+            label={'User Name'}
+            placeholder={'User Name'}
+            requiresValidation={true}
+            updateVals={this.updateVals} />
+          <FormControl.Feedback />
+          <HelpBlock><Alert bsStyle="danger" hidden={!userNameHelp}>{userNameHelp}</Alert></HelpBlock>
+        </FormGroup>
 
-                <FormGroup
-                    controlId="pass"
-                    validationState={this.state.data.pass.validation}
-                >
-                    <TextInput
-                        type={'password'}
-                        label={'Password'}
-                        placeholder={'Password'}
-                        requiresValidation={true}
-                        updateVals={this.updateVals} />
-                    <FormControl.Feedback />
-                    <HelpBlock><Alert bsStyle="danger" hidden={!passwordHelp}>{passwordHelp}</Alert></HelpBlock>
-                </FormGroup>
+        <FormGroup
+          controlId="pass"
+          validationState={this.state.data.pass.validation}
+        >
+          <TextInput
+            type={'password'}
+            label={'Password'}
+            placeholder={'Password'}
+            requiresValidation={true}
+            updateVals={this.updateVals} />
+          <FormControl.Feedback />
+          <HelpBlock><Alert bsStyle="danger" hidden={!passwordHelp}>{passwordHelp}</Alert></HelpBlock>
+        </FormGroup>
 
-                <FormGroup
-                    controlId="firstName"
-                    validationState={this.state.data.firstName.validation}
-                >
-                    <TextInput
-                        type={'text'}
-                        label={'firstName'}
-                        placeholder={'First Name'}
-                        requiresValidation={true}
-                        updateVals={this.updateVals} />
-                </FormGroup>
+        <FormGroup
+          controlId="firstName"
+          validationState={this.state.data.firstName.validation}
+        >
+          <TextInput
+            type={'text'}
+            label={'firstName'}
+            placeholder={'First Name'}
+            requiresValidation={true}
+            updateVals={this.updateVals} />
+        </FormGroup>
 
-                <FormGroup
-                    controlId="lastName"
-                    validationState={this.state.data.lastName.validation}
-                >
-                    <TextInput
-                        type={'text'}
-                        label={'lastName'}
-                        placeholder={'Last Name'}
-                        requiresValidation={true}
-                        updateVals={this.updateVals} />
-                </FormGroup>
+        <FormGroup
+          controlId="lastName"
+          validationState={this.state.data.lastName.validation}
+        >
+          <TextInput
+            type={'text'}
+            label={'lastName'}
+            placeholder={'Last Name'}
+            requiresValidation={true}
+            updateVals={this.updateVals} />
+        </FormGroup>
 
-                <FormGroup
-                    controlId="dateOfBirth"
-                    validationState={this.state.data.dateOfBirth.validation}
-                >
-                    <TextInput
-                        type={'date'}
-                        label={'dob'}
-                        placeholder={'Date of birth'}
-                        requiresValidation={true}
-                        updateVals={this.updateVals} />
-                </FormGroup>
+        <FormGroup
+          controlId="dateOfBirth"
+          validationState={this.state.data.dateOfBirth.validation}
+        >
+          <TextInput
+            type={'date'}
+            label={'dob'}
+            placeholder={'Date of birth'}
+            requiresValidation={true}
+            updateVals={this.updateVals} />
+        </FormGroup>
 
-                <FormGroup
-                    controlId="email"
-                    validationState={this.state.data.email.validation}
-                >
-                    <TextInput
-                        type={'email'}
-                        label={'email'}
-                        placeholder={'E-mail Address'}
-                        requiresValidation={true}
-                        updateVals={this.updateVals} />
-                </FormGroup>
+        <FormGroup
+          controlId="email"
+          validationState={this.state.data.email.validation}
+        >
+          <TextInput
+            type={'email'}
+            label={'email'}
+            placeholder={'E-mail Address'}
+            requiresValidation={true}
+            updateVals={this.updateVals} />
+        </FormGroup>
 
-                <Button bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick} disabled={this.state.isDisabled}>Sign Up</Button>
-            </form>
+        <Button bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick} disabled={this.state.isDisabled}>Sign Up</Button>
+      </form>
     );
   }
 }
