@@ -122,10 +122,19 @@ public class EventApi {
 			//Prepare the call from request body
 			stmt = conn.prepareCall("{call delEvent(?)}");
 			stmt.setInt(1, event.get("eventID").getAsInt());
-			stmt.executeUpdate();
+			int ret = stmt.executeUpdate();
 			
-			// TODO: Need to return CacheEntry for this user + the EventInfo
-			return new JsonResponse("SUCCESS", "", "Successfully deleted event.");
+			
+			
+			if (ret != 0) {
+				// TODO: Need to return CacheEntry for this user + the EventInfo
+					return new JsonResponse("SUCCESS", "", "Successfully deleted event.");	
+			} else {
+				// There is no event with that eventID
+					return new JsonResponse("FAIL", "", "There is no event with that ID, failed event deletion.");
+			}
+			
+			
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in Add Event");
 		}
