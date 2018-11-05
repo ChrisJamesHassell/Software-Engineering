@@ -43,7 +43,7 @@ class LeftNavInner extends React.Component {
         super(props);
         this.state = {
             isMouseOver: false,
-            fill: "white"
+            fill: 'white'
         }
         this.handleMouse = this.handleMouse.bind(this);
     }
