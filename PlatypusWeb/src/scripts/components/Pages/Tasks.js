@@ -7,7 +7,6 @@ import {
   ModalHeader,
   ModalBody,
   Panel,
-  Table,
 } from 'react-bootstrap';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { connect } from 'react-redux';
@@ -215,244 +214,99 @@ class Tasks extends React.Component {
     const { tasks } = this.props;
     const { activeModal } = this.state;
 
+    console.log(tasks);
+
     return (
       <div id="my-tasks">
-        <Panel bsStyle="success">
-          <Panel.Heading style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Panel.Title componentClass="h3">My Tasks</Panel.Title>
-            <Button bsSize="sm" bsStyle="primary" onClick={this.onTaskCreateClick}>
-              Create Task
+        <Modal onHide={this.onHideModal} show={activeModal === 'create-task'}>
+          <ModalHeader closeButton={true} onHide={this.onHideModal}>
+            Create Task
+          </ModalHeader>
+          <ModalBody>
+            <TaskForm onSubmit={this.onTaskCreate} />
+          </ModalBody>
+        </Modal>
+        <Modal onHide={this.onHideModal} show={activeModal && activeModal.startsWith('edit')}>
+          <ModalHeader closeButton={true} onHide={this.onHideModal}>
+            Edit Task
+          </ModalHeader>
+          <ModalBody>
+            <TaskForm
+              onSubmit={this.onTaskUpdate}
+              task={
+                activeModal
+                && activeModal.startsWith('edit')
+                && this.props.tasks.find(task => task.taskID === Number(activeModal.split('-')[1]))
+              }
+            />
+          </ModalBody>
+        </Modal>
+        <Modal
+          bsSize="small"
+          onHide={this.onHideModal}
+          show={activeModal && activeModal.startsWith('delete')}
+        >
+          <ModalHeader closeButton={true} onHide={this.onHideModal}>
+            Are you sure you want to delete{' '}
+            {activeModal
+              && activeModal.startsWith('delete')
+              && tasks.find(task => task.taskID === Number(activeModal.split('-')[1])).name}
+            ?
+          </ModalHeader>
+          <ModalFooter>
+            <Button bsSize="sm" onClick={this.onHideModal}>
+              Close
             </Button>
-            <Modal onHide={this.onHideModal} show={activeModal === 'create-task'}>
-              <ModalHeader closeButton={true} onHide={this.onHideModal}>
+            <Button
+              bsSize="sm"
+              bsStyle="danger"
+              onClick={
+                activeModal && activeModal.startsWith('delete')
+                  ? this.onTaskDeleteConfirmClick(Number(activeModal.split('-')[1]))
+                  : undefined
+              }
+            >
+              Delete
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {['Appliances', 'Auto', 'Meals', 'Medical', 'Miscellaneous'].map((value, index) => (
+          <Panel bsStyle="success" key={index}>
+            <Panel.Heading style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Panel.Title componentClass="h3">{value}</Panel.Title>
+              <Button bsSize="sm" bsStyle="primary" onClick={this.onTaskCreateClick}>
                 Create Task
-              </ModalHeader>
-              <ModalBody>
-                <TaskForm onSubmit={this.onTaskCreate} />
-              </ModalBody>
-            </Modal>
-          </Panel.Heading>
-          <Panel.Body>
-            <DragDropContext onDragEnd={this.onDragEnd}>
-              <TaskList
-                tasks={tasks.map(task => ({
-                  ...task,
-                  id: task.taskID,
-                  onTaskClick: this.onTaskClick(task),
-                  onTaskComplete: this.onTaskComplete(task),
-                  onTaskDeleteClick: this.onTaskDeleteClick(task.taskID),
-                  onTaskEditClick: this.onTaskEditClick(task.taskID),
-                }))}
-              />
-              <Modal onHide={this.onHideModal} show={activeModal && activeModal.startsWith('edit')}>
-                <ModalHeader closeButton={true} onHide={this.onHideModal}>
-                  Edit Task
-                </ModalHeader>
-                <ModalBody>
-                  <TaskForm
-                    onSubmit={this.onTaskUpdate}
-                    task={
-                      activeModal
-                      && activeModal.startsWith('edit')
-                      && this.props.tasks.find(
-                        task => task.taskID === Number(activeModal.split('-')[1]),
-                      )
-                    }
-                  />
-                </ModalBody>
-              </Modal>
-              <Modal
-                bsSize="small"
-                onHide={this.onHideModal}
-                show={activeModal && activeModal.startsWith('delete')}
-              >
-                <ModalHeader closeButton={true} onHide={this.onHideModal}>
-                  Are you sure you want to delete{' '}
-                  {activeModal
-                    && activeModal.startsWith('delete')
-                    && tasks.find(task => task.taskID === Number(activeModal.split('-')[1])).name}
-                  ?
-                </ModalHeader>
-                <ModalFooter>
-                  <Button bsSize="sm" onClick={this.onHideModal}>
-                    Close
-                  </Button>
-                  <Button
-                    bsSize="sm"
-                    bsStyle="danger"
-                    onClick={
-                      activeModal && activeModal.startsWith('delete')
-                        ? this.onTaskDeleteConfirmClick(Number(activeModal.split('-')[1]))
-                        : undefined
-                    }
-                  >
-                    Delete
-                  </Button>
-                </ModalFooter>
-              </Modal>
-            </DragDropContext>
-          </Panel.Body>
-        </Panel>
-
-        <Panel bsStyle="info">
-          <Panel.Heading>
-            <Panel.Title componentClass="h3">Group Tasks</Panel.Title>
-          </Panel.Heading>
-          <Panel.Body>
-            Whatever the fuck Johnathan wants to do.
-            <Table responsive>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                </tr>
-              </tbody>
-            </Table>
-          </Panel.Body>
-        </Panel>
-
-        <Panel bsStyle="info">
-          <Panel.Heading>
-            <Panel.Title componentClass="h3">Group Tasks</Panel.Title>
-          </Panel.Heading>
-          <Panel.Body>
-            Whatever the fuck Johnathan wants to do.
-            <Table responsive>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                </tr>
-              </tbody>
-            </Table>
-          </Panel.Body>
-        </Panel>
-
-        <Panel bsStyle="info">
-          <Panel.Heading>
-            <Panel.Title componentClass="h3">Group Tasks</Panel.Title>
-          </Panel.Heading>
-          <Panel.Body>
-            Whatever the fuck Johnathan wants to do.
-            <Table responsive>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                  <th>Table heading</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                  <td>Table cell</td>
-                </tr>
-              </tbody>
-            </Table>
-          </Panel.Body>
-        </Panel>
+              </Button>
+            </Panel.Heading>
+            <Panel.Body>
+              <DragDropContext onDragEnd={this.onDragEnd}>
+                <TaskList
+                  tasks={tasks[value].map(task => ({
+                    ...task,
+                    id: task.taskID,
+                    onTaskClick: this.onTaskClick(task),
+                    onTaskComplete: this.onTaskComplete(task),
+                    onTaskDeleteClick: this.onTaskDeleteClick(task.taskID),
+                    onTaskEditClick: this.onTaskEditClick(task.taskID),
+                  }))}
+                />
+              </DragDropContext>
+            </Panel.Body>
+          </Panel>
+        ))}
       </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  tasks: state.tasks,
+  tasks: {
+    Appliances: state.tasks.Appliances,
+    Auto: state.tasks.Auto,
+    Meals: state.tasks.Meals,
+    Medical: state.tasks.Medical,
+    Miscellaneous: state.tasks.Miscellaneous,
+  },
 });
 
 export default connect(mapStateToProps)(Tasks);
