@@ -5,13 +5,13 @@ import java.sql.Date;
 public class Document extends Item {
 
 	private String fileName;
-	private String expiration;
+	private Date expiration;
 	
 	public Document() {
 		super();
 	}
 
-	public Document(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned, String fileName, String expiration) {
+	public Document(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned, String fileName, Date expiration) {
 		super(itemID, type, name, description, category, notification, pinned);
 		this.fileName = fileName;
 		this.expiration = expiration;
@@ -25,11 +25,11 @@ public class Document extends Item {
 		this.fileName = fileName;
 	}
 	
-	public String getExpiration() {
+	public Date getExpiration() {
 		return expiration;
 	}
 	
-	public void setExpiration(String expiration) {
+	public void setExpiration(Date expiration) {
 		this.expiration = expiration;
 	}
 

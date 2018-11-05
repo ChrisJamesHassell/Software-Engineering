@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class Task extends Item {
 
-	private String deadline;
+	private Date deadline;
 	private Priority priority;
 	private boolean completed;
 
@@ -12,18 +12,18 @@ public class Task extends Item {
 		super();
 	}
 	
-	public Task(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned, String deadline, Priority priority, boolean completed) {
+	public Task(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned, Date deadline, Priority priority, boolean completed) {
 		super(itemID, type, name, description, category, notification, pinned);
 		this.deadline = deadline;
 		this.priority = priority;
 		this.completed = completed;
 	}
 
-	public String getDeadline() {
+	public Date getDeadline() {
 		return deadline;
 	}
 	
-	public void setDeadline(String deadline) {
+	public void setDeadline(Date deadline) {
 		this.deadline = deadline;
 	}
 	

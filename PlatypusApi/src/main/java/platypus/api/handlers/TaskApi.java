@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
+import platypus.api.models.Priority;
 import spark.Request;
 
 public class TaskApi {
@@ -30,7 +31,7 @@ public class TaskApi {
 			conn = ds.getConnection();
 
 			//Prepare the call from request body
-			stmt = conn.prepareCall("{call insertTask(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+			stmt = conn.prepareCall("{call insertTask(?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setString(1, task.get("pinned").getAsString());
 			stmt.setString(2, task.get("notification").getAsString());
 			stmt.setInt(3, group.get("groupID").getAsInt());
@@ -45,6 +46,7 @@ public class TaskApi {
 			// Need to return CacheEntry for this user + the Task stuff
 			return new JsonResponse("SUCCESS", "", "Successfully inserted task.");
 		} catch (SQLException sqlE) {
+			sqlE.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLError in Add Task");
 		} finally {
 			conn.close();

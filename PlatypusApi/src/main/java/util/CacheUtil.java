@@ -5,14 +5,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,15 +26,20 @@ import com.google.gson.JsonParser;
 import platypus.api.models.CacheEntry;
 import platypus.api.models.Category;
 import platypus.api.models.Document;
+import platypus.api.models.DocumentWrapper;
 import platypus.api.models.Event;
+import platypus.api.models.EventWrapper;
 import platypus.api.models.GroupyWrapper;
 import platypus.api.models.ItemType;
 import platypus.api.models.LoginEntry;
 import platypus.api.models.Priority;
 import platypus.api.models.Task;
+import platypus.api.models.TaskWrapper;
 import spark.Request;
 
 public class CacheUtil {
+	
+	/*
 
 	public static CacheEntry buildCacheEntry(Request req, Connection conn) throws SQLException {
 		
@@ -50,32 +61,50 @@ public class CacheUtil {
 					
 		int ct = 0;
 		while (rs.next()) {
-			groupyWrappers[0] = new GroupyWrapper(rs.getInt(1), rs.getString(2));
+			groupyWrappers[ct] = new GroupyWrapper(rs.getInt(1), rs.getString(2));
+			ct++;
 		}
 		
 		return new CacheEntry(userName, userId, groupId, groupName, groupyWrappers);
 				
 	}
 	
+	*/
+	
 	public static CacheEntry buildCacheEntry(String userName, int id, Connection conn) throws SQLException {
 		
 		// Use userId to get groupId & groupName for the user's self group.
 		PreparedStatement ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
 													+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
-													+ "WHERE belongs_to.userID = ?");
+													+ "WHERE belongs_to.userID = ? and belongs_to.self = '1'");
 		ps.setInt(1, id);
 		ResultSet rs = ps.executeQuery();
 		ps.close();
 		
-		
-		// Get id and name
 		rs.next();
-		int groupId = rs.getInt(2);
-		String groupName = rs.getString(3);
-		
+		int groupId = rs.getInt(getColumnWithName("groupID", rs));
+		String groupName = rs.getString(getColumnWithName("groupName", rs));
 		rs.close();
 		
-		return new CacheEntry(userName, id, groupId, groupName, new GroupyWrapper[] {new GroupyWrapper(groupId, groupName)});
+		ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
+									+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
+									+ "WHERE belongs_to.userID = ?");
+		ps.setInt(1, id);
+		rs = ps.executeQuery();
+		ps.close();
+		
+		GroupyWrapper[] groupyWrappers = new GroupyWrapper[getResultSetSize(rs)];
+		
+		int ct = 0;
+		while (rs.next()) {
+			groupyWrappers[ct] = new GroupyWrapper(rs.getInt(2), rs.getString(3));
+			ct++;
+		}
+		rs.close();
+		
+		// TODO, verify that a user with multiple groups gets the right cacheEntry return.
+		// Needs a user in multiple groups.
+		return new CacheEntry(userName, id, groupId, groupName, groupyWrappers);
 	
 	}
 	
@@ -93,141 +122,156 @@ public class CacheUtil {
 		// TODO, get all tasks where this user part of the group
 	
 		// Get all tasks, events, docs that meet filter criteria.
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM tasks WHERE groupID = ?");	// TODO, Join relation table so that every taskID has a groupID, pinned, notification field. 
+		PreparedStatement ps = conn.prepareStatement(
+				"SELECT *" + 
+				" FROM tasks JOIN has_tasks ON tasks.taskID = has_tasks.taskID" + 
+				" Where tasks.taskID IN (SELECT (taskID) FROM has_tasks WHERE groupID IN (SELECT (groupID) FROM belongs_to WHERE userID = ?));");	// TODO, Join relation table so that every taskID has a groupID, pinned, notification field. 
 																								// FOR ALL GROUP IDS IN GROUPYWRAPPER
-		ps.setInt(1, ce.getGroupId());
+		ps.setInt(1, ce.getId());
 		ResultSet rs = ps.executeQuery();
 		ps.close();
 		
 		// TODO, add notification and pinned fields and set them as well? Needs relation table
 		
-		Task[] tasks = new Task[getResultSetSize(rs)];
+		TaskWrapper[] taskWrappers = new TaskWrapper[getResultSetSize(rs)];
 		int i = 0;
 		while (rs.next()) {
-			tasks[i].setItemID(rs.getInt(getColumnWithName("taskID", rs)));
-			tasks[i].setType(ItemType.TASK);
-			tasks[i].setName(rs.getString(getColumnWithName("name", rs)));
-			tasks[i].setDescription(rs.getString(getColumnWithName("description", rs)));
-			tasks[i].setCategory(Category.valueOf(rs.getString(getColumnWithName("category", rs))));
-			tasks[i].setDeadline(rs.getString(getColumnWithName("deadline", rs)));
-			tasks[i].setPriority(Priority.valueOf(rs.getString(getColumnWithName("priority", rs))));
-			tasks[i].setCompleted(rs.getBoolean(getColumnWithName("completed", rs)));
-			//tasks[i].setNotification(relation.getDate(getColumnWithName("notification", rs)));
-			//tasks[i].setPinned(relation.getBoolean(getColumnWithName("pinned", rs)));
+			Task t = new Task();
+			t.setItemID(rs.getInt(getColumnWithName("taskID", rs)));
+			t.setType(ItemType.TASK);
+			t.setName(rs.getString(getColumnWithName("name", rs)));
+			t.setDescription(rs.getString(getColumnWithName("description", rs)));
+			t.setCategory(Category.valueOf(rs.getString(getColumnWithName("category", rs)).toUpperCase()));
+			t.setDeadline(rs.getDate(getColumnWithName("deadline", rs)));
+			t.setPriority(Priority.valueOf(rs.getString(getColumnWithName("priority", rs)).toUpperCase()));
+			t.setCompleted(rs.getBoolean(getColumnWithName("completed", rs)));
+			t.setNotification(rs.getDate(getColumnWithName("notification", rs)));
+			t.setPinned(rs.getBoolean(getColumnWithName("pinned", rs)));
+			taskWrappers[i] = new TaskWrapper(t, rs.getInt(getColumnWithName("groupID", rs)));
 			i++;
 		}
 		rs.close();
 		i = 0;
 		
-		ps = conn.prepareStatement("SELECT * FROM userevents");
+		ps = conn.prepareStatement(
+				"SELECT *" + 
+				" FROM userevents JOIN has_events ON userevents.eventID = has_events.eventID" + 
+				" Where userevents.eventID IN (SELECT (eventID) FROM has_events WHERE groupID IN ( SELECT (groupID) FROM belongs_to WHERE userID = ?));");
+		ps.setInt(1, ce.getId());
 		rs = ps.executeQuery();
 		ps.close();
 		
-		Event[] events = new Event[getResultSetSize(rs)];
+		EventWrapper[] eventWrappers = new EventWrapper[getResultSetSize(rs)];
 		while (rs.next()) {
-			events[i].setItemID(rs.getInt(getColumnWithName("eventID", rs)));
-			events[i].setType(ItemType.EVENT);
-			events[i].setName(rs.getString(getColumnWithName("name", rs)));
-			events[i].setDescription(rs.getString(getColumnWithName("description", rs)));
-			events[i].setCategory(Category.valueOf(rs.getString(getColumnWithName("category", rs))));
-			events[i].setStart(rs.getString(getColumnWithName("startDate", rs)));
-			events[i].setEnd(rs.getString(getColumnWithName("endDate", rs)));
-			events[i].setLocation(rs.getString(getColumnWithName("location", rs)));
+			Event e = new Event();
+			e.setItemID(rs.getInt(getColumnWithName("eventID", rs)));
+			e.setType(ItemType.EVENT);
+			e.setName(rs.getString(getColumnWithName("name", rs)));
+			e.setDescription(rs.getString(getColumnWithName("description", rs)));
+			e.setCategory(Category.valueOf(rs.getString(getColumnWithName("category", rs)).toUpperCase()));
+			e.setStart(rs.getDate(getColumnWithName("startDate", rs)));
+			e.setEnd(rs.getDate(getColumnWithName("endDate", rs)));
+			e.setLocation(rs.getString(getColumnWithName("location", rs)));
+			eventWrappers[i] = new EventWrapper(e, rs.getInt(getColumnWithName("groupID", rs)));
 			i++;
 		}
 		rs.close();
 		i = 0;
 		
-		ps = conn.prepareStatement("SELECT * FROM documents");
+		ps = conn.prepareStatement(
+				"SELECT *" +
+				" FROM documents JOIN has_documents ON documents.docID = has_documents.docID" +
+				" Where documents.docID IN (SELECT (docID) FROM has_documents WHERE groupID IN (SELECT (groupID) FROM belongs_to WHERE userID = ?));");
+		ps.setInt(1, ce.getId());
 		rs = ps.executeQuery();
 		ps.close();
 		
-		Document[] documents = new Document[getResultSetSize(rs)];
+		DocumentWrapper[] documentWrappers = new DocumentWrapper[getResultSetSize(rs)];
 		while (rs.next()) {
-			documents[i].setItemID(rs.getInt(getColumnWithName("eventID", rs)));
-			documents[i].setType(ItemType.DOCUMENT);
-			documents[i].setName(rs.getString(getColumnWithName("name", rs)));
-			documents[i].setDescription(rs.getString(getColumnWithName("description", rs)));
-			documents[i].setCategory(Category.valueOf(rs.getString(getColumnWithName("category", rs))));
-			documents[i].setFileName(rs.getString(getColumnWithName("fileName", rs)));
-			documents[i].setExpiration(rs.getString(getColumnWithName("expirationDate", rs)));
+			Document d = new Document();
+			d.setItemID(rs.getInt(getColumnWithName("eventID", rs)));
+			d.setType(ItemType.DOCUMENT);
+			d.setName(rs.getString(getColumnWithName("name", rs)));
+			d.setDescription(rs.getString(getColumnWithName("description", rs)));
+			d.setCategory(Category.valueOf(rs.getString(getColumnWithName("category", rs)).toUpperCase()));
+			d.setFileName(rs.getString(getColumnWithName("fileName", rs)));
+			d.setExpiration(rs.getDate(getColumnWithName("expirationDate", rs)));
+			documentWrappers[i] = new DocumentWrapper(d, rs.getInt(getColumnWithName("groupID", rs)));
 			i++;
 		}
 		rs.close();
 		i = 0;
 		
 		// Apply predicates for date filtering
-		ArrayList<Task> a = new ArrayList<>(Arrays.asList(tasks));
-		a.removeIf(new Predicate<Task>() {
+		ArrayList<TaskWrapper> a = new ArrayList<>(Arrays.asList(taskWrappers));
+		Stream<TaskWrapper> taskStream = a.stream().filter(new Predicate<TaskWrapper>() {
 
 			@Override
-			public boolean test(Task t) {
-				if (!t.isCompleted() && dateWithin(2, t.getDeadline())) {
+			public boolean test(TaskWrapper t) {
+				if (!t.getTask().isCompleted() && dateWithin(2, t.getTask().getDeadline())) {
 					return true;
 				}
 				return false;
 			}
 			
 		});
-		tasks = a.toArray(new Task[tasks.length]);
+		taskWrappers = taskStream.toArray(TaskWrapper[]::new);
 		
-		ArrayList<Event> b = new ArrayList<>(Arrays.asList(events));
-		b.removeIf(new Predicate<Event>() {
+		ArrayList<EventWrapper> b = new ArrayList<>(Arrays.asList(eventWrappers));
+		Stream<EventWrapper> eventStream = b.stream().filter(new Predicate<EventWrapper>() {
 
 			@Override
-			public boolean test(Event e) {
-				if (dateWithin(2, e.getStart())) {
+			public boolean test(EventWrapper e) {
+				if (dateWithin(2, e.getEvent().getStart())) {
 					return true;
 				}
 				return false;
 			}
 			
 		});
-		events = b.toArray(new Event[events.length]);
+		eventWrappers = eventStream.toArray(EventWrapper[]::new);
 		
-		ArrayList<Document> c = new ArrayList<>(Arrays.asList(documents));
-		c.removeIf(new Predicate<Document>() {
+		ArrayList<DocumentWrapper> c = new ArrayList<>(Arrays.asList(documentWrappers));
+		Stream<DocumentWrapper> documentStream = c.stream().filter(new Predicate<DocumentWrapper>() {
 
 			@Override
-			public boolean test(Document d) {
-				if (dateWithin(2, d.getExpiration())) {
+			public boolean test(DocumentWrapper d) {
+				if (dateWithin(2, d.getDocument().getExpiration())) {
 					return true;
 				}
 				return false;
 			}
 			
 		});
-		documents = c.toArray(new Document[documents.length]);
+		documentWrappers = documentStream.toArray(DocumentWrapper[]::new);
 		
-		loginEntry.setTasks(tasks);
-		loginEntry.setEvents(events);
-		loginEntry.setDocuments(documents);
+		loginEntry.setTasks(taskWrappers);
+		loginEntry.setEvents(eventWrappers);
+		loginEntry.setDocuments(documentWrappers);
 		
 		return loginEntry;
 	
 	}
 	
-	private static boolean dateWithin(int weeks, String itemDate) {
-		int days = weeks * 7;
+	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {
 		
 		// TODO, verify that MM-dd is correct and not dd-MM;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		
 		if (itemDate != null) {
-			try {
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(new Date());            
-				calendar.add(Calendar.DAY_OF_YEAR, days);
-				Date dateToCompareTo = calendar.getTime();
-				Date d = df.parse(itemDate);
-				
-				if (d.compareTo(dateToCompareTo) < 0) {
-					return true;
-				}
-			} catch (ParseException e) {
-				System.out.println("PARSE EXCEPTION IN PARSING DATE");
-				e.printStackTrace();
+			
+			Date currentDate = new Date();
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)), ZoneId.systemDefault());
+			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+							
+			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
+			System.out.println("Date to compare to: " + DateFormat.getDateInstance().format(dateToCompareTo));
+			
+			if (itemDate.compareTo(dateToCompareTo) < 0) {
+				System.out.println("Here");
+				return true;
 			}
+
 		}
 		return false;
 	}

@@ -4,35 +4,35 @@ import java.util.Arrays;
 
 public class LoginEntry extends CacheEntry {
 	
-	Task[] tasks;
-	Event[] events;
-	Document[] documents;
+	TaskWrapper[] tasks;
+	EventWrapper[] events;
+	DocumentWrapper[] documents;
 
 	public LoginEntry(String name, int id, int gid, String gn, GroupyWrapper[] groupy) {
 		super(name, id, gid, gn, groupy);
 	}
 	
-	public Task[] getTasks() {
+	public TaskWrapper[] getTasks() {
 		return tasks;
 	}
 
-	public void setTasks(Task[] tasks) {
+	public void setTasks(TaskWrapper[] tasks) {
 		this.tasks = tasks;
 	}
 
-	public Event[] getEvents() {
+	public EventWrapper[] getEvents() {
 		return events;
 	}
 
-	public void setEvents(Event[] events) {
+	public void setEvents(EventWrapper[] events) {
 		this.events = events;
 	}
 
-	public Document[] getDocuments() {
+	public DocumentWrapper[] getDocuments() {
 		return documents;
 	}
 
-	public void setDocuments(Document[] documents) {
+	public void setDocuments(DocumentWrapper[] documents) {
 		this.documents = documents;
 	}
 

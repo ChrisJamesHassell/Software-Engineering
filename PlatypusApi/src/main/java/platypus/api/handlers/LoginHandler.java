@@ -76,6 +76,7 @@ public class LoginHandler implements Route {
 			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");
 			
 		} catch (SQLException e) {
+			e.printStackTrace();
 			System.out.println(e.getMessage());
 			return new JsonResponse("FAIL", "", "SQLException occurred at Login.");
 		} finally {
