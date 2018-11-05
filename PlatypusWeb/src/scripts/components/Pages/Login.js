@@ -44,6 +44,12 @@ export default class Login extends React.Component {
     this.setState({ loading: false });
     const { status } = response;
     const isSuccess = status === 'SUCCESS';
+    const data = Object.assign({}, response.data);
+    Object.keys(data).map((key) =>{
+      let value = JSON.stringify(data[key]);
+      localStorage.setItem(key, value);
+    })
+    
     if (isSuccess) this.setState({ redirect: true });
     else this.logError(response.message);
   }
@@ -63,6 +69,7 @@ export default class Login extends React.Component {
   render() {
     const isLogin = this.props.location.pathname === '/login';
     const { redirect } = this.state;
+    
     if (redirect) {
       window.location.reload();
       return <Redirect to="/dashboard" />;

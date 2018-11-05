@@ -9,6 +9,11 @@ function deleteAllCookies() {
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     if (window.location.origin.includes('platypus')) document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=.platypus.null-terminator.com`; // .platypus.null-terminator.com
   }
+
+  // Now delete all the localStorage data
+  for(var item in localStorage){
+    localStorage.removeItem(item);
+  }
 }
 
 const hasCookie = document.cookie.length > 0;

@@ -69,19 +69,33 @@ h1 {
     margin: 0;
 }
 
+#nav-profile::before{
+    content: '';
+    width: 30px;
+    height: 30px;
+    background: url('../images/icons/profile_default.png');
+    background-size: 30px 30px;
+}
 #nav-profile {
     display: inline-flex;
-    width: 30px;
+    /* width: 30px; */
     height: 30px;
     border-radius: 50%;
     padding: 0;
     margin: 0 10px 0 0;
-    background: url('../images/icons/profile_default.png');
+    /* background: url('../images/icons/profile_default.png'); */
     background-size: cover;
+}
+span#nav-profile-username{
+    margin-top: 5px;
+    padding-left: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .3px;
 }
 
 #basic-nav-dropdown>span.caret {
-    margin-top: -15px;
+    margin-top: -20px;
 }
 
 a#basic-nav-dropdown {
