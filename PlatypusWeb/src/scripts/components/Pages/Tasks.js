@@ -17,9 +17,12 @@ import TaskForm, { priorityOptions } from '../Forms/TaskForm';
 const Task = ({
   index,
   onTaskClick,
+  onTaskComplete,
   onTaskDeleteClick,
   onTaskEditClick,
-  task: { description, id, name },
+  task: {
+    completed, description, id, name,
+  },
 }) => (
   <Draggable draggableId={id} index={index}>
     {provided => (
@@ -29,19 +32,28 @@ const Task = ({
         className="task"
         onClick={onTaskClick}
         ref={provided.innerRef}
+        style={{ alignItems: 'center', display: 'flex' }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <h4>{name}</h4>
-          <div style={{ display: 'flex' }}>
-            <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
-              <Glyphicon glyph="pencil" />
-            </a>
-            <a href="#remove" onClick={onTaskDeleteClick}>
-              <Glyphicon glyph="remove" />
-            </a>
+        <input
+          checked={completed}
+          onChange={onTaskComplete}
+          style={{ marginLeft: 'calc(1em - 8px)', marginRight: '1em' }}
+          type="checkbox"
+        />
+        <div style={{ flexGrow: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <h4>{name}</h4>
+            <div style={{ display: 'flex' }}>
+              <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
+                <Glyphicon glyph="pencil" />
+              </a>
+              <a href="#remove" onClick={onTaskDeleteClick}>
+                <Glyphicon glyph="remove" />
+              </a>
+            </div>
           </div>
+          <p>{description}</p>
         </div>
-        <p>{description}</p>
       </div>
     )}
   </Draggable>
@@ -66,13 +78,21 @@ export class TaskList extends React.Component {
                   {tasks
                     .filter(task => task.priority === value)
                     .map(
-                      ({
-                        onTaskClick, onTaskDeleteClick, onTaskEditClick, ...task
-                      }, taskIndex) => (
+                      (
+                        {
+                          onTaskClick,
+                          onTaskComplete,
+                          onTaskDeleteClick,
+                          onTaskEditClick,
+                          ...task
+                        },
+                        taskIndex,
+                      ) => (
                         <Task
                           index={taskIndex}
                           key={taskIndex}
                           onTaskClick={onTaskClick}
+                          onTaskComplete={onTaskComplete}
                           onTaskDeleteClick={onTaskDeleteClick}
                           onTaskEditClick={onTaskEditClick}
                           task={task}
@@ -136,6 +156,14 @@ class Tasks extends React.Component {
   onTaskClick = task => () => {
     console.log({ task });
   };
+
+  onTaskComplete = task => () => this.props.dispatch({
+    type: 'UPDATE_TASK',
+    payload: {
+      ...task,
+      completed: !task.completed,
+    },
+  });
 
   onTaskCreate = (values) => {
     const newID = Math.max(...this.props.tasks.map(task => task.taskID)) + 1;
@@ -211,6 +239,7 @@ class Tasks extends React.Component {
                   ...task,
                   id: task.taskID,
                   onTaskClick: this.onTaskClick(task),
+                  onTaskComplete: this.onTaskComplete(task),
                   onTaskDeleteClick: this.onTaskDeleteClick(task.taskID),
                   onTaskEditClick: this.onTaskEditClick(task.taskID),
                 }))}
