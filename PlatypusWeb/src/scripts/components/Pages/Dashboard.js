@@ -53,7 +53,7 @@ class LeftNavInner extends React.Component {
         this.setState({ isMouseOver: isOver });
         this.setState({ fill: fill });
     }
-    
+
     render() {
         return (
             <div className='left-nav-container' onMouseOver={() => this.handleMouse(true)} onMouseOut={() => this.handleMouse(false)}>
@@ -87,7 +87,6 @@ const LeftNav = (props) => {
             {routes.map((route, index) =>
                 <LeftNavInner key={route.name} route={route} index={index} />
             )}
-            <Button style={{ width: "100%", borderRadius: "0" }} onClick={() => { deleteAllCookies(); window.location.reload(); }}>Sign out</Button>
         </div>
     )
 }
