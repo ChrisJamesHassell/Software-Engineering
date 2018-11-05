@@ -14,6 +14,10 @@ const Login = (props) => {
             <Row id='row-space'>
 
             </Row>
+            {console.log('==========PROPS==============')}
+            {console.log(props)}
+            {console.log('==========PROPS.routes==============')}
+            {console.log(props.routes)}
             <Row id='login'>
                 <Col id='login-extra' xsHidden md={8}>
                     <div>
@@ -30,11 +34,11 @@ const Login = (props) => {
                     </div>
                 </Col>
                 <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
-                    <img src={logoUrl} />
+                    <img src={logoUrl} alt="white logo" />
                 </Col>
                 <Col id='login-creds' xs={12} md={4}>
                     <div>
-                        <p>
+                    <p>
                             <LinkContainer to="/"><Button bsStyle="link" disabled={props.match.isExact}>Login</Button></LinkContainer> or
                             <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!props.match.isExact}> Sign Up</Button></LinkContainer>
                         </p>
@@ -51,45 +55,3 @@ const Login = (props) => {
 }
 
 export default Login;
-
-/*
-export default class LoginPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
-
-    render() {
-        return (
-            <Grid id='row-container'>
-                <Row id='row-space'>
-
-                </Row>
-                <Row id='login'>
-                    <Col id='login-extra' xsHidden md={8}>
-                        <div>
-                            <h1>Organize.</h1>
-                            <h1>Plan.</h1>
-                            <h1>Live.</h1>
-                            <p>Hey, adulting is hard. We get it. That's why Platypus provides
-                                a sleek, modern interface to help you adult at maximum efficiency.
-                            </p>
-                            <p>
-                                <Button bsStyle='success' bsSize='large'>Learn More</Button>
-                            </p>
-                        </div>
-                    </Col>
-                    <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
-                        <img src={logo} />
-                    </Col>
-                    <Col id='login-creds' xs={12} md={4}>
-                        <div><p>Login or <a href=''>Sign Up</a></p></div>
-                        <div>
-                            <LoginForm />
-                        </div>
-                    </Col>
-                </Row>
-            </Grid>
-        );
-    }
-}*/

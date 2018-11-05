@@ -6,6 +6,7 @@ import LoginForm from './components/Forms/LoginForm';
 import SignupForm from './components/Forms/SignupForm';
 import logo from '../images/icons/logo_fill_white.svg';
 // then our route config
+
 const routes = [
     {
         path: "/login",
@@ -14,12 +15,16 @@ const routes = [
             {
                 path: "/login/login",
                 component: LoginForm,
-                logo: logo
+                props: {
+
+                }
             },
             {
                 path: "/login/signup",
                 component: SignupForm,
-                logo: logo
+                props: {
+
+                }
             }
         ]
     },

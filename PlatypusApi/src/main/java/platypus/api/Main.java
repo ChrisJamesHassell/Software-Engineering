@@ -5,7 +5,10 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.handlers.HelloHandler;
 import platypus.api.handlers.IndexHandler;
+import platypus.api.handlers.LoginHandler;
+import platypus.api.handlers.AuthFilter;
 import platypus.api.handlers.CorsFilter;
+import platypus.api.handlers.CreateHandler;
 import spark.Service.StaticFiles;
 import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.EmbeddedJettyServer;
@@ -18,7 +21,10 @@ import spark.Spark;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -40,13 +46,13 @@ public class Main {
 		// DB stuff
 		// ***************************** //
 		// DB conn pool config
-//		final HikariDataSource ds = new HikariDataSource();
-//		ds.setMaximumPoolSize(8);
-//		ds.setDriverClassName("org.mariadb.jdbc.Driver");
-//		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/butts");
-//		ds.addDataSourceProperty("user", "root");
-//		ds.addDataSourceProperty("password", "lamepassword");
-//		ds.setAutoCommit(false);
+		final HikariDataSource ds = new HikariDataSource();
+		ds.setMaximumPoolSize(8);
+		ds.setDriverClassName("org.mariadb.jdbc.Driver");
+		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/butts"); // TODO, agree on a database name.
+		ds.addDataSourceProperty("user", "root");
+		ds.addDataSourceProperty("password", "lamepassword");
+		ds.setAutoCommit(true); // Changed to true
 
 		final Properties emailConfig = new Properties();
 		emailConfig.put("mail.smtp.auth", true);
@@ -73,16 +79,47 @@ public class Main {
 		 * staticFiles.externalLocation(projectDir + staticDir); } else {
 		 * staticFiles.location("/public"); }
 		 */
+		
+		Spark.options("/*",
+		        (request, response) -> {
+
+		            String accessControlRequestHeaders = request
+		                    .headers("Access-Control-Request-Headers");
+		            if (accessControlRequestHeaders != null) {
+		                response.header("Access-Control-Allow-Headers",
+		                        accessControlRequestHeaders);
+		            }
+
+		            String accessControlRequestMethod = request
+		                    .headers("Access-Control-Request-Method");
+		            if (accessControlRequestMethod != null) {
+		                response.header("Access-Control-Allow-Methods",
+		                        accessControlRequestMethod);
+		            }
+
+		            return "OK";
+		        });
+
+		Spark.before((request, response) -> {
+			response.header("Access-Control-Allow-Origin", request.headers("Origin"));
+			response.header("Access-Control-Allow-Credentials", "true");
+			response.header("Vary", "Origin");
+		});
 
 		Spark.get("/", new IndexHandler(), gson::toJson);
-	
+		final AuthFilter authFilter = new AuthFilter();
+		
 		// Setting up the path groups.
 		Spark.path("/", () -> {
-			Spark.before("/*", (q, a) -> System.out.println("Api call"));
-			Spark.path("/User", () -> {
-				Spark.post("/Create", new IndexHandler(), gson::toJson); //Update this to be a userCreate handler
-				Spark.get("/Settings", new IndexHandler(), gson::toJson); //Update to settings manager
-				Spark.put("/Login", new IndexHandler(), gson::toJson); //Update to LoginHandler.
+			Spark.before("/api/*", authFilter);
+			Spark.get("/api/test", (req, res) -> {return "hi " + req.attribute(AuthFilter.USERNAME);});
+			Spark.path("/user", () -> {
+				// Spark.verb(String, Route, ResponseTransformer.render(Object));
+//				Spark.post("/create/:firstname/:lastname/:email/:username/:password/:dateofbirth", new CreateHandler(ds), gson::toJson); //Update this to be a userCreate handler
+				Spark.post("/create/", new CreateHandler(ds), gson::toJson);
+				Spark.get("/settings", new IndexHandler(), gson::toJson); //Update to settings manager
+//				Spark.post("/login/:username/:password", new LoginHandler(ds, authFilter), gson::toJson);
+				Spark.post("/login/", new LoginHandler(ds, authFilter), gson::toJson);
 			});
 		});
 			

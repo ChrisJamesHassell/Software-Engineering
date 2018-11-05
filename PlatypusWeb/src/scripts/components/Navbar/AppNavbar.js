@@ -1,40 +1,26 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import AppLogoHeader from './AppLogoHeader';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import { RouteWithSubRoutes, routes } from '../../routes';
 import logo from '../../../images/icons/logo_fill_white.svg';
-export default class AppNavbar extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
-    render() {
-        return (
-            <Navbar collapseOnSelect style={{ marginBottom: '0', borderRadius: '0' }}>
-                <Navbar.Header>
-                    <Navbar.Brand id='logo-brand'>
-                        <img src={logo}></img>
-                        <a href='#brand'><span id='brand-platy'>platy</span><span id='brand-pus'>pus</span></a>
-                    </Navbar.Brand>
-                    <Navbar.Toggle />
-                </Navbar.Header>
-                <Navbar.Collapse>
-                    <Nav>
-                        <NavItem eventKey={1} href='#'>Link</NavItem>
-                        <NavItem eventKey={2} href='#'>Link</NavItem>
-                        <NavDropdown eventKey={3} title='Dropdown' id='basic-nav-dropdown'>
-                            <MenuItem eventKey={3.1}>Action</MenuItem>
-                            <MenuItem eventKey={3.2}>Another action</MenuItem>
-                            <MenuItem eventKey={3.3}>Something else here</MenuItem>
-                            <MenuItem divider />
-                            <MenuItem eventKey={3.3}>Separated link</MenuItem>
-                        </NavDropdown>
-                    </Nav>
-                    <Nav pullRight>
-                        <NavItem eventKey={1} href='#'>Link Right</NavItem>
-                        <NavItem eventKey={2} href='#'>Link Right</NavItem>
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-        )
-    }
-}
+const AppNavbar = () => (
+    <Navbar collapseOnSelect style={{ marginBottom: '0', borderRadius: '0' }}>
+        <AppLogoHeader logo={logo} />
+        <Navbar.Collapse>
+            <Nav>
+                <LinkContainer to="/dashboard"><NavItem eventKey={1}>Dashboard</NavItem></LinkContainer>
+                <LinkContainer to="/"><NavItem eventKey={2}>Home (login)</NavItem></LinkContainer>
+                <NavDropdown eventKey={3} title='Dropdown' id='basic-nav-dropdown'>
+                    <MenuItem eventKey={3.1}>Something1</MenuItem>
+                    <MenuItem eventKey={3.2}>Something2</MenuItem>
+                    <MenuItem divider />
+                    <MenuItem eventKey={3.3}>Something3</MenuItem>
+                </NavDropdown>
+            </Nav>
+        </Navbar.Collapse>
+    </Navbar>
+);
+
+export default AppNavbar;
