@@ -270,7 +270,7 @@ class Tasks extends React.Component {
             </Button>
           </ModalFooter>
         </Modal>
-        {['Appliances', 'Auto', 'Meals', 'Medical', 'Miscellaneous'].map((value, index) => (
+        {Object.keys(tasks).map((value, index) => (
           <Panel bsStyle="success" key={index}>
             <Panel.Heading style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Panel.Title componentClass="h3">{value}</Panel.Title>
