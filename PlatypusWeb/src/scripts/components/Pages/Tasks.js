@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
-  Button, Glyphicon, Modal, ModalHeader, ModalBody, Panel, Table,
+  Button,
+  Glyphicon,
+  Modal,
+  ModalFooter,
+  ModalHeader,
+  ModalBody,
+  Panel,
+  Table,
 } from 'react-bootstrap';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { connect } from 'react-redux';
 
-import TaskForm from '../Forms/TaskForm';
+import TaskForm, { priorityOptions } from '../Forms/TaskForm';
 
 const Task = ({
   index,
@@ -45,25 +52,40 @@ export class TaskList extends React.Component {
     const { tasks } = this.props;
 
     return (
-      <Droppable droppableId="tasks">
-        {provided => (
-          <div {...provided.droppableProps} className="task-list" ref={provided.innerRef}>
-            {tasks.map(({
-              onTaskClick, onTaskDeleteClick, onTaskEditClick, ...task
-            }, index) => (
-              <Task
-                index={index}
-                key={index}
-                onTaskClick={onTaskClick}
-                onTaskDeleteClick={onTaskDeleteClick}
-                onTaskEditClick={onTaskEditClick}
-                task={task}
-              />
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+      <Fragment>
+        {[2, 1, 0].map((value, index) => {
+          const priority = priorityOptions.find(op => op.value === value);
+
+          if (!priority) return null;
+
+          return (
+            <Droppable droppableId={`tasks-${priority.label.toLowerCase()}`} key={index}>
+              {provided => (
+                <div {...provided.droppableProps} className="task-list" ref={provided.innerRef}>
+                  <h4>{priority.label}</h4>
+                  {tasks
+                    .filter(task => task.priority === value)
+                    .map(
+                      ({
+                        onTaskClick, onTaskDeleteClick, onTaskEditClick, ...task
+                      }, taskIndex) => (
+                        <Task
+                          index={taskIndex}
+                          key={taskIndex}
+                          onTaskClick={onTaskClick}
+                          onTaskDeleteClick={onTaskDeleteClick}
+                          onTaskEditClick={onTaskEditClick}
+                          task={task}
+                        />
+                      ),
+                    )}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          );
+        })}
+      </Fragment>
     );
   }
 }
@@ -74,6 +96,40 @@ class Tasks extends React.Component {
   };
 
   changeModal = value => this.setState({ activeModal: value });
+
+  onDragEnd = (result) => {
+    const { tasks } = this.props;
+    const { destination, draggableId, source } = result;
+
+    // if Draggable dragged outside of DragDropContext
+    if (!destination) {
+      return;
+    }
+
+    // if same location
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return;
+    }
+
+    const newPriority = priorityOptions.find(
+      // droppableId something like 'tasks-medium'
+      op => op.label.toLowerCase() === destination.droppableId.split('-')[1],
+    );
+
+    if (!newPriority) return;
+
+    const task = tasks.find(tsk => tsk.taskID === draggableId);
+
+    if (!task) return;
+
+    this.props.dispatch({
+      type: 'UPDATE_TASK',
+      payload: {
+        ...task,
+        priority: newPriority.value,
+      },
+    });
+  };
 
   onHideModal = () => this.changeModal(null);
 
@@ -96,7 +152,6 @@ class Tasks extends React.Component {
 
   onTaskCreateClick = () => this.changeModal('create-task');
 
-  // TODO: Add delete confirmation
   onTaskDelete = taskID => this.props.dispatch({
     type: 'REMOVE_TASK',
     payload: {
@@ -106,6 +161,12 @@ class Tasks extends React.Component {
 
   onTaskDeleteClick = id => (event) => {
     event.preventDefault();
+    // this.onTaskDelete(id);
+    this.changeModal(`delete-${id}`);
+  };
+
+  onTaskDeleteConfirmClick = id => () => {
+    this.changeModal(null);
     this.onTaskDelete(id);
   };
 
@@ -144,7 +205,7 @@ class Tasks extends React.Component {
             </Modal>
           </Panel.Heading>
           <Panel.Body>
-            <DragDropContext>
+            <DragDropContext onDragEnd={this.onDragEnd}>
               <TaskList
                 tasks={tasks.map(task => ({
                   ...task,
@@ -170,6 +231,35 @@ class Tasks extends React.Component {
                     }
                   />
                 </ModalBody>
+              </Modal>
+              <Modal
+                bsSize="small"
+                onHide={this.onHideModal}
+                show={activeModal && activeModal.startsWith('delete')}
+              >
+                <ModalHeader closeButton={true} onHide={this.onHideModal}>
+                  Are you sure you want to delete{' '}
+                  {activeModal
+                    && activeModal.startsWith('delete')
+                    && tasks.find(task => task.taskID === Number(activeModal.split('-')[1])).name}
+                  ?
+                </ModalHeader>
+                <ModalFooter>
+                  <Button bsSize="sm" onClick={this.onHideModal}>
+                    Close
+                  </Button>
+                  <Button
+                    bsSize="sm"
+                    bsStyle="danger"
+                    onClick={
+                      activeModal && activeModal.startsWith('delete')
+                        ? this.onTaskDeleteConfirmClick(Number(activeModal.split('-')[1]))
+                        : undefined
+                    }
+                  >
+                    Delete
+                  </Button>
+                </ModalFooter>
               </Modal>
             </DragDropContext>
           </Panel.Body>
