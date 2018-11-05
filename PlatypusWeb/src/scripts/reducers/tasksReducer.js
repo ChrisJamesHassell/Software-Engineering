@@ -7,6 +7,7 @@ export default (
       category: 'Miscellaneous',
       deadline: '2018-10-29T19:30:34.888Z',
       priority: 2,
+      completed: false,
     },
     {
       taskID: 2,
@@ -15,6 +16,7 @@ export default (
       category: 'Miscellaneous',
       deadline: '2018-10-29T19:30:34.888Z',
       priority: 1,
+      completed: false,
     },
     {
       taskID: 1,
@@ -23,23 +25,18 @@ export default (
       category: 'Miscellaneous',
       deadline: '2018-10-29T19:30:34.888Z',
       priority: 0,
+      completed: false,
     },
   ],
   action,
 ) => {
   switch (action.type) {
     case 'ADD_TASK':
-      return [...state, action.payload].sort(
-        (a, b) => b.priority - a.priority,
-      );
+      return [...state, action.payload].sort((a, b) => b.priority - a.priority);
     case 'ADD_TASKS':
-      return [...state, ...action.payload].sort(
-        (a, b) => b.priority - a.priority,
-      );
+      return [...state, ...action.payload].sort((a, b) => b.priority - a.priority);
     case 'REMOVE_TASK':
-      return [...state].filter(
-        task => task.taskID !== action.payload.taskID,
-      );
+      return [...state].filter(task => task.taskID !== action.payload.taskID);
     case 'UPDATE_TASK':
       return [...state]
         .map((task) => {
