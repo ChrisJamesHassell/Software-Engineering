@@ -51,6 +51,10 @@ public class Main {
 			            });
 
 			            Spark.path("/task", () -> {
+			            	
+			            	// TODO, validate that this path works
+			            	Spark.get("", (req, res) -> TaskApi.get(ds, req), gson::toJson);
+			            	
 			            	Spark.post("/add", (req, res) -> TaskApi.addTask(ds, req), gson::toJson);
 			                Spark.post("/update", (req, res) -> TaskApi.editTask(ds, req), gson::toJson);
 		                    Spark.post("/delete", (req, res) -> TaskApi.removeTask(ds, req), gson::toJson);
