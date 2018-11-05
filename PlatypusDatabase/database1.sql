@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS `belongs_to` (
   `self` enum('0','1') DEFAULT NULL,
   `owner` INT(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`groupID`,`userID`),
-  KEY `FK_belongs_to_user` (`userID`),
+  KEY `FK_belongs_to_users` (`userID`),
   CONSTRAINT `FK_belongs_to_group` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_belongs_to_user` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_belongs_to_users` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
@@ -38,9 +38,9 @@ BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
-	-- DELETE document relation(s), then DELETE the document
-		DELETE FROM has_document WHERE docID = docIDparam;
-		DELETE FROM document WHERE docID = docIDparam;
+	-- DELETE documents relation(s), then DELETE the document
+		DELETE FROM has_documents WHERE docID = docIDparam;
+		DELETE FROM documents WHERE docID = docIDparam;
 		IF `_rollback`
 			THEN ROLLBACK;
 		else
@@ -59,7 +59,7 @@ BEGIN
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
 	-- DELETE Event relation(s), then DELETE the Event
-		DELETE FROM has_event WHERE eventID = eventIDparam;
+		DELETE FROM has_events WHERE eventID = eventIDparam;
 		DELETE FROM userevents WHERE eventID = eventIDparam;
 		IF `_rollback`
 			THEN ROLLBACK;
@@ -84,37 +84,37 @@ BEGIN
 	START TRANSACTION;
 	
 	-- Count number of relations with the deleting group's ID
-	SET `counter` = (SELECT COUNT(groupID) FROM has_event WHERE groupID = groupIDparam);
+	SET `counter` = (SELECT COUNT(groupID) FROM has_events WHERE groupID = groupIDparam);
 	IF `counter` > 0
 	THEN
-		WHILE (SELECT COUNT(groupID) FROM has_event WHERE groupID = groupIDparam) > 0
+		WHILE (SELECT COUNT(groupID) FROM has_events WHERE groupID = groupIDparam) > 0
 		DO
 			-- assign min eventID associated with deleting group's ID
-			SET eventCount = (SELECT MIN(eventID) FROM has_event WHERE groupID = groupIDparam);
-			DELETE FROM has_event WHERE eventID = eventCount;
+			SET eventCount = (SELECT MIN(eventID) FROM has_events WHERE groupID = groupIDparam);
+			DELETE FROM has_events WHERE eventID = eventCount;
 			DELETE FROM userevents WHERE eventID = eventCount;
 		END WHILE;
 	END IF;	
 	
-	SET `counter` = (SELECT COUNT(groupID) FROM has_document WHERE groupID = groupIDparam);	
+	SET `counter` = (SELECT COUNT(groupID) FROM has_documents WHERE groupID = groupIDparam);	
 	IF `counter` > 0
 	THEN
-		WHILE (SELECT COUNT(groupID) FROM has_document WHERE groupID = groupIDparam) > 0
+		WHILE (SELECT COUNT(groupID) FROM has_documents WHERE groupID = groupIDparam) > 0
 		DO
-		SET docCount = (SELECT MIN(docID) FROM has_document WHERE groupID = groupIDparam);
-			DELETE FROM has_document WHERE docID = docCount;
-			DELETE FROM document WHERE docID = docCount;
+		SET docCount = (SELECT MIN(docID) FROM has_documents WHERE groupID = groupIDparam);
+			DELETE FROM has_documents WHERE docID = docCount;
+			DELETE FROM documents WHERE docID = docCount;
 		END WHILE;
 	END IF;
 
-	SET `counter` = (SELECT COUNT(groupID) FROM has_task WHERE groupID = groupIDparam);
+	SET `counter` = (SELECT COUNT(groupID) FROM has_tasks WHERE groupID = groupIDparam);
 	IF `counter` > 0
 	THEN
-		WHILE (SELECT COUNT(groupID) FROM has_task WHERE groupID = groupIDparam) > 0
+		WHILE (SELECT COUNT(groupID) FROM has_tasks WHERE groupID = groupIDparam) > 0
 		DO
-		SET taskCount = (SELECT MIN(taskID) FROM has_task WHERE groupID = groupIDparam);
-			DELETE FROM has_task WHERE taskID = taskCount;
-			DELETE FROM task WHERE taskID = taskCount;
+		SET taskCount = (SELECT MIN(taskID) FROM has_tasks WHERE groupID = groupIDparam);
+			DELETE FROM has_tasks WHERE taskID = taskCount;
+			DELETE FROM tasks WHERE taskID = taskCount;
 
 		END WHILE;
 	END IF;
@@ -139,8 +139,8 @@ BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
-		DELETE FROM has_task WHERE taskID = taskIDparam;
-		DELETE FROM task WHERE taskID = taskIDparam;
+		DELETE FROM has_tasks WHERE taskID = taskIDparam;
+		DELETE FROM tasks WHERE taskID = taskIDparam;
 		IF `_rollback`
 			THEN ROLLBACK;
 		else
@@ -179,36 +179,36 @@ BEGIN
 				GROUP BY groupID
 				HAVING COUNT(groupID) = 1 AND userID = userIDparam) as M);
 		
-			SET `counter` = (SELECT COUNT(groupID) FROM has_event WHERE groupID = groupIDcheck);
+			SET `counter` = (SELECT COUNT(groupID) FROM has_events WHERE groupID = groupIDcheck);
 			IF `counter` > 0
 			THEN
-				WHILE (SELECT COUNT(groupID) FROM has_event WHERE groupID = groupIDcheck) > 0
+				WHILE (SELECT COUNT(groupID) FROM has_events WHERE groupID = groupIDcheck) > 0
 				DO
-				SET eventCount = (SELECT MIN(eventID) FROM has_event WHERE groupID = groupIDcheck);
-					DELETE FROM has_event WHERE eventID = eventCount;
+				SET eventCount = (SELECT MIN(eventID) FROM has_events WHERE groupID = groupIDcheck);
+					DELETE FROM has_events WHERE eventID = eventCount;
 					DELETE FROM userevents WHERE eventID = eventCount;
 				END WHILE;
 			END IF;	
 			
-			SET `counter` = (SELECT COUNT(groupID) FROM has_document WHERE groupID = groupIDcheck);
+			SET `counter` = (SELECT COUNT(groupID) FROM has_documents WHERE groupID = groupIDcheck);
 			IF `counter` > 0
 			THEN
-				WHILE (SELECT COUNT(groupID) FROM has_document WHERE groupID = groupIDcheck) > 0
+				WHILE (SELECT COUNT(groupID) FROM has_documents WHERE groupID = groupIDcheck) > 0
 				DO
-				SET docCount = (SELECT MIN(docID) FROM has_document WHERE groupID = groupIDcheck);
-					DELETE FROM has_document WHERE docID = docCount;
-					DELETE FROM document WHERE docID = docCount;
+				SET docCount = (SELECT MIN(docID) FROM has_documents WHERE groupID = groupIDcheck);
+					DELETE FROM has_documents WHERE docID = docCount;
+					DELETE FROM documents WHERE docID = docCount;
 				END WHILE;
 			END IF;
 	
-			SET `counter` = (SELECT COUNT(groupID) FROM has_task WHERE groupID = groupIDcheck);
+			SET `counter` = (SELECT COUNT(groupID) FROM has_tasks WHERE groupID = groupIDcheck);
 			IF `counter` > 0
 			THEN
-				WHILE (SELECT COUNT(groupID) FROM has_task WHERE groupID = groupIDcheck) > 0
+				WHILE (SELECT COUNT(groupID) FROM has_tasks WHERE groupID = groupIDcheck) > 0
 				DO
-				SET taskCount = (SELECT MIN(taskID) FROM has_task WHERE groupID = groupIDcheck);
-					DELETE FROM has_task WHERE taskID = taskCount;
-					DELETE FROM task WHERE taskID = taskCount;
+				SET taskCount = (SELECT MIN(taskID) FROM has_tasks WHERE groupID = groupIDcheck);
+					DELETE FROM has_tasks WHERE taskID = taskCount;
+					DELETE FROM tasks WHERE taskID = taskCount;
 				END WHILE;
 			END IF;
 			
@@ -232,8 +232,8 @@ BEGIN
 END//
 DELIMITER ;
 
--- Dumping structure for table platypus.document
-CREATE TABLE IF NOT EXISTS `document` (
+-- Dumping structure for table platypus.documents
+CREATE TABLE IF NOT EXISTS `documents` (
   `docID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
@@ -252,42 +252,42 @@ CREATE TABLE IF NOT EXISTS `groups` (
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
--- Dumping structure for table platypus.has_document
-CREATE TABLE IF NOT EXISTS `has_document` (
+-- Dumping structure for table platypus.has_documents
+CREATE TABLE IF NOT EXISTS `has_documents` (
   `groupID` INT(11) unsigned NOT NULL,
   `docID` INT(11) unsigned NOT NULL,
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`docID`),
   UNIQUE KEY `docID` (`docID`),
-  CONSTRAINT `FK_hasdocument_document` FOREIGN KEY (`docID`) REFERENCES `document` (`docID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_hasdocument_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_hasdocuments_documents` FOREIGN KEY (`docID`) REFERENCES `documents` (`docID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_hasdocuments_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
--- Dumping structure for table platypus.has_event
-CREATE TABLE IF NOT EXISTS `has_event` (
+-- Dumping structure for table platypus.has_events
+CREATE TABLE IF NOT EXISTS `has_events` (
   `groupID` INT(11) unsigned NOT NULL,
   `eventID` INT(11) unsigned NOT NULL,
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`eventID`),
   UNIQUE KEY `eventID` (`eventID`),
-  CONSTRAINT `FK_hasevent_events` FOREIGN KEY (`eventID`) REFERENCES `userevents` (`eventID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_hasevent_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_hasevents_events` FOREIGN KEY (`eventID`) REFERENCES `userevents` (`eventID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_hasevents_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
--- Dumping structure for table platypus.has_task
-CREATE TABLE IF NOT EXISTS `has_task` (
+-- Dumping structure for table platypus.has_tasks
+CREATE TABLE IF NOT EXISTS `has_tasks` (
   `groupID` INT(11) unsigned NOT NULL,
   `taskID` INT(11) unsigned NOT NULL,
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`taskID`),
   UNIQUE KEY `taskID` (`taskID`),
-  CONSTRAINT `FK_hastask_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_hastask_task` FOREIGN KEY (`taskID`) REFERENCES `task` (`taskID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_hastasks_groups` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_hastasks_tasks` FOREIGN KEY (`taskID`) REFERENCES `tasks` (`taskID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
@@ -311,12 +311,12 @@ BEGIN
 
     SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
 
-    INSERT INTO document (name, description, category, fileName, expirationDate)
+    INSERT INTO documents (name, description, category, fileName, expirationDate)
 	 VALUES (name, description, category, fileName, expirationDate);
 
     SET @docID = last_insert_id(); -- get last inserted task's ID
     
-    INSERT INTO has_document VALUES (
+    INSERT INTO has_documents VALUES (
      groupID,
      @docID,
      pinned,
@@ -356,7 +356,7 @@ BEGIN
     
     SET @eventID = last_insert_id(); -- get last inserted task's ID
     
-    INSERT INTO has_event VALUES (
+    INSERT INTO has_events VALUES (
      groupID,
      @eventID,
      pinned,
@@ -390,12 +390,12 @@ BEGIN
 
     SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
     
-    INSERT INTO task (name, description, category, deadline, priority)
+    INSERT INTO tasks (name, description, category, deadline, priority)
 	 VALUES (name, description, category, deadline, priority);
     
     SET @taskID = last_insert_id(); -- get last inserted task's ID
     
-    INSERT INTO has_task VALUES (
+    INSERT INTO has_tasks VALUES (
      groupID,
      @taskID,
      pinned,
@@ -459,8 +459,8 @@ BEGIN
 END//
 DELIMITER ;
 
--- Dumping structure for table platypus.task
-CREATE TABLE IF NOT EXISTS `task` (
+-- Dumping structure for table platypus.tasks
+CREATE TABLE IF NOT EXISTS `tasks` (
   `taskID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
