@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.handlers.IndexHandler;
 import platypus.api.handlers.LoginHandler;
+import platypus.api.handlers.TaskApi;
 //import platypus.api.handlers.SettingsHandler;
 import platypus.api.handlers.UserApi;
 import platypus.api.handlers.AuthFilter;
@@ -19,6 +20,8 @@ import spark.Spark;
 import java.util.Properties;
 
 public class Main {
+	
+	public final static boolean IS_PRODUCTION = false;
 
 	public static void main(String[] args) {
 		// To build on eclipse:
@@ -27,7 +30,7 @@ public class Main {
 		// server in some non public folder.
 		// Then on server `java -jar
 		// platypus-api-1.0-SNAPSHOT-jar-with-dependencies.jar`
-
+		
 		final Gson gson = new Gson();
 		final HikariDataSource ds = InitService.initDatabase();
 		final Properties emailConfig = InitService.initEmailConfig();
@@ -48,15 +51,17 @@ public class Main {
 			            });
 
 			            Spark.path("/task", () -> {
-
+			            	Spark.post("/add", (req, res) -> TaskApi.addTask(ds, req), gson::toJson);
+			                Spark.post("/update", (req, res) -> TaskApi.editTask(ds, req), gson::toJson);
+		                    Spark.post("/delete", (req, res) -> TaskApi.removeTask(ds, req), gson::toJson);
 			            });
 			            Spark.path("/event", () -> {
-			                Spark.post("/add", (req, res) -> EventApi.AddEvent(ds, req), gson::toJson);
-			                Spark.post("/update", (req, res) -> EventApi.EditEvent(ds, req), gson::toJson);
-		                    Spark.post("/delete", (req, res) -> EventApi.RemoveEvent(ds, req), gson::toJson);
+			                Spark.post("/add", (req, res) -> EventApi.addEvent(ds, req), gson::toJson);
+			                Spark.post("/update", (req, res) -> EventApi.editEvent(ds, req), gson::toJson);
+		                    Spark.post("/delete", (req, res) -> EventApi.removeEvent(ds, req), gson::toJson);
 			            });
 			            Spark.path("/doc", () -> {
-
+			            	// TODO, kolby please do your stuff
 		                });
 
 			        }); //end app path grouping

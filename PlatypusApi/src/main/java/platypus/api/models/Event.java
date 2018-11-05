@@ -1,5 +1,7 @@
 package platypus.api.models;
 
+import java.sql.Date;
+
 public class Event extends Item {
 
 	private String start;
@@ -10,8 +12,8 @@ public class Event extends Item {
 		super();
 	}
 
-	public Event(int itemID, ItemType type, String name, String description, Category category, String start, String end, String location) {
-		super(itemID, type, name, description, category);
+	public Event(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned, String start, String end, String location) {
+		super(itemID, type, name, description, category, notification, pinned);
 		this.start = start;
 		this.end = end;
 		this.location = location;

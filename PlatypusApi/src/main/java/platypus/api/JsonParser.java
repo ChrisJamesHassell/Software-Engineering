@@ -11,8 +11,4 @@ public class JsonParser {
 		return gson.fromJson(json, type);
 	}
 	
-	// Append one JsonObject with another.
-	public static String appendJson(JsonObject j1, JsonObject j2) {
-		j1.geta
-	}
 }

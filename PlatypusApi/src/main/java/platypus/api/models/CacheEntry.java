@@ -7,7 +7,6 @@ public class CacheEntry {
 	private int selfGroupId;
 	private String selfGroupName;
 	private GroupyWrapper[] groupList;
-
 	
 	public CacheEntry(String name, int id, int gid, String gn, GroupyWrapper[] groupy) {
 		this.username = name;
@@ -31,6 +30,10 @@ public class CacheEntry {
 	
 	public String getselfGroupName() {
 		return this.selfGroupName;
+	}
+	
+	public GroupyWrapper[] getGroupyWrapper() {
+		return groupList;
 	}
 	
 	@Override

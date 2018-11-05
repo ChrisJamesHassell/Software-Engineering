@@ -1,5 +1,7 @@
 package platypus.api.models;
 
+import java.sql.Date;
+
 public class Document extends Item {
 
 	private String fileName;
@@ -9,8 +11,8 @@ public class Document extends Item {
 		super();
 	}
 
-	public Document(int itemID, ItemType type, String name, String description, Category category, String fileName, String expiration) {
-		super(itemID, type, name, description, category);
+	public Document(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned, String fileName, String expiration) {
+		super(itemID, type, name, description, category, notification, pinned);
 		this.fileName = fileName;
 		this.expiration = expiration;
 	}
