@@ -11,7 +11,7 @@ const categoryOptions = [
   { label: 'Miscellaneous', value: 'Miscellaneous' },
   { label: 'ToDo', value: 'ToDo' },
 ];
-const priorityOptions = [
+export const priorityOptions = [
   { label: 'High', value: 2 },
   { label: 'Medium', value: 1 },
   { label: 'Low', value: 0 },
@@ -35,18 +35,22 @@ export default class TaskForm extends React.Component {
 
     return (
       <Formik
-        initialValues={task ? {
-          ...task,
-          category: categoryOptions.find(op => op.value === task.category),
-          deadline: moment(task.deadline).format('YYYY-MM-DD'),
-          priority: priorityOptions.find(op => op.value === task.priority),
-        } : {
-          category: null,
-          deadline: '',
-          description: '',
-          name: '',
-          priority: null,
-        }}
+        initialValues={
+          task
+            ? {
+              ...task,
+              category: categoryOptions.find(op => op.value === task.category),
+              deadline: moment(task.deadline).format('YYYY-MM-DD'),
+              priority: priorityOptions.find(op => op.value === task.priority),
+            }
+            : {
+              category: null,
+              deadline: '',
+              description: '',
+              name: '',
+              priority: null,
+            }
+        }
         onSubmit={this.onSubmit}
       >
         {({
