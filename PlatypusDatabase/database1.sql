@@ -18,10 +18,10 @@ USE `platypus`;
 
 -- Dumping structure for table platypus.belongs_to
 CREATE TABLE IF NOT EXISTS `belongs_to` (
-  `groupID` int(11) unsigned NOT NULL,
-  `userID` int(11) unsigned NOT NULL,
+  `groupID` INT(11) unsigned NOT NULL,
+  `userID` INT(11) unsigned NOT NULL,
   `self` enum('0','1') DEFAULT NULL,
-  `owner` int(11) unsigned DEFAULT NULL,
+  `owner` INT(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`groupID`,`userID`),
   KEY `FK_belongs_to_user` (`userID`),
   CONSTRAINT `FK_belongs_to_group` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -33,16 +33,16 @@ CREATE TABLE IF NOT EXISTS `belongs_to` (
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delDoc`(
 	IN `docIDparam` INT
-
 )
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
-		Delete from has_document Where docID = docIDparam;
-		Delete from document Where docID = docIDparam;
+	-- DELETE document relation(s), then DELETE the document
+		DELETE FROM has_document WHERE docID = docIDparam;
+		DELETE FROM document WHERE docID = docIDparam;
 		IF `_rollback`
-			then ROLLBACK;
+			THEN ROLLBACK;
 		else
 			COMMIT;
 		END IF;
@@ -53,17 +53,16 @@ DELIMITER ;
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delEvent`(
 	IN `eventIDparam` INT
-
-
 )
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
-		Delete from has_event Where eventID = eventIDparam;
-		Delete from userevents Where eventID = eventIDparam;
+	-- DELETE Event relation(s), then DELETE the Event
+		DELETE FROM has_event WHERE eventID = eventIDparam;
+		DELETE FROM userevents WHERE eventID = eventIDparam;
 		IF `_rollback`
-			then ROLLBACK;
+			THEN ROLLBACK;
 		else
 			COMMIT;
 		END IF;
@@ -74,63 +73,60 @@ DELIMITER ;
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delGroup`(
 	IN `groupIDparam` INT
-
-
-
-
 )
 BEGIN
-	DECLARE `_rollback` BOOL DEFAULT 0;
-	DECLARE `counter` int DEFAULT 0;
-	DECLARE `eventCount` int DEFAULT 0;
-	DECLARE `docCount` int DEFAULT 0;
-	DECLARE `taskCount` int DEFAULT 0;
+	DECLARE `_rollback` BOOL DEFAULT 0;		-- error flag
+	DECLARE `counter` INT DEFAULT 0;		-- counter for looping over results
+	DECLARE `eventCount` INT DEFAULT 0;
+	DECLARE `docCount` INT DEFAULT 0;
+	DECLARE `taskCount` INT DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
 	
-			Set `counter` = (Select Count(groupID) from has_event where groupID = groupIDparam);
-			if `counter` > 0
-			then
-				While (Select Count(groupID) from has_event where groupID = groupIDparam) > 0
-				DO
-		   		Set eventCount = (Select MIN(eventID) from has_event where groupID = groupIDparam);
-					Delete from has_event Where eventID = eventCount;
-					Delete from userevents Where eventID = eventCount;
-				end while;
-			end if;	
-			
-			Set `counter` = (Select Count(groupID) from has_document where groupID = groupIDparam);	
-			if `counter` > 0
-			then
-				While (Select Count(groupID) from has_document where groupID = groupIDparam) > 0
-				DO
-		   		Set docCount = (Select MIN(docID) from has_document where groupID = groupIDparam);
-					Delete from has_document Where docID = docCount;
-					Delete from document Where docID = docCount;
-				end while;
-			end if;
+	-- Count number of relations with the deleting group's ID
+	SET `counter` = (SELECT COUNT(groupID) FROM has_event WHERE groupID = groupIDparam);
+	IF `counter` > 0
+	THEN
+		WHILE (SELECT COUNT(groupID) FROM has_event WHERE groupID = groupIDparam) > 0
+		DO
+			-- assign min eventID associated with deleting group's ID
+			SET eventCount = (SELECT MIN(eventID) FROM has_event WHERE groupID = groupIDparam);
+			DELETE FROM has_event WHERE eventID = eventCount;
+			DELETE FROM userevents WHERE eventID = eventCount;
+		END WHILE;
+	END IF;	
 	
-			Set `counter` = (Select Count(groupID) from has_task where groupID = groupIDparam);
-			if `counter` > 0
-			then
-				While (Select Count(groupID) from has_task where groupID = groupIDparam) > 0
-				DO
-			   	Set taskCount = (Select MIN(taskID) from has_task where groupID = groupIDparam);
-					Delete from has_task Where taskID = taskCount;
-					Delete from task Where taskID = taskCount;
+	SET `counter` = (SELECT COUNT(groupID) FROM has_document WHERE groupID = groupIDparam);	
+	IF `counter` > 0
+	THEN
+		WHILE (SELECT COUNT(groupID) FROM has_document WHERE groupID = groupIDparam) > 0
+		DO
+		SET docCount = (SELECT MIN(docID) FROM has_document WHERE groupID = groupIDparam);
+			DELETE FROM has_document WHERE docID = docCount;
+			DELETE FROM document WHERE docID = docCount;
+		END WHILE;
+	END IF;
 
-				end while;
-			end if;
-			
-					
-			Delete from belongs_to Where groupID = groupIDparam;
-			Delete from groups Where groupID = groupIDparam;
+	SET `counter` = (SELECT COUNT(groupID) FROM has_task WHERE groupID = groupIDparam);
+	IF `counter` > 0
+	THEN
+		WHILE (SELECT COUNT(groupID) FROM has_task WHERE groupID = groupIDparam) > 0
+		DO
+		SET taskCount = (SELECT MIN(taskID) FROM has_task WHERE groupID = groupIDparam);
+			DELETE FROM has_task WHERE taskID = taskCount;
+			DELETE FROM task WHERE taskID = taskCount;
 
-		IF `_rollback`
-			then ROLLBACK;
-		else
-			COMMIT;
-		END IF;
+		END WHILE;
+	END IF;
+	
+	DELETE FROM belongs_to WHERE groupID = groupIDparam;
+	DELETE FROM groups WHERE groupID = groupIDparam;
+
+	IF `_rollback`
+		THEN ROLLBACK;
+	else
+		COMMIT;
+	END IF;
 END//
 DELIMITER ;
 
@@ -138,21 +134,15 @@ DELIMITER ;
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delTask`(
 	IN `taskIDparam` INT
-
-
-
-
-
-
 )
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
-		Delete from has_task Where taskID = taskIDparam;
-		Delete from task Where taskID = taskIDparam;
+		DELETE FROM has_task WHERE taskID = taskIDparam;
+		DELETE FROM task WHERE taskID = taskIDparam;
 		IF `_rollback`
-			then ROLLBACK;
+			THEN ROLLBACK;
 		else
 			COMMIT;
 		END IF;
@@ -161,94 +151,80 @@ DELIMITER ;
 
 -- Dumping structure for procedure platypus.delUser
 DELIMITER //
-CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delUser`(
-	IN `userIDparam` INT
-
-
-
-
-
-
-
-
-
-
-
-
-)
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delUser`( IN `userIDparam` INT )
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
-	DECLARE `counter` int DEFAULT 0;
-	DECLARE `eventCount` int DEFAULT 0;
-	DECLARE `docCount` int DEFAULT 0;
-	DECLARE `taskCount` int DEFAULT 0;
-	DECLARE `groupIDcheck` int DEFAULT 0;
-	DECLARE `deleteCount` int DEFAULT 0;
+	DECLARE `counter` INT DEFAULT 0;
+	DECLARE `eventCount` INT DEFAULT 0;
+	DECLARE `docCount` INT DEFAULT 0;
+	DECLARE `taskCount` INT DEFAULT 0;
+	DECLARE `groupIDcheck` INT DEFAULT 0;
+	DECLARE `deleteCount` INT DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
 		
-		Set `deleteCount` = 	(Select COUNT(groupID)
-		From(
-		SELECT groupID, userID
-		FROM belongs_to
-		Group by groupID
-		HAVING COUNT(groupID) = 1 and userID = userIDparam) as T);
+		SET `deleteCount` = (SELECT COUNT(groupID)
+			FROM(
+				SELECT groupID, userID
+				FROM belongs_to
+				GROUP BY groupID
+				HAVING COUNT(groupID) = 1 AND userID = userIDparam) as T);
 		
-		While `deleteCount` > 0
+		WHILE `deleteCount` > 0
 		DO
-			Set `groupIDcheck` = (Select MIN(groupID)
+			SET `groupIDcheck` = (SELECT MIN(groupID)
 			FROM (
-			SELECT groupID, userID
-			FROM belongs_to
-			Group by groupID
-			HAVING COUNT(groupID) = 1 and userID = userIDparam) as M);	
+				SELECT groupID, userID
+				FROM belongs_to
+				GROUP BY groupID
+				HAVING COUNT(groupID) = 1 AND userID = userIDparam) as M);
 		
-			Set `counter` = (Select Count(groupID) from has_event where groupID = groupIDcheck);
-			if `counter` > 0
-			then
-				While (Select Count(groupID) from has_event where groupID = groupIDcheck) > 0
+			SET `counter` = (SELECT COUNT(groupID) FROM has_event WHERE groupID = groupIDcheck);
+			IF `counter` > 0
+			THEN
+				WHILE (SELECT COUNT(groupID) FROM has_event WHERE groupID = groupIDcheck) > 0
 				DO
-		   		Set eventCount = (Select MIN(eventID) from has_event where groupID = groupIDcheck);
-					Delete from has_event Where eventID = eventCount;
-					Delete from userevents Where eventID = eventCount;
-				end while;
-			end if;	
+				SET eventCount = (SELECT MIN(eventID) FROM has_event WHERE groupID = groupIDcheck);
+					DELETE FROM has_event WHERE eventID = eventCount;
+					DELETE FROM userevents WHERE eventID = eventCount;
+				END WHILE;
+			END IF;	
 			
-			Set `counter` = (Select Count(groupID) from has_document where groupID = groupIDcheck);	
-			if `counter` > 0
-			then
-				While (Select Count(groupID) from has_document where groupID = groupIDcheck) > 0
+			SET `counter` = (SELECT COUNT(groupID) FROM has_document WHERE groupID = groupIDcheck);
+			IF `counter` > 0
+			THEN
+				WHILE (SELECT COUNT(groupID) FROM has_document WHERE groupID = groupIDcheck) > 0
 				DO
-		   		Set docCount = (Select MIN(docID) from has_document where groupID = groupIDcheck);
-					Delete from has_document Where docID = docCount;
-					Delete from document Where docID = docCount;
-				end while;
-			end if;
+				SET docCount = (SELECT MIN(docID) FROM has_document WHERE groupID = groupIDcheck);
+					DELETE FROM has_document WHERE docID = docCount;
+					DELETE FROM document WHERE docID = docCount;
+				END WHILE;
+			END IF;
 	
-			Set `counter` = (Select Count(groupID) from has_task where groupID = groupIDcheck);
-			if `counter` > 0
-			then
-				While (Select Count(groupID) from has_task where groupID = groupIDcheck) > 0
+			SET `counter` = (SELECT COUNT(groupID) FROM has_task WHERE groupID = groupIDcheck);
+			IF `counter` > 0
+			THEN
+				WHILE (SELECT COUNT(groupID) FROM has_task WHERE groupID = groupIDcheck) > 0
 				DO
-			   	Set taskCount = (Select MIN(taskID) from has_task where groupID = groupIDcheck);
-					Delete from has_task Where taskID = taskCount;
-					Delete from task Where taskID = taskCount;
-				end while;
-			end if;
+				SET taskCount = (SELECT MIN(taskID) FROM has_task WHERE groupID = groupIDcheck);
+					DELETE FROM has_task WHERE taskID = taskCount;
+					DELETE FROM task WHERE taskID = taskCount;
+				END WHILE;
+			END IF;
 			
-			Delete from belongs_to where groupID = groupIDcheck;
-			Delete from groups Where groupID = groupIDcheck;
+			DELETE FROM belongs_to WHERE groupID = groupIDcheck;
+			DELETE FROM groups WHERE groupID = groupIDcheck;
 
 
-			Set `deleteCount` = `deleteCount` - 1;
+			SET `deleteCount` = `deleteCount` - 1;
 			
-		end while;
+		END WHILE;
 		
-		Delete from belongs_to where userID = userIDparam;
-		Delete from users where userID = userIDparam;
+		DELETE FROM belongs_to WHERE userID = userIDparam;
+		DELETE FROM users WHERE userID = userIDparam;
 	
 	IF `_rollback`
-		then ROLLBACK;
+		THEN ROLLBACK;
 	else
 		COMMIT;
 	END IF;
@@ -258,7 +234,7 @@ DELIMITER ;
 
 -- Dumping structure for table platypus.document
 CREATE TABLE IF NOT EXISTS `document` (
-  `docID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `docID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
   `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
@@ -270,7 +246,7 @@ CREATE TABLE IF NOT EXISTS `document` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.groups
 CREATE TABLE IF NOT EXISTS `groups` (
-  `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `groupID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `groupName` varchar(50) NOT NULL DEFAULT '"Me"',
   PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
@@ -278,8 +254,8 @@ CREATE TABLE IF NOT EXISTS `groups` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_document
 CREATE TABLE IF NOT EXISTS `has_document` (
-  `groupID` int(11) unsigned NOT NULL,
-  `docID` int(11) unsigned NOT NULL,
+  `groupID` INT(11) unsigned NOT NULL,
+  `docID` INT(11) unsigned NOT NULL,
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`docID`),
@@ -291,8 +267,8 @@ CREATE TABLE IF NOT EXISTS `has_document` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_event
 CREATE TABLE IF NOT EXISTS `has_event` (
-  `groupID` int(11) unsigned NOT NULL,
-  `eventID` int(11) unsigned NOT NULL,
+  `groupID` INT(11) unsigned NOT NULL,
+  `eventID` INT(11) unsigned NOT NULL,
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`eventID`),
@@ -304,8 +280,8 @@ CREATE TABLE IF NOT EXISTS `has_event` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_task
 CREATE TABLE IF NOT EXISTS `has_task` (
-  `groupID` int(11) unsigned NOT NULL,
-  `taskID` int(11) unsigned NOT NULL,
+  `groupID` INT(11) unsigned NOT NULL,
+  `taskID` INT(11) unsigned NOT NULL,
   `pinned` enum('0','1') NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`taskID`),
@@ -320,30 +296,24 @@ DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
 	IN `pinned` enum('0', '1'),
 	IN `notification` DATE,
-	IN `groupID` int(11),
+	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
 	IN `category` enum('Auto','Medical','Home','ToDo','Miscellaneous'),
 	IN `fileName` VARCHAR(32),
 	IN `expirationDate` DATE
-
-
-
-
-
-
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
-    
+
     START TRANSACTION;
-    
+
     SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
-    
+
     INSERT INTO document (name, description, category, fileName, expirationDate)
 	 VALUES (name, description, category, fileName, expirationDate);
-    
+
     SET @docID = last_insert_id(); -- get last inserted task's ID
     
     INSERT INTO has_document VALUES (
@@ -365,17 +335,13 @@ DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
 	IN `pinned` enum('0', '1'),
 	IN `notification` DATE,
-	IN `groupID` int(11),
+	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
 	IN `category` enum('Auto','Medical','Home','ToDo','Miscellaneous'),
 	IN `startDate` DATE,
 	IN `endDate` DATE,
 	IN `location` VARCHAR(100)
-
-
-
-
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -409,22 +375,19 @@ DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
 	IN `pinned` enum('0', '1'),
 	IN `notification` DATE,
-	IN `groupID` int(11),
+	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
 	IN `category` enum('Auto','Medical','Home','ToDo','Miscellaneous'),
 	IN `deadline` DATE,
-	IN `priority` int(1)
-
-
-
+	IN `priority` INT(1)
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
-    
+
     START TRANSACTION;
-    
+
     SET pinned = IF(pinned = null, 0, pinned); -- If pinned is null set to 0, otherwise set to itself
     
     INSERT INTO task (name, description, category, deadline, priority)
@@ -455,7 +418,6 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertUser`(
 	IN `email` VARCHAR(32),
 	IN `userPassword` VARCHAR(64),
 	IN `dateOfBirth` DATE
-
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -499,7 +461,7 @@ DELIMITER ;
 
 -- Dumping structure for table platypus.task
 CREATE TABLE IF NOT EXISTS `task` (
-  `taskID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `taskID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
   `category` enum('Auto','Medical','Home','ToDo','Miscellaneous') NOT NULL,
@@ -512,7 +474,7 @@ CREATE TABLE IF NOT EXISTS `task` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.userevents
 CREATE TABLE IF NOT EXISTS `userevents` (
-  `eventID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `eventID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
   `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
@@ -525,7 +487,7 @@ CREATE TABLE IF NOT EXISTS `userevents` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.users
 CREATE TABLE IF NOT EXISTS `users` (
-  `userID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(32) NOT NULL,
   `firstName` varchar(32) NOT NULL,
   `lastName` varchar(32) NOT NULL,
