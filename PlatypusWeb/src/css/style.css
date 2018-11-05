@@ -137,7 +137,7 @@ button:disabled, button[disabled] {
     border-color: #e65d4fed;
 }
 
-/* XSmall devices (landscape phones, 0px and up) */
+/* ***********************************XSmall devices (landscape phones, 0px and up)*********************************** */
 
 @media (min-width: 0px) {
     #row-space {
@@ -197,15 +197,23 @@ button:disabled, button[disabled] {
         display: none;
     }
     .left-nav-link {
-        /* padding: 4%; */
         margin: 0;
-        /* border-bottom: .5px solid rgba(18, 143, 118, .7); */
     }
     .left-nav-link>li>a {
         color: white;
+        display: inline-flex;
+        width: 100%;
     }
     .left-nav-link>li>a>span.glyphicon {
         padding-right: .8em;
+    }
+
+    span.nav-icons{
+        padding-right: .8em;
+    }
+
+    span.nav-icons:hover{
+        fill: #18bc9c;
     }
     span.input-group>input {
         background: transparent;
@@ -224,7 +232,7 @@ button:disabled, button[disabled] {
     }
 }
 
-/* Medium devices (tablets, 768px and up) */
+/* ***********************************Medium devices (tablets, 768px and up)*********************************** */
 
 @media (min-width: 768px) {
     #row-space {
@@ -248,7 +256,6 @@ button:disabled, button[disabled] {
         height: unset;
         background: #ffffff;
         color: var(--text);
-        /* display: flex; */
         flex-direction: column;
         align-items: stretch;
         justify-content: space-between;
@@ -256,20 +263,16 @@ button:disabled, button[disabled] {
         overflow-y: auto;
     }
     .left-nav-link {
-        /* border-bottom: 1px solid rgba(115, 119, 121, 0.4); */
         margin: 0;
     }
     .left-nav-link:hover{
-        /* border-bottom: 1px solid rgba(115, 119, 121, 0.4); */
         border-left: 4px solid #18bc9c;
-        
+        background: #282a2d;
     }
     .left-nav-link > li > a {
-        /* border-bottom: 1px solid rgba(115, 119, 121, 0.4); */
-        padding: 30px 0 30px 28px;
+        padding: 25px 0 25px 28px;
     }
-    #left-nav> div>ul>li>a:hover, .left-nav>li>a:hover, .left-nav>li>a:focus{
-        /* border-bottom: 1px solid rgba(115, 119, 121, 0.4); */
+    .left-nav-container > ul>li> a:hover {
         background: transparent;
         margin-left: -4px;
     }

@@ -1,6 +1,10 @@
 import React from 'react';
+// import { Glyphicon } from 'react-bootstrap';
 import Tasks from './components/Pages/Tasks';
+// import * as Icons from '../images/icons/NavIcons';
+// import NavIcons from '../images/icons/NavIcons';
 
+const iconStyle = { width: 20, height: 20 };
 const routes = [
     {
         path: "/dashboard",
@@ -13,42 +17,42 @@ const routes = [
     {
         path: "/dashboard/tasks",
         name: "Tasks",
-        glyph: "tasks",
+        glyph: "tasks", //<Icons.Tasks {...iconStyle} />,
         sidebar: () => <div></div>,
         main: () => <Tasks />
     },
     {
         path: "/dashboard/events",
         name: "Events",
-        glyph: "calendar",
+        glyph: "events",//<Icons.Events {...iconStyle} />,
         sidebar: () => <div></div>,
         main: () => <b>Events Page</b>
     },
     {
         path: "/dashboard/appliances",
         name: "Appliances",
-        glyph: "lamp",
+        glyph: "appliances",//<Icons.Appliances {...iconStyle} />,
         sidebar: () => <div></div>,
         main: () => <b>Home and Appliances Page</b>
     },
     {
         path: "/dashboard/medical",
         name: "Medical",
-        glyph: "heart",
+        glyph: "medical",// <Icons.Medical {...iconStyle} />,
         sidebar: () => <div></div>,
         main: () => <b>Medical Page</b>
     },
     {
         path: "/dashboard/auto",
         name: "Auto",
-        glyph: "road",
+        glyph: "auto",//<Icons.Auto {...iconStyle} />,
         sidebar: () => <div></div>,
         main: () => <b>Home and Appliances Page</b>
     },
     {
         path: "/dashboard/meals",
         name: "Meals",
-        glyph: "cutlery",
+        glyph: "meals",//<Icons.Meals {...iconStyle} />,
         sidebar: () => <div></div>,
         main: () => <b>Meals</b>
     }
