@@ -5,7 +5,7 @@ export default (
     Appliances: [],
     Auto: [],
     Home: [],
-    Meal: [],
+    Meals: [],
     Medical: [],
     Miscellaneous: [
       {
