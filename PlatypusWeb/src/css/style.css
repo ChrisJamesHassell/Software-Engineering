@@ -232,6 +232,17 @@ button:disabled, button[disabled] {
     }
 }
 
+.task,
+.task-list {
+  border: solid 1px lightgrey;
+  padding: 8px;
+}
+
+.task {
+  background-color: white;
+}
+
+/* Medium devices (tablets, 768px and up) */
 /* ***********************************Medium devices (tablets, 768px and up)*********************************** */
 
 @media (min-width: 768px) {
