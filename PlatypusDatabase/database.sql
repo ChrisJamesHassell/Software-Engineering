@@ -237,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
   `docID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
+  `category` enum('Appliances', 'Auto', 'Meals', 'Medical') NOT NULL,
   `fileName` varchar(128) NOT NULL,
   `expirationDate` date DEFAULT NULL,
   PRIMARY KEY (`docID`)
@@ -299,7 +299,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-	IN `category` enum('Auto','Medical','Home','ToDo','Miscellaneous'),
+        IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
 	IN `fileName` VARCHAR(32),
 	IN `expirationDate` DATE
 )
@@ -338,7 +338,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-	IN `category` enum('Auto','Medical','Home','ToDo','Miscellaneous'),
+        IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
 	IN `startDate` DATE,
 	IN `endDate` DATE,
 	IN `location` VARCHAR(100)
@@ -378,7 +378,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-	IN `category` enum('Auto','Medical','Home','ToDo','Miscellaneous'),
+        IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
 	IN `deadline` DATE,
 	IN `priority` INT(1)
 )
@@ -464,7 +464,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `taskID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `category` enum('Auto','Medical','Home','ToDo','Miscellaneous') NOT NULL,
+  `category` enum('Appliances', 'Auto', 'Meals', 'Medical') NOT NULL,
   `deadline` date NOT NULL,
   `priority` enum('Low','Mid','High') NOT NULL,
   `completed` enum('0','1') NOT NULL DEFAULT '0',
@@ -477,7 +477,7 @@ CREATE TABLE IF NOT EXISTS `userevents` (
   `eventID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `category` enum('Medical','Auto','Home','ToDo','Miscellaneous') NOT NULL,
+  `category` enum('Appliances', 'Auto', 'Meals', 'Medical') NOT NULL,
   `startDate` date NOT NULL,
   `endDate` date NOT NULL,
   `location` varchar(100) DEFAULT NULL,
