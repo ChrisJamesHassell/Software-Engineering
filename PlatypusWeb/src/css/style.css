@@ -17,26 +17,18 @@ html, body, #root, #container {
     width: 100%;
 }
 
-#content, #main-grid-row, #left-nav {
+#content, #left-nav {
     height: 100%;
 }
 
-#content, #main-grid-row, #main-div {
+#content, #main-div {
     padding: 0;
     margin: 0;
-}
-
-#content, #main-grid-row {
-    width: 100%;
-    max-width: 100%;
-}
-
-#main-grid-row {
-    display: flex;
-}
-
-#content, #main-div {
     background: #f2f5f8;
+}
+
+#content {
+    display: flex;
 }
 
 #left-nav {

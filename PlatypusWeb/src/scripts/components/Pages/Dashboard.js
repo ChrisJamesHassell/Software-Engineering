@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { Grid, NavItem, Nav } from 'react-bootstrap';
+import { NavItem, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import routes from '../../routes';
 import NavIcons from '../../../images/icons/NavIcons';
@@ -9,12 +9,10 @@ function Dashboard() {
     var mainHeight = (100 - ((60 / (60 + window.screen.availHeight)) * 100)).toString() + "%"
     return (
         <div id='content'>
-            <div id='main-grid-row'>
-                <div id='left-nav' style={{ minWidth: '210px' }}>
-                    <LeftNav />
-                </div>
-                <Main mainHeight={mainHeight} />
+            <div id='left-nav' style={{ minWidth: '210px' }}>
+                <LeftNav />
             </div>
+            <Main mainHeight={mainHeight} />
         </div>
     );
 }

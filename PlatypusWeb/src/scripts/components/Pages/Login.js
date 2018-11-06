@@ -45,7 +45,7 @@ export default class Login extends React.Component {
     const { status } = response;
     const isSuccess = status === 'SUCCESS';
     const data = Object.assign({}, response.data);
-    Object.keys(data).map((key) =>{
+    Object.keys(data).forEach((key) =>{
       let value = JSON.stringify(data[key]);
       localStorage.setItem(key, value);
     })

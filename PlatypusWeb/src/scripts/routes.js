@@ -5,7 +5,7 @@ import Dash from './components/Pages/DashPage';
 // import * as Icons from '../images/icons/NavIcons';
 // import NavIcons from '../images/icons/NavIcons';
 
-const iconStyle = { width: 20, height: 20 };
+// const iconStyle = { width: 20, height: 20 };
 const routes = [
     {
         path: "/dashboard",

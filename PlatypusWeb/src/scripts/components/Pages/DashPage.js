@@ -56,7 +56,7 @@ class Dash extends React.Component {
             }, {});
 
         return (
-            <div id='dash-container' style={{ height: '100%', display: 'flex', flexWrap: 'wrap', alignItems: 'stretch', justifyContent: 'space-around', alignItems: 'stretch' }}>
+            <div id='dash-container' style={{ height: '100%', display: 'flex', flexWrap: 'wrap', alignItems: 'stretch', justifyContent: 'space-around'}}>
                 {Object.keys(appCategories).map((category, index) => {
                     return (
                         <DashBox key={index} category={category}{...this.props[category]} />
