@@ -1,5 +1,7 @@
 package platypus.api.models;
 
+import java.sql.Date;
+
 public class Item {
 	
 	private int itemID;
@@ -7,18 +9,22 @@ public class Item {
 	private String name;
 	private String description;
 	private Category category;
+	private Date notification;
+	private boolean pinned;
 	
 	public Item() {
 		
 	}
 	
-	public Item(int itemID, ItemType type, String name, String description, Category category) {
+	public Item(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned) {
 		super();
 		this.itemID = itemID;
 		this.type = type;
 		this.name = name;
 		this.description = description;
 		this.category = category;
+		this.notification = notification;
+		this.pinned = pinned;
 	}
 
 	public int getItemID() {
@@ -60,11 +66,27 @@ public class Item {
 	public void setCategory(Category category) {
 		this.category = category;
 	}
+	
+	public Date getNotification() {
+		return notification;
+	}
+	
+	public void setNotification(Date notification) {
+		this.notification = notification;
+	}
+	
+	public boolean isPinned() {
+		return pinned;
+	}
+	
+	public void setPinned(boolean pinned) {
+		this.pinned = pinned;
+	}
 
 	@Override
 	public String toString() {
 		return "Item [itemID=" + itemID + ", type=" + type + ", name=" + name + ", description=" + description
-				+ ", category=" + category + "]";
+				+ ", category=" + category + ", notification=" + notification + ", pinned=" + pinned + "]";
 	}
 
 }

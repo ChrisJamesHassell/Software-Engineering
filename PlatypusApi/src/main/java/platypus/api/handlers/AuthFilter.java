@@ -24,10 +24,13 @@ public class AuthFilter implements Filter {
 		sessions.put(token, userName);
 		return token;
 	}
+	
 
+	
 	@Override
 	public void handle(Request request, Response response) throws Exception {
 		String token = request.cookie(TOKEN_COOKIE);
+		System.out.println("Token cookie: " + token);
 		if(token == null) {
 			throw Spark.halt(401, "Cookie not found");
 		}
