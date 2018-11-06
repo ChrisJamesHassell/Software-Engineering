@@ -380,7 +380,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
 	IN `description` VARCHAR(250),
         IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
 	IN `deadline` DATE,
-	IN `priority` INT(1)
+        IN `priority` enum('Low','Mid','High') NOT NULL,
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
