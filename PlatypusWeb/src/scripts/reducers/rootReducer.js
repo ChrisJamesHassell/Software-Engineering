@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 import documentsReducer from './documentsReducer';
 import eventsReducer from './eventsReducer';
 import tasksReducer from './tasksReducer';
-import {userReducer, itemsReducer, pinFilter, categoryFilter, itemTypeFilter, groupFilter} from './dashReducer';
+import {userReducer, pinFilter, categoryFilter, itemTypeFilter, groupFilter} from './dashReducer';
 export default combineReducers({
   pinFilter,
   categoryFilter,
@@ -12,6 +12,5 @@ export default combineReducers({
   documents: documentsReducer,
   events: eventsReducer,
   tasks: tasksReducer,
-  user: userReducer,
-  items: itemsReducer
+  user: userReducer
 });

@@ -1,8 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { Grid, NavItem, Button, Nav, Glyphicon } from 'react-bootstrap';
+import { Grid, NavItem, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { deleteAllCookies } from '../../fetchHelpers';
 import routes from '../../routes';
 import NavIcons from '../../../images/icons/NavIcons';
 
@@ -10,14 +9,12 @@ function Dashboard() {
     var mainHeight = (100 - ((60 / (60 + window.screen.availHeight)) * 100)).toString() + "%"
     return (
         <div id='content'>
-            <Grid id='main-grid'>
-                <div id='main-grid-row' style={{ display: 'flex', width: '100%' }}>
-                    <div id='left-nav' style={{ minWidth: '210px' }}>
-                        <LeftNav />
-                    </div>
-                    <Main mainHeight={mainHeight} />
+            <div id='main-grid-row'>
+                <div id='left-nav' style={{ minWidth: '210px' }}>
+                    <LeftNav />
                 </div>
-            </Grid>
+                <Main mainHeight={mainHeight} />
+            </div>
         </div>
     );
 }

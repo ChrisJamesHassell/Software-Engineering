@@ -17,18 +17,22 @@ html, body, #root, #container {
     width: 100%;
 }
 
-#content, #main-grid, #main-grid-row, #left-nav {
+#content, #main-grid-row, #left-nav {
     height: 100%;
 }
 
-#content, #main-grid, #main-grid-row, #main-div {
+#content, #main-grid-row, #main-div {
     padding: 0;
     margin: 0;
 }
 
-#content, #main-grid, #main-grid-row {
+#content, #main-grid-row {
     width: 100%;
     max-width: 100%;
+}
+
+#main-grid-row {
+    display: flex;
 }
 
 #content, #main-div {
@@ -62,11 +66,6 @@ h1 {
 #login button {
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
-}
-
-#nav-profile-dropdown {
-    padding: 0;
-    margin: 0;
 }
 
 #nav-profile::before{
@@ -256,7 +255,6 @@ button:disabled, button[disabled] {
   background-color: white;
 }
 
-/* Medium devices (tablets, 768px and up) */
 /* ***********************************Medium devices (tablets, 768px and up)*********************************** */
 
 @media (min-width: 768px) {

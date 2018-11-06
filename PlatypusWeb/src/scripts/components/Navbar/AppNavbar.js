@@ -23,7 +23,7 @@ const AppNavbar = (props) => {
                 <Nav pullRight>
                     {showHome && <LinkContainer id='nav-home' to="/"><NavItem eventKey={1}><Glyphicon glyph="home" /></NavItem></LinkContainer>}
                     {mobileNav && <LeftNav />}
-                    <NavDropdown id='nav-profile-dropdown' eventKey={10} title={<span id='nav-profile'><span id='nav-profile-username'>{JSON.parse(localStorage.getItem('username'))}</span></span>} id='basic-nav-dropdown'>
+                    <NavDropdown  id='basic-nav-dropdown' eventKey={10} title={<span id='nav-profile'><span id='nav-profile-username'>{JSON.parse(localStorage.getItem('username'))}</span></span>}>
                         <MenuItem eventKey={10.1}>Something1</MenuItem>
                         <MenuItem eventKey={10.2}>Something2</MenuItem>
                         <MenuItem divider />

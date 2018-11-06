@@ -9,7 +9,8 @@ const NavIcons = props => {
         "events": Events,
         "meals": Meals,
         "medical": Medical,
-        "tasks": Tasks
+        "tasks": Tasks,
+        "documents": Documents
     }
     var style = {
         width: props.width || 20,
@@ -25,7 +26,7 @@ const NavIcons = props => {
 const Appliances = props => {
     return (
         <span className="nav-icons">
-            <svg className="nav-icons" className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36.69238 40" height={props.height} width={props.width}>
+            <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36.69238 40" height={props.height} width={props.width}>
                 <title>
                     appliances
             </title>
@@ -44,7 +45,7 @@ const Appliances = props => {
 const Auto = props => {
     return (
         <span className="nav-icons">
-            <svg className="nav-icons" className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 31.345" height={props.height} width={props.width}>
+            <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 31.345" height={props.height} width={props.width}>
                 <title>
                     auto
 	            </title>
@@ -69,6 +70,23 @@ const Dashboard = props => {
                     <g id="Layer_1-2" data-name="Layer 1">
                         <path className="nav-icons" fill={props.style} d="M39.95417,6.16364a1.44709,1.44709,0,0,0-.66585-.88713,37.89261,37.89261,0,0,0-38.57667,0A1.45029,1.45029,0,0,0,.20143,7.26156L9.79011,23.47594a1.44856,1.44856,0,0,0,1.98492.51049,14.1135,14.1135,0,0,1,1.86422-.91632L9.093,8.1a4.36091,4.36091,0,0,1,8.19441-2.95337l6.60336,15.869a5.97,5.97,0,0,1,1.33387,1.597,16.25048,16.25048,0,0,1,3.00043,1.37384A1.44927,1.44927,0,0,0,30.21,23.47594L39.79867,7.26156A1.44858,1.44858,0,0,0,39.95417,6.16364Z" />
                         <path className="nav-icons" fill={props.style} d="M21.168,23.22561l-6.98069-16.776a.998.998,0,0,0-1.87649.67312l5.27773,17.379a2.62946,2.62946,0,0,0-.24389,1.09791A2.6557,2.6557,0,1,0,21.168,23.22561Z" />
+                    </g>
+                </g>
+            </svg>
+        </span>
+    )
+}
+
+const Documents = props => {
+    return (
+        <span className="nav-icons">
+            <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1935.55615 2334.04655" height={props.height} width={props.width}>
+                <title>
+                    documents
+	            </title>
+                <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_1-2" data-name="Layer 1">
+                        <path className="nav-icons" fill={props.style} d="M1909.26709,534.19092,1806.51758,431.44141,1504.11475,129.03882l-92.2334-92.2334L1375.07715.001,0,0V2334.04655H1935.55615V560.48Zm-125.5332,199.55371V2171.70817H151.81738v-2009.37H1212.32813v571.4065Z" />
                     </g>
                 </g>
             </svg>

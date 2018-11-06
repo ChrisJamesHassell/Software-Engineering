@@ -1,6 +1,7 @@
 import React from 'react';
 // import { Glyphicon } from 'react-bootstrap';
 import Tasks from './components/Pages/Tasks';
+import Dash from './components/Pages/DashPage';
 // import * as Icons from '../images/icons/NavIcons';
 // import NavIcons from '../images/icons/NavIcons';
 
@@ -11,41 +12,23 @@ const routes = [
         name: "Dash",
         exact: true,
         glyph: "dashboard",
+        type: "home",
         sidebar: () => <div></div>,
-        main: () => <b>Main Dash Stuff</b>
-    },
-    {
-        path: "/dashboard/tasks",
-        name: "Tasks",
-        glyph: "tasks", //<Icons.Tasks {...iconStyle} />,
-        sidebar: () => <div></div>,
-        main: () => <Tasks />
-    },
-    {
-        path: "/dashboard/events",
-        name: "Events",
-        glyph: "events",//<Icons.Events {...iconStyle} />,
-        sidebar: () => <div></div>,
-        main: () => <b>Events Page</b>
+        main: () => <Dash />
     },
     {
         path: "/dashboard/appliances",
         name: "Appliances",
         glyph: "appliances",//<Icons.Appliances {...iconStyle} />,
+        type: "Category",
         sidebar: () => <div></div>,
         main: () => <b>Home and Appliances Page</b>
-    },
-    {
-        path: "/dashboard/medical",
-        name: "Medical",
-        glyph: "medical",// <Icons.Medical {...iconStyle} />,
-        sidebar: () => <div></div>,
-        main: () => <b>Medical Page</b>
     },
     {
         path: "/dashboard/auto",
         name: "Auto",
         glyph: "auto",//<Icons.Auto {...iconStyle} />,
+        type: "Category",
         sidebar: () => <div></div>,
         main: () => <b>Home and Appliances Page</b>
     },
@@ -53,8 +36,41 @@ const routes = [
         path: "/dashboard/meals",
         name: "Meals",
         glyph: "meals",//<Icons.Meals {...iconStyle} />,
+        type: "Category",
         sidebar: () => <div></div>,
         main: () => <b>Meals</b>
+    },
+    {
+        path: "/dashboard/medical",
+        name: "Medical",
+        glyph: "medical",// <Icons.Medical {...iconStyle} />,
+        type: "Category",
+        sidebar: () => <div></div>,
+        main: () => <b>Medical Page</b>
+    },
+    {
+        path: "/dashboard/documents",
+        name: "Documents",
+        glyph: "documents",//<Icons.Events {...iconStyle} />,
+        type: "Actions",
+        sidebar: () => <div></div>,
+        main: () => <b>Documents Page</b>
+    },
+    {
+        path: "/dashboard/events",
+        name: "Events",
+        glyph: "events",//<Icons.Events {...iconStyle} />,
+        type: "Actions",
+        sidebar: () => <div></div>,
+        main: () => <b>Events Page</b>
+    },
+    {
+        path: "/dashboard/tasks",
+        name: "Tasks",
+        glyph: "tasks", //<Icons.Tasks {...iconStyle} />,
+        type: "Actions",
+        sidebar: () => <div></div>,
+        main: () => <Tasks />
     }
 ];
 export default routes;

@@ -1,17 +1,3 @@
-// Synchronous
-/*
-        "appliances": Appliances,
-        "auto": Auto,
-        "dashboard": Dashboard,
-        "events": Events,
-        "meals": Meals,
-        "medical": Medical,
-        "tasks": Tasks
-        ============
-        itemTypes: TASK, EVENT, DOCUMENT
-*/
-// DASHBOARD
-// setting filters
 export const setPinFilter = filter => ({
     type: 'SET_PIN_FILTER',
     filter
@@ -63,10 +49,12 @@ export const GroupFilters = {
 // set user selfIds and groupIds
 export const setUserData = data => ({
     type: 'SET_USER_DATA',
-    username: data.username,
-    userId: data.userId,
-    selfGroupId: data.selfGroupId,
-    groupList: data.groupList
+    userData: {
+        username: data.username,
+        userId: data.userId,
+        selfGroupId: data.selfGroupId,
+        groupList: data.groupList
+    }
 })
 
 export const getUserData = () => ({
@@ -74,88 +62,5 @@ export const getUserData = () => ({
 })
 
 export const getItems = data => ({
-    type: 'GET_ITEMS' //,
-    // request: {
-    //     method: 'GET',
-    //     headers: {
-    //         'Content-type': 'application/json'
-    //     },
-    //     body: JSON.stringify(data.body)
-    // },
-    // path: data.path
+    type: 'GET_ITEMS'
 })
-// export const setUserId = id => ({
-//     type: 'SET_USERID',
-//     id
-// })
-
-// export const setUsername = username => ({
-//     type: 'SET_USERNAME',
-//     username
-// })
-
-// export const setGroupId = groupId => ({
-//     type: 'SET_GROUPID',
-//     groupId
-// })
-
-// export const setGroupList = groupList => ({
-//     type: 'SET_GROUPLIST',
-//     groupList
-// })
-
-// get data
-
-// -- state shape
-/*
-{
-    pinFilter: 'SHOW_ALL', // PINNED_ONLY
-    categoryFilter: 'SHOW_ALL', // 'APPLIANCES', 'AUTO', 'MEALS', 'MEDICAL'
-    itemTypeFilter: 'SHOW_ALL', // 'TASK', 'EVENT', 'DOCUMENT',
-    groupId: 24,
-    userId: 24,
-    groupList: [24],
-    maxItems: 10
-    items: [
-        {
-            type: 'TASK',
-            id: 0,
-            name: 'task01',
-            pinned: true,
-            description: 'description for task 1',
-            category: 'MEDICAL',
-            data: {
-                startDate: ...,
-                endDate: ...,
-                location: ...
-            }
-        },
-                {
-            type: 'EVENT',
-            id: 0,
-            name: 'event01',
-            pinned: true,
-            description: 'description for event 1',
-            category: 'AUTO',
-            data: {
-                deadline: ...,
-                priority: ...,
-                completed: ...
-            }
-        },
-                {
-            type: 'DOCUMENT',
-            id: 0,
-            name: 'task01',
-            pinned: true,
-            description: 'description for task 1',
-            category: 'MEDICAL',
-            data: {
-                fileName: ...,
-                expirationDate: ...
-            }
-        }
-    ]
-}
-*/
-
