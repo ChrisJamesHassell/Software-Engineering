@@ -24,13 +24,18 @@ export default (
           sortByStartDate,
         ),
       };
-    case 'ADD_EVENTS':
+    case 'ADD_EVENTS': {
+      if (action.payload.length === 0) {
+        return state;
+      }
+
       return {
         ...state,
-        [action.payload.category]: [...state[action.payload.category], ...action.payload].sort(
+        [action.payload[0].category]: [...state[action.payload.category], ...action.payload].sort(
           sortByStartDate,
         ),
       };
+    }
     case 'REMOVE_EVENT':
       return {
         ...state,
