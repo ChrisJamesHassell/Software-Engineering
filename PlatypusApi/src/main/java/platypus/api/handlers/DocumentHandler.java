@@ -8,8 +8,8 @@ import java.sql.SQLException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
-public class DocumentApi {
-	
+
+public class DocumentHandler {
 	
 	// TODO: -Set up the response body to return CacheEntry + document stuff
 	//		 -Test more extensively if needed
@@ -65,17 +65,15 @@ public class DocumentApi {
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 			JsonObject document = jsonO.get("document").getAsJsonObject();
 			
-			
-			
 			conn = ds.getConnection();
 			
 			//Prepare the call from request body
-			stmt = conn.prepareStatement("UPDATE documents SET name = ?, description = ?, expirationDate = ? WHERE docID = ?");
+			stmt = conn.prepareStatement("UPDATE documents SET name = ?, description = ?, category = ?, expirationDate = ? WHERE docID = ?");
 			stmt.setString(1, document.get("name").getAsString());
 			stmt.setString(2, document.get("description").getAsString());
-			stmt.setString(3, document.get("expirationDate").getAsString());
-			stmt.setInt(4, document.get("documentID").getAsInt());
-			
+			stmt.setString(3, document.get("category").getAsString());
+			stmt.setString(4, document.get("expirationDate").getAsString());
+			stmt.setInt(5, document.get("documentID").getAsInt());
 			
 			int ret = stmt.executeUpdate();		
 			System.out.println(ret);

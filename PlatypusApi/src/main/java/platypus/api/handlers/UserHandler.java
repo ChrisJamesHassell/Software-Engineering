@@ -15,7 +15,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import platypus.api.models.User;
 
 
-public class UserApi {
+public class UserHandler {
 	
 	/*
 	 * Return a JsonObject of the User, (This is to retrieve all Groups a user is in) 

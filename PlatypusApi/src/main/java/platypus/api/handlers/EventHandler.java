@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
-public class EventApi {
+public class EventHandler {
 	
 	
 	// TODO: -Set up the response body to return CacheEntry + Event stuff
@@ -46,9 +46,10 @@ public class EventApi {
 			return new JsonResponse("SUCCESS", "", "Successfully inserted event.");
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in Add Event");
-		} finally {
-			conn.close();
 		}
+		finally {
+			conn.close();
+		} 
 	}
 	
 	public static JsonResponse editEvent(HikariDataSource ds, Request req) throws SQLException {
@@ -67,13 +68,14 @@ public class EventApi {
 			conn = ds.getConnection();
 			
 			//Prepare the call from request body
-			stmt = conn.prepareStatement("UPDATE userevents SET name = ?, description = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
+			stmt = conn.prepareStatement("UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
 			stmt.setString(1, event.get("name").getAsString());
 			stmt.setString(2, event.get("description").getAsString());
-			stmt.setString(3, event.get("startDate").getAsString());
-			stmt.setString(4, event.get("endDate").getAsString());
-			stmt.setString(5, event.get("location").getAsString());
-			stmt.setInt(6, event.get("eventID").getAsInt());
+			stmt.setString(3, event.get("category").getAsString());
+			stmt.setString(4, event.get("startDate").getAsString());
+			stmt.setString(5, event.get("endDate").getAsString());
+			stmt.setString(6, event.get("location").getAsString());
+			stmt.setInt(7, event.get("eventID").getAsInt());
 			
 			
 			int ret = stmt.executeUpdate();			
@@ -88,9 +90,10 @@ public class EventApi {
 			
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in EditEvent");
-		} finally {
-			conn.close();
 		}
+		finally {
+			conn.close();
+		} 
 	}
 	
 	
@@ -138,7 +141,8 @@ public class EventApi {
 		}
 		finally {
 			conn.close();
-		}
+		} 
 	}
-
+	
 }
+
