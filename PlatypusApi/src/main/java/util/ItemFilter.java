@@ -4,9 +4,16 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
 
@@ -50,19 +57,14 @@ public class ItemFilter {
 		}
 		rs.close();
 		
-		tasks.stream().filter(new Predicate<TaskWrapper>() {
-
-			@Override
-			public boolean test(TaskWrapper t) {
-				
-				// TODO, write predicate
-				return false;
+		Stream<TaskWrapper> stream = tasks.stream().filter(t -> {
+			if (t.getTask().getCategory().equals(category) && dateWithin(weeksAhead, t.getTask().getDeadline()) && t.getTask().isPinned() == pinned) {
+				return true;
 			}
-			
+			return false;
 		});
-		
-		
-		return null;
+			
+		return stream.toArray(TaskWrapper[]::new);
 	}
 
 	private static int getColumnWithName(String s, ResultSet rs) throws SQLException {
@@ -76,6 +78,30 @@ public class ItemFilter {
 		
 		// Doesn't exist
 		return -1;
+	}
+	
+	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {
+		
+		// TODO, verify that MM-dd is correct and not dd-MM;
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		
+		if (itemDate != null) {
+			
+			Date currentDate = new Date();
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)), ZoneId.systemDefault());
+			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+			
+			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
+			System.out.println("Date to compare to: " + DateFormat.getDateInstance().format(dateToCompareTo));
+			
+			if (itemDate.compareTo(dateToCompareTo) < 0) {
+				System.out.println("Here");
+				return true;
+			}
+
+		}
+		return false;
+	
 	}
 	
 }
