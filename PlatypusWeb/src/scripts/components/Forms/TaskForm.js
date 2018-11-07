@@ -78,6 +78,7 @@ export default class TaskForm extends React.Component {
               <Select
                 onChange={this.onSelectChange('category', setFieldValue)}
                 options={categoryOptions}
+                placeholder="Select Category..."
                 value={values.category}
               />
             </FormGroup>
@@ -94,6 +95,7 @@ export default class TaskForm extends React.Component {
               <Select
                 onChange={this.onSelectChange('priority', setFieldValue)}
                 options={priorityOptions}
+                placeholder="Select Priority..."
                 value={values.priority}
               />
             </FormGroup>
