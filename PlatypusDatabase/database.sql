@@ -20,7 +20,7 @@ USE `platypus`;
 CREATE TABLE IF NOT EXISTS `belongs_to` (
   `groupID` INT(11) unsigned NOT NULL,
   `userID` INT(11) unsigned NOT NULL,
-  `self` enum('0','1') DEFAULT NULL,
+  `self` binary(1) DEFAULT NULL,
   `owner` INT(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`groupID`,`userID`),
   KEY `FK_belongs_to_users` (`userID`),
@@ -237,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
   `docID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `category` enum('Appliances', 'Auto', 'Meals', 'Medical') NOT NULL,
+  `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `fileName` varchar(128) NOT NULL,
   `expirationDate` date DEFAULT NULL,
   PRIMARY KEY (`docID`)
@@ -256,7 +256,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
 CREATE TABLE IF NOT EXISTS `has_documents` (
   `groupID` INT(11) unsigned NOT NULL,
   `docID` INT(11) unsigned NOT NULL,
-  `pinned` enum('0','1') NOT NULL DEFAULT '0',
+  `pinned` binary(1) NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`docID`),
   UNIQUE KEY `docID` (`docID`),
@@ -269,7 +269,7 @@ CREATE TABLE IF NOT EXISTS `has_documents` (
 CREATE TABLE IF NOT EXISTS `has_events` (
   `groupID` INT(11) unsigned NOT NULL,
   `eventID` INT(11) unsigned NOT NULL,
-  `pinned` enum('0','1') NOT NULL DEFAULT '0',
+  `pinned` binary(1) NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`eventID`),
   UNIQUE KEY `eventID` (`eventID`),
@@ -282,7 +282,7 @@ CREATE TABLE IF NOT EXISTS `has_events` (
 CREATE TABLE IF NOT EXISTS `has_tasks` (
   `groupID` INT(11) unsigned NOT NULL,
   `taskID` INT(11) unsigned NOT NULL,
-  `pinned` enum('0','1') NOT NULL DEFAULT '0',
+  `pinned` binary(1) NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`taskID`),
   UNIQUE KEY `taskID` (`taskID`),
@@ -464,10 +464,10 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `taskID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `category` enum('Appliances', 'Auto', 'Meals', 'Medical') NOT NULL,
+  `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `deadline` date NOT NULL,
   `priority` enum('Low','Mid','High') NOT NULL,
-  `completed` enum('0','1') NOT NULL DEFAULT '0',
+  `completed` binary(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`taskID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
@@ -477,7 +477,7 @@ CREATE TABLE IF NOT EXISTS `userevents` (
   `eventID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `category` enum('Appliances', 'Auto', 'Meals', 'Medical') NOT NULL,
+  `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `startDate` date NOT NULL,
   `endDate` date NOT NULL,
   `location` varchar(100) DEFAULT NULL,
