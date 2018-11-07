@@ -2,11 +2,17 @@ const sortByStartDate = (a, b) => new Date(a.start).getTime() - new Date(b.start
 
 export default (
   state = {
-    Appliances: [],
-    Auto: [],
-    Home: [],
-    Meals: [],
-    Medical: []
+    Miscellaneous: [
+      {
+        eventID: 1,
+        name: 'Event Name',
+        description: 'Event Description',
+        category: 'Miscellaneous',
+        start: '2018-10-29T21:29:48.475Z',
+        end: '2018-10-29T21:29:56.940Z',
+        location: 'That one place',
+      },
+    ],
   },
   action,
 ) => {
@@ -18,13 +24,18 @@ export default (
           sortByStartDate,
         ),
       };
-    case 'ADD_EVENTS':
+    case 'ADD_EVENTS': {
+      if (action.payload.length === 0) {
+        return state;
+      }
+
       return {
         ...state,
-        [action.payload.category]: [...state[action.payload.category], ...action.payload].sort(
+        [action.payload[0].category]: [...state[action.payload.category], ...action.payload].sort(
           sortByStartDate,
         ),
       };
+    }
     case 'REMOVE_EVENT':
       return {
         ...state,

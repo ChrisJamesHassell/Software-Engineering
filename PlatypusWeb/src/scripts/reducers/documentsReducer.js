@@ -2,10 +2,6 @@ const sortByExpiryDate = (a, b) => new Date(a.expiryDate).getTime() - new Date(b
 
 export default (
   state = {
-    Appliances: [],
-    Auto: [],
-    Home: [],
-    Meals: [],
     Medical: [
       {
         docID: 1,
@@ -15,7 +11,7 @@ export default (
         filename: 'IMG-12345.PNG',
         expiryDate: '2018-10-29T21:29:56.940Z',
       },
-    ]
+    ],
   },
   action,
 ) => {
@@ -27,13 +23,19 @@ export default (
           sortByExpiryDate,
         ),
       };
-    case 'ADD_DOCUMENTS':
+    case 'ADD_DOCUMENTS': {
+      console.log(action.payload);
+      if (action.payload.length === 0) {
+        return state;
+      }
+
       return {
         ...state,
-        [action.payload.category]: [...state[action.payload.category], ...action.payload].sort(
+        [action.payload[0].category]: [...state[action.payload.category], ...action.payload].sort(
           sortByExpiryDate,
         ),
       };
+    }
     case 'REMOVE_DOCUMENT':
       return {
         ...state,

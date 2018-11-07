@@ -1,4 +1,6 @@
-const path = window.location.origin.toLowerCase().includes('platypus') ? '/api' : 'http://localhost:8080/api';
+const path = window.location.origin.toLowerCase().includes('platypus')
+  ? '/api'
+  : 'http://localhost:8080/api';
 
 const categories = ['Appliances', 'Auto', 'Meals', 'Medical', 'Miscellaneous'];
 
@@ -13,7 +15,8 @@ function deleteAllCookies() {
   }
 
   // Now delete all the localStorage data
-  for(var item in localStorage){
+  // eslint-disable-next-line
+  for (const item in localStorage) {
     localStorage.removeItem(item);
   }
 }
@@ -23,9 +26,5 @@ const hasCookie = document.cookie.length > 0;
 const currentPath = window.location.pathname;
 
 export {
-  categories,
-  path,
-  currentPath,
-  hasCookie,
-  deleteAllCookies,
+  categories, path, currentPath, hasCookie, deleteAllCookies,
 };

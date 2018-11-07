@@ -10,8 +10,6 @@ import spark.Route;
 import util.CacheUtil;
 
 import org.mindrot.jbcrypt.BCrypt;
-
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +38,8 @@ public class LoginHandler implements Route {
 
 		try {
 			dbconn = ds.getConnection();
-			PreparedStatement stmt = dbconn.prepareStatement("SELECT username, userPassword, userID FROM users WHERE username = ?");
+			PreparedStatement stmt = dbconn
+					.prepareStatement("SELECT username, userPassword, userID FROM users WHERE username = ?");
 			stmt.setString(1, u.getUsername());
 			ResultSet rows = stmt.executeQuery();
 			stmt.close();
@@ -54,27 +53,25 @@ public class LoginHandler implements Route {
 			if (BCrypt.checkpw(u.getPassword(), rows.getString(2))) {
 				u.setUserId(rows.getInt(3));
 
-				// Branch cookie settings depending on if using production environment.
-				if (!Main.IS_PRODUCTION) {
-					// set cookie here
+				String domain = request.headers("Host");
+				if (domain.equalsIgnoreCase("localhost:8080") || domain.equalsIgnoreCase("127.0.0.1:8080")) {
+					// Dev environment
 					response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 							60 * 60 * 24 * 7, false, false);
-					// Insert success, return success
-					return new JsonResponse("SUCCESS", CacheUtil.buildLoginEntry(u.getUsername(), u.getUserId(), dbconn), "Login success.");
+				} else {
+					// Prod environment
+					response.cookie(request.headers("Origin"), "/", AuthFilter.TOKEN_COOKIE,
+							authFilter.createSession(u.getUsername()), 60 * 60 * 24 * 7, false, false);
 				}
-				else {
-					final URI uri = new URI(request.headers("Origin"));
-					if("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())){
-						response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
-								60 * 60 * 24 * 7, false, false);
-						// Insert success, return success
-						return new JsonResponse("SUCCESS", CacheUtil.buildLoginEntry(u.getUsername(), u.getUserId(), dbconn), "Login success.");
-					}
-					return new JsonResponse("ERROR", "", "The request is from an unknown origin");
-				}
+
+				// System.out.println("Request username should now be : " +
+				// this.authFilter.getUsername());
+
+				return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), u.getUserId(), dbconn),
+						"Login success.");
 			}
 			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());

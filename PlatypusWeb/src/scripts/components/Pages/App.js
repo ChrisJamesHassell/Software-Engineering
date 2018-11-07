@@ -17,22 +17,21 @@ const Home = withRouter((props) => {
       return <Redirect to="/dashboard" />;
     }
 
-    return <span hidden></span>;
+    return <span hidden />;
   }
 
   if (!matches && !['/login/login', '/login/signup'].includes(thispath)) {
     return <Redirect to="/login" />;
   }
 
-  return <span hidden></span>;
+  return <span hidden />;
 });
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={props => (
-    hasCookie === true
-      ? <Component {...props} {...rest} />
-      : <span></span>
-  )} />
+  <Route
+    {...rest}
+    render={props => (hasCookie === true ? <Component {...props} {...rest} /> : <span />)}
+  />
 );
 
 const App = () => {
@@ -53,8 +52,6 @@ const mapStateToProps = state => ({
   pinFilter: state.pinFilter,
   categoryFilter: state.categoryFilter,
   groupFilter: state.groupFilter,
-  user: state.user
 });
-
 
 export default connect(mapStateToProps)(App);

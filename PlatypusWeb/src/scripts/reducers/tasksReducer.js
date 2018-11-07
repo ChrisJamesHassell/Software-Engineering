@@ -26,12 +26,12 @@ export default (
         category: 'Appliances',
         deadline: '2018-10-29T19:30:34.888Z',
         priority: 0,
-      }
+      },
     ],
     Auto: [],
     Home: [],
     Meals: [],
-    Medical: []
+    Medical: [],
   },
   action,
 ) => {
@@ -43,13 +43,18 @@ export default (
           sortByPriority,
         ),
       };
-    case 'ADD_TASKS':
+    case 'ADD_TASKS': {
+      if (action.payload.length === 0) {
+        return state;
+      }
+
       return {
         ...state,
-        [action.payload.category]: [...state[action.payload.category], ...action.payload].sort(
+        [action.payload[0].category]: [...state[action.payload.category], ...action.payload].sort(
           sortByPriority,
         ),
       };
+    }
     case 'REMOVE_TASK':
       return {
         ...state,

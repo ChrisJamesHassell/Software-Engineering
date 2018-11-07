@@ -75,11 +75,34 @@ export default class Login extends React.Component {
   validateResponse(result) {
     if (!result.ok) throw Error(result.statusText);
     return result;
-  }
+  };
 
   handleJsonResponse(response) {
     this.setState({ loading: false });
-    const { status } = response;
+    const {
+      data: {
+        documents, events, tasks, ...user
+      },
+      status,
+    } = response;
+
+    this.props.dispatch({
+      type: 'ADD_DOCUMENTS',
+      payload: documents,
+    });
+    this.props.dispatch({
+      type: 'ADD_EVENTS',
+      payload: events,
+    });
+    this.props.dispatch({
+      type: 'ADD_TASKS',
+      payload: tasks,
+    });
+    this.props.dispatch({
+      type: 'UPDATE_USER',
+      payload: user,
+    });
+
     const isSuccess = status === 'SUCCESS';
     const data = Object.assign({}, response.data);
     Object.keys(data).forEach((key) =>{
@@ -111,23 +134,52 @@ export default class Login extends React.Component {
       return <Redirect to="/dashboard" />;
     }
     return (
-      <div id='login-container'>
+      <div id="login-container">
         <LoadingModal loading={this.state.loading} />
-        <Grid id='row-container'>
+        <Grid id="row-container">
           <RowSpacer />
-          <Row id='login'>
+          <Row id="login">
             <LoginLargeContent />
             <LoginMobileContent logoUrl={`${window.location.origin}/${logo}`} />
-            <Col id='login-creds' xs={12} md={4}>
+            <Col id="login-creds" xs={12} md={4}>
               <div>
-                <Route exact path="/login" render={props => <LoginForm {...props} login={this.login} clearErrorAlert={this.clearErrorAlert.bind(this)} />} />
-                <Route path="/login/signup" render={props => <SignupForm {...props} login={this.login} clearErrorAlert={this.clearErrorAlert.bind(this)} />} />
-                <Alert bsStyle="danger" hidden={!(this.state.error)}>
+                <Route
+                  exact
+                  path="/login"
+                  render={props => (
+                    <LoginForm
+                      {...props}
+                      login={this.login}
+                      clearErrorAlert={this.clearErrorAlert.bind(this)}
+                    />
+                  )}
+                />
+                <Route
+                  path="/login/signup"
+                  render={props => (
+                    <SignupForm
+                      {...props}
+                      login={this.login}
+                      clearErrorAlert={this.clearErrorAlert.bind(this)}
+                    />
+                  )}
+                />
+                <Alert bsStyle="danger" hidden={!this.state.error}>
                   {this.state.error}
                 </Alert>
-                <div id='login-links'>
-                  <LinkContainer to="/login"><Button bsStyle="link" disabled={isLogin}>Login</Button></LinkContainer> or
-                                    <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
+                <div id="login-links">
+                  <LinkContainer to="/login">
+                    <Button bsStyle="link" disabled={isLogin}>
+                      Login
+                    </Button>
+                  </LinkContainer>{' '}
+                  or
+                  <LinkContainer to="/login/signup">
+                    <Button bsStyle="link" disabled={!isLogin}>
+                      {' '}
+                      Sign Up
+                    </Button>
+                  </LinkContainer>
                 </div>
                 <div>
                 </div>
