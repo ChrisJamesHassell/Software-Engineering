@@ -2,13 +2,14 @@ import React from 'react';
 import {
   Button, Grid, Row, Col, Alert, Modal,
 } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Route, Redirect } from 'react-router-dom';
 import LoginForm from '../Forms/LoginForm';
 import SignupForm from '../Forms/SignupForm';
 import logo from '../../../images/icons/icon_circle_white.svg';
 
-export default class Login extends React.Component {
+class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,7 +45,24 @@ export default class Login extends React.Component {
 
   handleJsonResponse = (response) => {
     this.setState({ loading: false });
-    const { status } = response;
+    const {
+      data: { documents, events, tasks },
+      status,
+    } = response;
+
+    this.props.dispatch({
+      type: 'ADD_DOCUMENTS',
+      payload: documents,
+    });
+    this.props.dispatch({
+      type: 'ADD_EVENTS',
+      payload: events,
+    });
+    this.props.dispatch({
+      type: 'ADD_TASKS',
+      payload: tasks,
+    });
+
     const isSuccess = status === 'SUCCESS';
     if (isSuccess) {
       return this.setState({ redirect: true });
@@ -57,7 +75,7 @@ export default class Login extends React.Component {
     this.setState({ loading: false });
     let text = error.toString();
     if (text.includes('Failed to fetch')) text = 'There was a problem connecting to the server. Please contact the service administrator.';
-    this.setState({ error });
+    this.setState({ error: text });
   }
 
   clearErrorAlert() {
@@ -134,6 +152,8 @@ export default class Login extends React.Component {
     );
   }
 }
+
+export default connect()(Login);
 
 const LoginMobileContent = props => (
   <Col id="login-logo" smHidden mdHidden lgHidden xs={12}>
