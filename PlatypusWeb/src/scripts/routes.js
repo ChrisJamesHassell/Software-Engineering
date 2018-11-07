@@ -2,6 +2,7 @@ import React from 'react';
 // import { Glyphicon } from 'react-bootstrap';
 import Tasks from './components/Pages/Tasks';
 import Dash from './components/Pages/DashPage';
+import {Events} from './components/Pages/EventsPage';
 // import * as Icons from '../images/icons/NavIcons';
 // import NavIcons from '../images/icons/NavIcons';
 
@@ -62,7 +63,7 @@ const routes = [
         glyph: "events",//<Icons.Events {...iconStyle} />,
         type: "Actions",
         sidebar: () => <div></div>,
-        main: () => <b>Events Page</b>
+        main: () => <Events />
     },
     {
         path: "/dashboard/tasks",
