@@ -3,7 +3,7 @@ import AppLogoHeader from './AppLogoHeader';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import logo from '../../../images/icons/logo_fill_white.svg';
-import { LeftNav } from '../Pages/Dashboard';
+import { LeftNav } from '../Layouts/AuthLayout';
 import {deleteAllCookies} from '../../fetchHelpers';
 
 const AppNavbar = (props) => {

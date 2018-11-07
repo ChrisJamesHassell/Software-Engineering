@@ -6,6 +6,43 @@ import LoginForm from '../Forms/LoginForm';
 import SignupForm from '../Forms/SignupForm';
 import logo from '../../../images/icons/icon_circle_white.svg';
 
+const LoginMobileContent = (props) => (
+  <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
+    <div><img src={props.logoUrl} id='logo-hidden' alt='white logo' /></div>
+    <div id='login-logo-brand'>
+      <span id='brand-platy'>platy</span><span id='brand-pus'>pus</span>
+    </div>
+  </Col>
+);
+
+const LoadingModal = (props) => (
+  <Modal show={props.loading}>
+    <Modal.Body>
+      <b>Loading...</b>
+    </Modal.Body>
+  </Modal>
+);
+
+const LoginLargeContent = () => (
+  <Col id='login-extra' xsHidden md={8}>
+    <div>
+      <h1>Organize.</h1>
+      <h1>Plan.</h1>
+      <h1>Live.</h1>
+      <p>
+        Hey, adulting is hard. We get it. That's why Platypus provides
+        a sleek, modern interface to help you adult at maximum efficiency.
+            </p>
+      <p><Button bsStyle='success' bsSize='large'>Learn More</Button></p>
+    </div>
+  </Col>
+);
+
+const RowSpacer = () => (
+  <Row id='row-space'>
+
+  </Row>
+);
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -65,7 +102,6 @@ export default class Login extends React.Component {
     this.setState({ error: null });
   }
 
-
   render() {
     const isLogin = this.props.location.pathname === '/login';
     const { redirect } = this.state;
@@ -94,11 +130,6 @@ export default class Login extends React.Component {
                                     <LinkContainer to="/login/signup"><Button bsStyle="link" disabled={!isLogin}> Sign Up</Button></LinkContainer>
                 </div>
                 <div>
-                  {/* <audio controls>
-                                        <source src="horse.ogg" type="audio/ogg" />
-                                        <source src="horse.mp3" type="audio/mpeg" />
-                                        Your browser does not support the audio element.
-                                    </audio> */}
                 </div>
               </div>
             </Col>
@@ -108,42 +139,3 @@ export default class Login extends React.Component {
     );
   }
 }
-
-const LoginMobileContent = (props) => (
-  <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
-    <div><img src={props.logoUrl} id='logo-hidden' alt='white logo' /></div>
-    <div id='login-logo-brand'>
-      <span id='brand-platy'>platy</span><span id='brand-pus'>pus</span>
-    </div>
-  </Col>
-);
-
-const LoadingModal = (props) => (
-  <Modal show={props.loading}>
-    <Modal.Body>
-      <b>Loading...</b>
-    </Modal.Body>
-  </Modal>
-);
-
-const LoginLargeContent = () => (
-  <Col id='login-extra' xsHidden md={8}>
-    <div>
-      <h1>Organize.</h1>
-      <h1>Plan.</h1>
-      <h1>Live.</h1>
-      <p>
-        Hey, adulting is hard. We get it. That's why Platypus provides
-        a sleek, modern interface to help you adult at maximum efficiency.
-            </p>
-      <p><Button bsStyle='success' bsSize='large'>Learn More</Button></p>
-    </div>
-  </Col>
-);
-
-
-const RowSpacer = () => (
-  <Row id='row-space'>
-
-  </Row>
-);

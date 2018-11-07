@@ -13,9 +13,9 @@ const defaultState = {
     itemTypeFilter: 'SHOW_ALL', // 'TASKS', 'EVENTS', 'DOCUMENTS',
     groupFilter: 'USER_ONLY', // USER_ONLY, GROUP_ONLY, MULTI_GROUP
     user: { // returned from the Login/Create API call
-        username: "mikah1337",
-        userId: 24,
-        selfGroupId: 24,
+        username: null,
+        userId: null,
+        selfGroupId: null,
         groupList: [{}]
     },
     maxItems: 10,
@@ -52,7 +52,7 @@ const defaultState = {
         }
     }
 }
-export const userReducer = (state = defaultState, action) => {
+export const userReducer = (state = defaultState.user, action) => {
     switch (action.type) {
         case 'SET_USER_DATA':
             return Object.assign({ ...state }, { user: { ...action.userData } })

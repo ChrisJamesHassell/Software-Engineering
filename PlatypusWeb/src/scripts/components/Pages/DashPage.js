@@ -56,10 +56,10 @@ class Dash extends React.Component {
             }, {});
 
         return (
-            <div id='dash-container' style={{ height: '100%', display: 'flex', flexWrap: 'wrap', alignItems: 'stretch', justifyContent: 'space-around'}}>
+            <div id='page-container'>
                 {Object.keys(appCategories).map((category, index) => {
                     return (
-                        <DashBox key={index} category={category}{...this.props[category]} />
+                        <DashBox key={index} category={category} {...this.props[category]} />
                     )
                 })}
             </div>
@@ -89,6 +89,5 @@ const mapStateToProps = state => ({
         tasks: state.tasks.Medical,
     }
 });
-
 
 export default connect(mapStateToProps)(Dash);

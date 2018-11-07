@@ -2,25 +2,11 @@ import React from 'react';
 import {
   BrowserRouter as Router, Route, Redirect, withRouter,
 } from 'react-router-dom';
-import { Dashboard } from './Dashboard';
+import { connect } from 'react-redux';
+import { AuthLayout } from '../Layouts/AuthLayout';
 import { hasCookie } from '../../fetchHelpers';
 import AppNavbar from '../Navbar/AppNavbar';
 import Login from './Login';
-
-
-const App = () => {
-  const home = hasCookie ? '/dashboard' : '/login';
-  return (
-    <Router>
-      <div id="container">
-        <AppNavbar isAuth={hasCookie} />
-        <Route path="/login" render={props => <Login {...props} />} />
-        <PrivateRoute path="/dashboard" component={Dashboard} />
-        <Home home={home} />
-      </div>
-    </Router>
-  );
-};
 
 const Home = withRouter((props) => {
   const thispath = window.location.pathname;
@@ -49,4 +35,26 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   )} />
 );
 
-export default App;
+const App = () => {
+  const home = hasCookie ? '/dashboard' : '/login';
+  return (
+    <Router>
+      <div id="container">
+        <AppNavbar isAuth={hasCookie} />
+        <Route path="/login" render={props => <Login {...props} />} />
+        <PrivateRoute path="/dashboard" component={AuthLayout} />
+        <Home home={home} />
+      </div>
+    </Router>
+  );
+};
+
+const mapStateToProps = state => ({
+  pinFilter: state.pinFilter,
+  categoryFilter: state.categoryFilter,
+  groupFilter: state.groupFilter,
+  user: state.user
+});
+
+
+export default connect(mapStateToProps)(App);

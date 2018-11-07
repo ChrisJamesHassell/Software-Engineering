@@ -12,13 +12,16 @@ html, body, #root, #container {
     max-width: 100%;
 }
 
-#container>nav>div {
+#container>nav>div, #left-nav-container {
     margin: 0;
     width: 100%;
 }
 
-#content, #left-nav {
+#content, #left-nav, #left-nav-container {
     height: 100%;
+}
+#content {
+    display: flex;
 }
 
 #content, #main-div {
@@ -27,11 +30,15 @@ html, body, #root, #container {
     background: #f2f5f8;
 }
 
-#content {
-    display: flex;
+#main-div{
+    width: 100%;
+    padding: 20px;
+    margin: 0;
+    overflow-y: auto;
 }
 
 #left-nav {
+    min-width: 210px;
     padding: 10px;
     margin: 0;
     background: #33363b;
@@ -69,12 +76,10 @@ h1 {
 }
 #nav-profile {
     display: inline-flex;
-    /* width: 30px; */
     height: 30px;
     border-radius: 50%;
     padding: 0;
     margin: 0 10px 0 0;
-    /* background: url('../images/icons/profile_default.png'); */
     background-size: cover;
 }
 span#nav-profile-username{
@@ -140,6 +145,14 @@ button:disabled, button[disabled] {
 .btn-success[disabled]:hover {
     background: #e65d4f;
     border-color: #e65d4fed;
+}
+
+#page-container {
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: space-around;
 }
 
 /* ***********************************XSmall devices (landscape phones, 0px and up)*********************************** */
@@ -279,6 +292,7 @@ button:disabled, button[disabled] {
     }
     .left-nav-link {
         margin: 0;
+        width: 100%;
     }
     .left-nav-link:hover{
         border-left: 4px solid #18bc9c;
