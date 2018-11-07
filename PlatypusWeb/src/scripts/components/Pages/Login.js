@@ -46,7 +46,9 @@ class Login extends React.Component {
   handleJsonResponse = (response) => {
     this.setState({ loading: false });
     const {
-      data: { documents, events, tasks },
+      data: {
+        documents, events, tasks, ...user
+      },
       status,
     } = response;
 
@@ -61,6 +63,10 @@ class Login extends React.Component {
     this.props.dispatch({
       type: 'ADD_TASKS',
       payload: tasks,
+    });
+    this.props.dispatch({
+      type: 'UPDATE_USER',
+      payload: user,
     });
 
     const isSuccess = status === 'SUCCESS';
