@@ -34,10 +34,17 @@ export default class LoginForm extends React.Component {
 
   render() {
     return (
-      <form action={this.state.route} method="POST" encType="multipart/form-data" onKeyUp={ev => ev.keyCode === 13 && this.handleClick()}>
+      <form
+        action={this.state.route}
+        method="POST"
+        encType="multipart/form-data"
+        onKeyUp={ev => ev.keyCode === 13 && this.handleClick()}
+      >
         <FormGroup controlId="username">
           <InputGroup>
-            <InputGroup.Addon><Glyphicon glyph="user" /></InputGroup.Addon>
+            <InputGroup.Addon>
+              <Glyphicon glyph="user" />
+            </InputGroup.Addon>
             <TextInput
               type={'text'}
               name={'username'}
@@ -45,13 +52,16 @@ export default class LoginForm extends React.Component {
               required={true}
               maxLength={'32'}
               placeholder={'Enter your user name'}
-              updateVals={this.updateVals} />
+              updateVals={this.updateVals}
+            />
           </InputGroup>
         </FormGroup>
 
-        <FormGroup controlId="pass" >
+        <FormGroup controlId="pass">
           <InputGroup>
-            <InputGroup.Addon><Glyphicon glyph="lock" /></InputGroup.Addon>
+            <InputGroup.Addon>
+              <Glyphicon glyph="lock" />
+            </InputGroup.Addon>
             <TextInput
               type={'password'}
               name={'password'}
@@ -59,10 +69,19 @@ export default class LoginForm extends React.Component {
               required={true}
               maxLength={'32'}
               placeholder={'Enter your password'}
-              updateVals={this.updateVals} />
+              updateVals={this.updateVals}
+            />
           </InputGroup>
         </FormGroup>
-        <Button type="button" bsStyle='success' style={{ width: '100%' }} onClick={this.handleClick.bind(this)} disabled={this.state.data.username.length < 1 || this.state.data.pass.length < 1}>Login</Button>
+        <Button
+          type="button"
+          bsStyle="success"
+          style={{ width: '100%' }}
+          onClick={this.handleClick.bind(this)}
+          disabled={this.state.data.username.length < 1 || this.state.data.pass.length < 1}
+        >
+          Login
+        </Button>
       </form>
     );
   }

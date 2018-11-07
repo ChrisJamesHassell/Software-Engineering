@@ -1,6 +1,7 @@
 package platypus.api;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class JsonParser {
 
@@ -9,4 +10,5 @@ public class JsonParser {
 	public static <T> T getObject(Class<T> type, String json) {
 		return gson.fromJson(json, type);
 	}
+
 }
