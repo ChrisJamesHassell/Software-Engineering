@@ -47,11 +47,4 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   />
 );
 
-const PrivateRoute = ({ component: Component, ...rest }) => (
-    <Route
-      {...rest}
-      render={props => (hasCookie === true ? <Component {...props} {...rest} /> : <span />)}
-    />
-);
-
 export default App;
