@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
+import platypus.api.Main;
 import platypus.api.models.User;
 import spark.Request;
 import spark.Response;
@@ -85,59 +86,59 @@ public class CreateHandler implements Route {
 
 			// Create account in the database
 			CallableStatement st = conn.prepareCall("{call insertUser(?, ?, ?, ?, ?, ?)}");
+			System.out.println("HERE");
 			st.setString(1, u.getUsername());
 			st.setString(2, u.getFirstName());
 			st.setString(3, u.getLastName());
 			st.setString(4, u.getEmail());
 			st.setString(5, BCrypt.hashpw(u.getPassword(), BCrypt.gensalt()));
 			st.setString(6, u.getDateOfBirth());
+			st.executeUpdate();
+			System.out.println("HERE2");
 			
-			/*
-			 *  executeUpdate for CallableStatements will return 1 if and only if the stored procedure has an OUT parameter inside it.
-			 *  Otherwise it just returns 0.
-			 */
-			int ret = st.executeUpdate();
-			//System.out.println(ret);
-			try  {
-				//Get user id for cookie
-				ps = conn.prepareStatement("SELECT userID FROM users WHERE username = ?");
-				ps.setString(1, u.getUsername());
-				ResultSet rows = ps.executeQuery();
-				ps.close();
-				int id;
-				if (!rows.next()) {
-					System.out.println("Some fuckywucky here");
-					return new JsonResponse("ERROR", "", "Made a fuckywucky in retrieving userId for cookie.");
-				} else {
-					id = rows.getInt(1);
-				}
+			// Get user id for cookie
+			ps = conn.prepareStatement("SELECT userID FROM users WHERE username = ?");
+			ps.setString(1, u.getUsername());
+			ResultSet rows = ps.executeQuery();
+			System.out.println("HERE3");
+			ps.close();
+			int id;
+			
+			if (!rows.next()) {
+				return new JsonResponse("ERROR", "", "Error in retrieving userId for cookie.");
+			} 
+			else {
+				System.out.println("HERE4");
+				id = rows.getInt(1);
+				System.out.println("HERE5");
+			}
+			rows.close();
+			System.out.println("HERE6");
+			
+			// Branch cookie settings depending on if using production environment.
+			if (!Main.IS_PRODUCTION) {
 				// set cookie here
 				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 						60 * 60 * 24 * 7, false, false);
-				rows.close();
-				
 				// Insert success, return success
+				System.out.println("HERE???? WTF2222");
 				return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn), "Account created successfully.");
-				
-				// set cookie here
-        // TODO, this portion works on the server. Above works on postman locally.
-    /*
+			}
+			else {
 				final URI uri = new URI(request.headers("Origin"));
 				if("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())){
 					response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 							60 * 60 * 24 * 7, false, false);
 					// Insert success, return success
-					return new JsonResponse("SUCCESS", CacheUtil.buildCacheUtil(request, conn), "Account created successfully.");
+					System.out.println("HERE???? WTF111");
+					return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn), "Account created successfully.");
 				}
+				System.out.println("HERE???? WTF");
 				return new JsonResponse("ERROR", "", "The request is from an unknown origin");
-    */
-				
-			} catch(SQLException e) {
-				// Insert failed, return failure
-				return new JsonResponse("FAIL", "", "Account creation failed. PreparedStatement returned non-1 value.");
 			}
 		} catch (SQLException e) {
 			// return failure to front-end.
+			e.printStackTrace();
 			String error = e.getMessage(); // SQLException occurred
 			HashMap<String, Integer> errorMap = new HashMap<>();
 			errorMap.put("email: " + u.getEmail(), error.indexOf("unique_email"));

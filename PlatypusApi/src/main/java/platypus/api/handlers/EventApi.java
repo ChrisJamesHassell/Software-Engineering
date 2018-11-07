@@ -12,7 +12,7 @@ public class EventApi {
 	
 	// TODO: -Set up the response body to return CacheEntry + Event stuff
 	//		 -Test more extensively if needed
-	public static JsonResponse AddEvent(HikariDataSource ds, Request req) throws SQLException  {
+	public static JsonResponse addEvent(HikariDataSource ds, Request req) throws SQLException  {
 		Connection conn = null;
 		CallableStatement stmt = null;
 		
@@ -50,9 +50,8 @@ public class EventApi {
 			conn.close();
 		}
 	}
-
-
-	public static JsonResponse EditEvent(HikariDataSource ds, Request req) throws SQLException {
+	
+	public static JsonResponse editEvent(HikariDataSource ds, Request req) throws SQLException {
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -99,7 +98,7 @@ public class EventApi {
 	// Successfully removes the event from all appropriate tables.
 	// TODO: -Build the response correctly.
 	//		 -Test more extensively.
-	public static JsonResponse RemoveEvent(HikariDataSource ds, Request req) throws SQLException {
+	public static JsonResponse removeEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
 	
@@ -121,10 +120,19 @@ public class EventApi {
 			//Prepare the call from request body
 			stmt = conn.prepareCall("{call delEvent(?)}");
 			stmt.setInt(1, event.get("eventID").getAsInt());
-			stmt.executeUpdate();
+			int ret = stmt.executeUpdate();
 			
-			// TODO: Need to return CacheEntry for this user + the EventInfo
-			return new JsonResponse("SUCCESS", "", "Successfully deleted event.");
+			
+			
+			if (ret != 0) {
+				// TODO: Need to return CacheEntry for this user + the EventInfo
+					return new JsonResponse("SUCCESS", "", "Successfully deleted event.");	
+			} else {
+				// There is no event with that eventID
+					return new JsonResponse("FAIL", "", "There is no event with that ID, failed event deletion.");
+			}
+			
+			
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in Add Event");
 		}
