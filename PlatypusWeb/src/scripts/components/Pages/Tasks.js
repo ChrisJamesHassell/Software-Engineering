@@ -1,12 +1,14 @@
 import React, { Fragment } from 'react';
 import {
   Button,
+  Col,
   Glyphicon,
   Modal,
   ModalFooter,
   ModalHeader,
   ModalBody,
   Panel,
+  Row,
 } from 'react-bootstrap';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { connect } from 'react-redux';
@@ -179,9 +181,10 @@ class Tasks extends React.Component {
 
   onTaskCreateClick = () => this.changeModal('create-task');
 
-  onTaskDelete = taskID => this.props.dispatch({
+  onTaskDelete = ({ taskID, category }) => this.props.dispatch({
     type: 'REMOVE_TASK',
     payload: {
+      category,
       taskID,
     },
   });
@@ -192,9 +195,9 @@ class Tasks extends React.Component {
     this.changeModal(`delete-${id}`);
   };
 
-  onTaskDeleteConfirmClick = id => () => {
+  onTaskDeleteConfirmClick = task => () => {
     this.changeModal(null);
-    this.onTaskDelete(id);
+    this.onTaskDelete(task);
   };
 
   onTaskEditClick = id => (event) => {
@@ -213,8 +216,13 @@ class Tasks extends React.Component {
   render() {
     const { tasks } = this.props;
     const { activeModal } = this.state;
+    let modalTask;
 
-    console.log(tasks);
+    if (activeModal && activeModal.includes('-')) {
+      modalTask = Object.values(tasks)
+        .reduce((prev, curr) => [...prev, ...curr], [])
+        .find(task => task.taskID === Number(activeModal.split('-')[1]));
+    }
 
     return (
       <div id="my-tasks">
@@ -233,11 +241,7 @@ class Tasks extends React.Component {
           <ModalBody>
             <TaskForm
               onSubmit={this.onTaskUpdate}
-              task={
-                activeModal
-                && activeModal.startsWith('edit')
-                && this.props.tasks.find(task => task.taskID === Number(activeModal.split('-')[1]))
-              }
+              task={activeModal && activeModal.startsWith('edit') && modalTask}
             />
           </ModalBody>
         </Modal>
@@ -248,10 +252,7 @@ class Tasks extends React.Component {
         >
           <ModalHeader closeButton={true} onHide={this.onHideModal}>
             Are you sure you want to delete{' '}
-            {activeModal
-              && activeModal.startsWith('delete')
-              && tasks.find(task => task.taskID === Number(activeModal.split('-')[1])).name}
-            ?
+            {activeModal && activeModal.startsWith('delete') && modalTask.name}?
           </ModalHeader>
           <ModalFooter>
             <Button bsSize="sm" onClick={this.onHideModal}>
@@ -262,7 +263,7 @@ class Tasks extends React.Component {
               bsStyle="danger"
               onClick={
                 activeModal && activeModal.startsWith('delete')
-                  ? this.onTaskDeleteConfirmClick(Number(activeModal.split('-')[1]))
+                  ? this.onTaskDeleteConfirmClick(modalTask)
                   : undefined
               }
             >
@@ -270,13 +271,26 @@ class Tasks extends React.Component {
             </Button>
           </ModalFooter>
         </Modal>
+        <Row>
+          <Col
+            style={{ alignItems: 'flex-end', display: 'flex', justifyContent: 'space-between' }}
+            xs={12}
+          >
+            <h2 style={{ width: 'fit-content' }}>Tasks</h2>
+            <Button
+              bsSize="sm"
+              bsStyle="primary"
+              onClick={this.onTaskCreateClick}
+              style={{ height: 'fit-content', marginBottom: '10.5px' }}
+            >
+              Create Task
+            </Button>
+          </Col>
+        </Row>
         {Object.keys(tasks).map((value, index) => (
           <Panel bsStyle="success" key={index}>
-            <Panel.Heading style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Panel.Heading>
               <Panel.Title componentClass="h3">{value}</Panel.Title>
-              <Button bsSize="sm" bsStyle="primary" onClick={this.onTaskCreateClick}>
-                Create Task
-              </Button>
             </Panel.Heading>
             <Panel.Body>
               <DragDropContext onDragEnd={this.onDragEnd}>
@@ -299,14 +313,18 @@ class Tasks extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  tasks: {
-    Appliances: state.tasks.Appliances,
-    Auto: state.tasks.Auto,
-    Meals: state.tasks.Meals,
-    Medical: state.tasks.Medical,
-    Miscellaneous: state.tasks.Miscellaneous,
-  },
-});
+const mapStateToProps = (state) => {
+  const obj = {};
+
+  Object.entries(state.tasks).forEach(([key, value]) => {
+    if (value) {
+      obj[key] = value;
+    }
+  });
+
+  return {
+    tasks: obj,
+  };
+};
 
 export default connect(mapStateToProps)(Tasks);
