@@ -15,8 +15,7 @@ export default (
         filename: 'IMG-12345.PNG',
         expiryDate: '2018-10-29T21:29:56.940Z',
       },
-    ],
-    Miscellaneous: [],
+    ]
   },
   action,
 ) => {
