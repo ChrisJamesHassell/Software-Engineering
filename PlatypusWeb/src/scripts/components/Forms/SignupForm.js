@@ -20,7 +20,7 @@ export default class SignupForm extends React.Component {
     super(props, context);
     this.state = {
       id: null,
-      isDisabled: true,
+      isDisabled: false,
       route: `${path}/user/create`,
       data: {
         username: {
@@ -68,17 +68,22 @@ export default class SignupForm extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  componentDidUpdate(prevProps, nextProps) {
-    const stateChanged = JSON.stringify(nextProps) !== JSON.stringify(this.state);
-    const objCount = Object.keys(this.state.data).length;
-    if (stateChanged) {
-      let formValid = 0;
-      Object.keys(this.state.data).forEach((item) => {
-        formValid += this.state.data[item].validation === 'success' ? 1 : 0;
-      });
-      this.setState({ isDisabled: formValid < objCount });
-    }
-  }
+  // componentDidUpdate(prevProps, nextProps) {
+  //   const stateChanged = JSON.stringify(nextProps) !== JSON.stringify(this.state);
+  //   const objCount = Object.keys(this.state.data).length;
+  //   console.log(stateChanged);
+  //   if (stateChanged) {
+  //     console.log(this.state);
+  //     let formValid = 0;
+  //     Object.keys(this.state.data).forEach((item) => {
+  //       formValid += this.state.data[item].validation === 'success' ? 1 : 0;
+  //     });
+  //     console.log(formValid, objCount);
+  //     this.setState({ isDisabled: formValid < objCount });
+  //   } else {
+  //     console.log({ nextProps, state: this.state });
+  //   }
+  // }
 
   setValidationState(id, validProps) {
     const mergedProps = Object.assign(this.state.data[id], validProps);
