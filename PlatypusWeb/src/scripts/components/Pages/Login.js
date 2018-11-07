@@ -1,49 +1,83 @@
 import React from 'react';
-import {
-  Button, Grid, Row, Col, Alert, Modal,
-} from 'react-bootstrap';
-import { connect } from 'react-redux';
+import { Button, Grid, Row, Col, Alert, Modal } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Route, Redirect } from 'react-router-dom';
 import LoginForm from '../Forms/LoginForm';
 import SignupForm from '../Forms/SignupForm';
 import logo from '../../../images/icons/icon_circle_white.svg';
 
-class Login extends React.Component {
+const LoginMobileContent = (props) => (
+  <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
+    <div><img src={props.logoUrl} id='logo-hidden' alt='white logo' /></div>
+    <div id='login-logo-brand'>
+      <span id='brand-platy'>platy</span><span id='brand-pus'>pus</span>
+    </div>
+  </Col>
+);
+
+const LoadingModal = (props) => (
+  <Modal show={props.loading}>
+    <Modal.Body>
+      <b>Loading...</b>
+    </Modal.Body>
+  </Modal>
+);
+
+const LoginLargeContent = () => (
+  <Col id='login-extra' xsHidden md={8}>
+    <div>
+      <h1>Organize.</h1>
+      <h1>Plan.</h1>
+      <h1>Live.</h1>
+      <p>
+        Hey, adulting is hard. We get it. That's why Platypus provides
+        a sleek, modern interface to help you adult at maximum efficiency.
+            </p>
+      <p><Button bsStyle='success' bsSize='large'>Learn More</Button></p>
+    </div>
+  </Col>
+);
+
+const RowSpacer = () => (
+  <Row id='row-space'>
+
+  </Row>
+);
+
+export default class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       redirect: false,
       error: '',
-      loading: false,
-    };
+      loading: false
+    }
     this.login = this.login.bind(this);
   }
 
   login(route, data) {
     this.setState({ loading: true });
-    const opts = {
+    var opts = {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'Content-type': 'application/json',
+        'Content-type': 'application/json'
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     };
     fetch(route, opts)
-      // If not valid, skips rest and goes to catch
-      .then(response => this.validateResponse(response))
-      .then(validResponse => validResponse.json())
+      .then(response => this.validateResponse(response)) // If not valid, skips rest and goes to catch
+      .then(validResponse => { return validResponse.json() })
       .then(jsonResponse => this.handleJsonResponse(jsonResponse))
       .catch(error => this.logError(error));
   }
 
-  validateResponse = (result) => {
+  validateResponse(result) {
     if (!result.ok) throw Error(result.statusText);
     return result;
   };
 
-  handleJsonResponse = (response) => {
+  handleJsonResponse(response) {
     this.setState({ loading: false });
     const {
       data: {
@@ -70,18 +104,21 @@ class Login extends React.Component {
     });
 
     const isSuccess = status === 'SUCCESS';
-    if (isSuccess) {
-      return this.setState({ redirect: true });
-    }
-
-    return this.logError(response.message);
-  };
+    const data = Object.assign({}, response.data);
+    Object.keys(data).forEach((key) =>{
+      let value = JSON.stringify(data[key]);
+      localStorage.setItem(key, value);
+    })
+    
+    if (isSuccess) this.setState({ redirect: true });
+    else this.logError(response.message);
+  }
 
   logError(error) {
     this.setState({ loading: false });
-    let text = error.toString();
-    if (text.includes('Failed to fetch')) text = 'There was a problem connecting to the server. Please contact the service administrator.';
-    this.setState({ error: text });
+    var err = error.toString();
+    if (err.includes('Failed to fetch')) err = 'There was a problem connecting to the server. Please contact the service administrator.';
+    this.setState({ error: err });
   }
 
   clearErrorAlert() {
@@ -91,6 +128,7 @@ class Login extends React.Component {
   render() {
     const isLogin = this.props.location.pathname === '/login';
     const { redirect } = this.state;
+    
     if (redirect) {
       window.location.reload();
       return <Redirect to="/dashboard" />;
@@ -144,11 +182,6 @@ class Login extends React.Component {
                   </LinkContainer>
                 </div>
                 <div>
-                  {/* <audio controls>
-                                        <source src="horse.ogg" type="audio/ogg" />
-                                        <source src="horse.mp3" type="audio/mpeg" />
-                                        Your browser does not support the audio element.
-                                    </audio> */}
                 </div>
               </div>
             </Col>
@@ -158,46 +191,3 @@ class Login extends React.Component {
     );
   }
 }
-
-export default connect()(Login);
-
-const LoginMobileContent = props => (
-  <Col id="login-logo" smHidden mdHidden lgHidden xs={12}>
-    <div>
-      <img src={props.logoUrl} id="logo-hidden" alt="white logo" />
-    </div>
-    <div id="login-logo-brand">
-      <span id="brand-platy">platy</span>
-      <span id="brand-pus">pus</span>
-    </div>
-  </Col>
-);
-
-const LoadingModal = props => (
-  <Modal show={props.loading}>
-    <Modal.Body>
-      <b>Loading...</b>
-    </Modal.Body>
-  </Modal>
-);
-
-const LoginLargeContent = () => (
-  <Col id="login-extra" xsHidden md={8}>
-    <div>
-      <h1>Organize.</h1>
-      <h1>Plan.</h1>
-      <h1>Live.</h1>
-      <p>
-        Hey, adulting is hard. We get it. That's why Platypus provides a sleek, modern interface to
-        help you adult at maximum efficiency.
-      </p>
-      <p>
-        <Button bsStyle="success" bsSize="large">
-          Learn More
-        </Button>
-      </p>
-    </div>
-  </Col>
-);
-
-const RowSpacer = () => <Row id="row-space" />;

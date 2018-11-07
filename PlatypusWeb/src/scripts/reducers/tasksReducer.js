@@ -2,12 +2,12 @@ const sortByPriority = (a, b) => b.priority - a.priority;
 
 export default (
   state = {
-    Miscellaneous: [
+    Appliances: [
       {
         taskID: 3,
         name: 'Cry into pillow 3',
         description: 'I feel sad',
-        category: 'Miscellaneous',
+        category: 'Appliances',
         deadline: '2018-10-29T19:30:34.888Z',
         priority: 2,
       },
@@ -15,7 +15,7 @@ export default (
         taskID: 2,
         name: 'Cry into pillow 2',
         description: 'I feel sad',
-        category: 'Miscellaneous',
+        category: 'Appliances',
         deadline: '2018-10-29T19:30:34.888Z',
         priority: 1,
       },
@@ -23,11 +23,15 @@ export default (
         taskID: 1,
         name: 'Cry into pillow 1',
         description: 'I feel sad',
-        category: 'Miscellaneous',
+        category: 'Appliances',
         deadline: '2018-10-29T19:30:34.888Z',
         priority: 0,
       },
     ],
+    Auto: [],
+    Home: [],
+    Meals: [],
+    Medical: [],
   },
   action,
 ) => {

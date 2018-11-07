@@ -88,27 +88,18 @@ export default class SignupForm extends React.Component {
   setValidationState(id, validProps) {
     const mergedProps = Object.assign(this.state.data[id], validProps);
     this.setState({ id }); // set the current input item id we are on
-    this.setState(state => ({
-      data: {
-        ...state.data,
-        [id]: mergedProps,
-      },
-    }));
+    this.setState(state => (state.data[id] = mergedProps));
   }
 
   updateVals(id, value) {
     const match = value.match(regex[id]); // Get whether or not the input is valid
 
     // If there WAS a match, set appropriate values
-    if (match) {
-      this.setValidationState(id, { validation: 'success', value, helpText: null });
-    } else {
+    if (match) this.setValidationState(id, { validation: 'success', value, helpText: null });
+    else {
       // If there was NOT a match
       let [validation, helpText] = [null, null]; // Clear the error if the field is empty
-
-      if (value.length < 1) {
-        this.props.clearErrorAlert(); // clear whole form error alert if field is cleared
-      }
+      value.length < 1 && this.props.clearErrorAlert(); // clear whole form error alert if field is cleared
       if (value.length > 0) [validation, helpText] = ['error', this.state.data[id].requirements];
       this.setValidationState(id, { validation, value: null, helpText });
     }

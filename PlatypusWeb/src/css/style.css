@@ -15,34 +15,37 @@ body,
   max-width: 100%;
 }
 
-#container > nav > div {
+#container > nav > div,
+#left-nav-container {
   margin: 0;
   width: 100%;
 }
+
 #content,
-#main-grid,
-#main-grid-row,
-#left-nav {
+#left-nav,
+#left-nav-container {
   height: 100%;
 }
+#content {
+  display: flex;
+}
+
 #content,
-#main-grid,
-#main-grid-row,
 #main-div {
   padding: 0;
   margin: 0;
-}
-#content,
-#main-grid,
-#main-grid-row {
-  width: 100%;
-  max-width: 100%;
-}
-#content,
-#main-div {
   background: #f2f5f8;
 }
+
+#main-div {
+  width: 100%;
+  padding: 20px;
+  margin: 0;
+  overflow-y: auto;
+}
+
 #left-nav {
+  min-width: 210px;
   padding: 10px;
   margin: 0;
   background: #33363b;
@@ -71,29 +74,41 @@ h1 {
   font-weight: 700;
 }
 
-#nav-profile-dropdown {
-  padding: 0;
-  margin: 0;
+#nav-profile::before {
+  content: '';
+  width: 30px;
+  height: 30px;
+  background: url('../images/icons/profile_default.png');
+  background-size: 30px 30px;
 }
 #nav-profile {
   display: inline-flex;
-  width: 30px;
   height: 30px;
   border-radius: 50%;
   padding: 0;
   margin: 0 10px 0 0;
-  background: url('../images/icons/profile_default.png');
   background-size: cover;
 }
-#basic-nav-dropdown > span.caret {
-  margin-top: -15px;
+span#nav-profile-username {
+  margin-top: 5px;
+  padding-left: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
+
+#basic-nav-dropdown > span.caret {
+  margin-top: -20px;
+}
+
 a#basic-nav-dropdown {
   padding: 15px 15px 8px 15px;
 }
+
 .navbar-inverse .navbar-toggle {
   border-color: transparent;
 }
+
 .navbar-brand {
   display: inline-flex;
   min-width: 200px;
@@ -141,7 +156,15 @@ button[disabled] {
   border-color: #e65d4fed;
 }
 
-/* XSmall devices (landscape phones, 0px and up) */
+#page-container {
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: space-around;
+}
+
+/* ***********************************XSmall devices (landscape phones, 0px and up)*********************************** */
 
 @media (min-width: 0px) {
   #row-space {
@@ -197,6 +220,28 @@ button[disabled] {
   #login-creds div {
     text-align: center;
   }
+  #left-nav {
+    display: none;
+  }
+  .left-nav-link {
+    margin: 0;
+  }
+  .left-nav-link > li > a {
+    color: white;
+    display: inline-flex;
+    width: 100%;
+  }
+  .left-nav-link > li > a > span.glyphicon {
+    padding-right: 0.8em;
+  }
+
+  span.nav-icons {
+    padding-right: 0.8em;
+  }
+
+  span.nav-icons:hover {
+    fill: #18bc9c;
+  }
   span.input-group > input {
     background: transparent;
     color: #929db1;
@@ -224,7 +269,7 @@ button[disabled] {
   background-color: white;
 }
 
-/* Medium devices (tablets, 768px and up) */
+/* ***********************************Medium devices (tablets, 768px and up)*********************************** */
 
 @media (min-width: 768px) {
   #row-space {
@@ -249,16 +294,39 @@ button[disabled] {
     height: unset;
     background: #ffffff;
     color: var(--text);
-    /* display: flex; */
     flex-direction: column;
     align-items: stretch;
     justify-content: space-between;
     padding: 5vh;
     overflow-y: auto;
   }
+  .left-nav-link {
+    margin: 0;
+    width: 100%;
+  }
+  .left-nav-link:hover {
+    border-left: 4px solid #18bc9c;
+    background: #282a2d;
+  }
+  .left-nav-link > li > a {
+    padding: 25px 0 25px 28px;
+  }
+  .left-nav-container > ul > li > a:hover {
+    background: transparent;
+    margin-left: -4px;
+  }
+  .nav > li > a:hover,
+  .nav > li > a:focus {
+    background: transparent;
+  }
+  #left-nav {
+    display: flex;
+    padding: 0;
+  }
   a.active.btn.btn-link.disabled {
     color: #333;
   }
+
   span.input-group-addon {
     background: transparent;
     color: #929db1;

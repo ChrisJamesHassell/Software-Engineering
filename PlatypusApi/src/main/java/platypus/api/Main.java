@@ -1,4 +1,3 @@
-
 package platypus.api;
 
 import java.util.Properties;
@@ -6,20 +5,12 @@ import java.util.Properties;
 import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariDataSource;
 
-import platypus.api.handlers.IndexHandler;
-import platypus.api.handlers.LoginHandler;
-import platypus.api.handlers.TaskApi;
-//import platypus.api.handlers.SettingsHandler;
-import platypus.api.handlers.UserApi;
 import platypus.api.handlers.AuthFilter;
 import platypus.api.handlers.CreateHandler;
-import platypus.api.handlers.DocumentApi;
-import platypus.api.services.*;
-import platypus.api.models.*;
 import platypus.api.handlers.EventApi;
+import platypus.api.handlers.LoginHandler;
+import platypus.api.services.*;
 import spark.Spark;
-
-import java.util.Properties;
 
 public class Main {
 
@@ -54,23 +45,14 @@ public class Main {
 
 				Spark.path("/task", () -> {
 
-					// TODO, validate that this path works
-					Spark.get("", (req, res) -> TaskApi.get(ds, req), gson::toJson);
-
-					Spark.post("/add", (req, res) -> TaskApi.addTask(ds, req), gson::toJson);
-					Spark.post("/update", (req, res) -> TaskApi.editTask(ds, req), gson::toJson);
-					Spark.post("/delete", (req, res) -> TaskApi.removeTask(ds, req), gson::toJson);
 				});
 				Spark.path("/event", () -> {
-					// Spark.get("/get", (req, res) -> EventApi.get(ds, req), gson::toJson);
-					Spark.post("/add", (req, res) -> EventApi.addEvent(ds, req), gson::toJson);
-					Spark.post("/update", (req, res) -> EventApi.editEvent(ds, req), gson::toJson);
-					Spark.post("/delete", (req, res) -> EventApi.removeEvent(ds, req), gson::toJson);
+					Spark.post("/add", (req, res) -> EventApi.AddEvent(ds, req), gson::toJson);
+					Spark.post("/update", (req, res) -> EventApi.EditEvent(ds, req), gson::toJson);
+					Spark.post("/delete", (req, res) -> EventApi.RemoveEvent(ds, req), gson::toJson);
 				});
 				Spark.path("/doc", () -> {
-					Spark.post("/add", (req, res) -> DocumentApi.addDoc(ds, req), gson::toJson);
-					Spark.post("/update", (req, res) -> DocumentApi.editDoc(ds, req), gson::toJson);
-					Spark.post("/delete", (req, res) -> DocumentApi.removeDoc(ds, req), gson::toJson);
+
 				});
 
 			}); // end app path grouping

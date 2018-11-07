@@ -1,17 +1,17 @@
 import React from 'react';
 import {
-  Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon,
+  Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon, Button,
 } from 'react-bootstrap';
-import { Route } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 import AppLogoHeader from './AppLogoHeader';
 import logo from '../../../images/icons/logo_fill_white.svg';
-import routes from '../../routes';
-// #32a78d
+import { LeftNav } from '../Layouts/AuthLayout';
+import { deleteAllCookies } from '../../fetchHelpers';
 
 const AppNavbar = (props) => {
   const { availWidth } = window.screen;
   const mobileNav = props.isAuth && availWidth < 768;
+  const showHome = !mobileNav && props.isAuth;
   const navStyle = {
     marginBottom: '0',
     borderRadius: '0',
@@ -23,34 +23,42 @@ const AppNavbar = (props) => {
       <AppLogoHeader logo={logo} />
       <Navbar.Collapse>
         <Nav pullRight>
-          {!mobileNav
-            && props.isAuth && (
-              <LinkContainer to="/">
-                <NavItem eventKey={1}>
-                  <Glyphicon glyph="home" />
-                </NavItem>
-              </LinkContainer>
+          {showHome && (
+            <LinkContainer id="nav-home" to="/">
+              <NavItem eventKey={1}>
+                <Glyphicon glyph="home" />
+              </NavItem>
+            </LinkContainer>
           )}
-          {mobileNav
-            && routes.map((route, index) => (
-              <LinkContainer key={route.name} to={route.path}>
-                <NavItem eventKey={index + 1}>{route.name}</NavItem>
-              </LinkContainer>
-            ))}
-          {mobileNav
-            && routes.map((route, index) => (
-              <Route key={index} path={route.path} exact={route.exact} component={route.sidebar} />
-            ))}
-          <NavDropdown id="nav-profile-dropdown" eventKey={10} title={<span id="nav-profile" />}>
+          {mobileNav && <LeftNav />}
+          <NavDropdown
+            id="basic-nav-dropdown"
+            eventKey={10}
+            title={
+              <span id="nav-profile">
+                <span id="nav-profile-username">
+                  {JSON.parse(localStorage.getItem('username'))}
+                </span>
+              </span>
+            }
+          >
             <MenuItem eventKey={10.1}>Something1</MenuItem>
             <MenuItem eventKey={10.2}>Something2</MenuItem>
             <MenuItem divider />
             <MenuItem eventKey={10.3}>Something3</MenuItem>
+            <Button
+              style={{ width: '100%', borderRadius: '0' }}
+              onClick={() => {
+                deleteAllCookies();
+                window.location.reload();
+              }}
+            >
+              Sign out
+            </Button>
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
   );
 };
-
 export default AppNavbar;

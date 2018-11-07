@@ -2,6 +2,8 @@ const path = window.location.origin.toLowerCase().includes('platypus')
   ? '/api'
   : 'http://localhost:8080/api';
 
+const categories = ['Appliances', 'Auto', 'Meals', 'Medical', 'Miscellaneous'];
+
 function deleteAllCookies() {
   const cookies = document.cookie.split(';');
   for (let i = 0; i < cookies.length; i += 1) {
@@ -11,11 +13,18 @@ function deleteAllCookies() {
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     if (window.location.origin.includes('platypus')) document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=.platypus.null-terminator.com`; // .platypus.null-terminator.com
   }
+
+  // Now delete all the localStorage data
+  // eslint-disable-next-line
+  for (const item in localStorage) {
+    localStorage.removeItem(item);
+  }
 }
 
 const hasCookie = document.cookie.length > 0;
+
 const currentPath = window.location.pathname;
 
 export {
-  path, currentPath, hasCookie, deleteAllCookies,
+  categories, path, currentPath, hasCookie, deleteAllCookies,
 };
