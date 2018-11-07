@@ -17,9 +17,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -118,20 +120,9 @@ public class CacheUtil {
 				ce.getselfGroupName(), 
 				ce.getGroupyWrapper()
 		);
-		
-		// TODO, get all tasks where this user part of the group
-	
-		// Get all tasks, events, docs that meet filter criteria.
-		PreparedStatement ps = conn.prepareStatement(
-				"SELECT *" + 
-				" FROM tasks JOIN has_tasks ON tasks.taskID = has_tasks.taskID" + 
-				" Where tasks.taskID IN (SELECT (taskID) FROM has_tasks WHERE groupID IN (SELECT (groupID) FROM belongs_to WHERE userID = ?));");	// TODO, Join relation table so that every taskID has a groupID, pinned, notification field. 
-																								// FOR ALL GROUP IDS IN GROUPYWRAPPER
-		ps.setInt(1, ce.getId());
-		ResultSet rs = ps.executeQuery();
-		ps.close();
-		
-		// TODO, add notification and pinned fields and set them as well? Needs relation table
+			
+		// Get all tasks that meet filter criteria.
+		ResultSet rs = Queries.getItems(ItemType.TASK, conn, id);
 		
 		TaskWrapper[] taskWrappers = new TaskWrapper[getResultSetSize(rs)];
 		int i = 0;
@@ -153,13 +144,7 @@ public class CacheUtil {
 		rs.close();
 		i = 0;
 		
-		ps = conn.prepareStatement(
-				"SELECT *" + 
-				" FROM userevents JOIN has_events ON userevents.eventID = has_events.eventID" + 
-				" Where userevents.eventID IN (SELECT (eventID) FROM has_events WHERE groupID IN ( SELECT (groupID) FROM belongs_to WHERE userID = ?));");
-		ps.setInt(1, ce.getId());
-		rs = ps.executeQuery();
-		ps.close();
+		rs = Queries.getItems(ItemType.EVENT, conn, id);
 		
 		EventWrapper[] eventWrappers = new EventWrapper[getResultSetSize(rs)];
 		while (rs.next()) {
@@ -177,14 +162,8 @@ public class CacheUtil {
 		}
 		rs.close();
 		i = 0;
-		
-		ps = conn.prepareStatement(
-				"SELECT *" +
-				" FROM documents JOIN has_documents ON documents.docID = has_documents.docID" +
-				" Where documents.docID IN (SELECT (docID) FROM has_documents WHERE groupID IN (SELECT (groupID) FROM belongs_to WHERE userID = ?));");
-		ps.setInt(1, ce.getId());
-		rs = ps.executeQuery();
-		ps.close();
+	
+		rs = Queries.getItems(ItemType.DOCUMENT, conn, id);
 		
 		DocumentWrapper[] documentWrappers = new DocumentWrapper[getResultSetSize(rs)];
 		while (rs.next()) {
