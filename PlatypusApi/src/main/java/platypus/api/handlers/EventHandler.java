@@ -1,5 +1,7 @@
 package platypus.api.handlers;
 import spark.Request;
+import util.ItemFilter;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +9,8 @@ import java.sql.SQLException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
+
+import platypus.api.JsonParser;
 public class EventHandler {
 	
 	
@@ -142,6 +146,21 @@ public class EventHandler {
 		finally {
 			conn.close();
 		} 
+	}
+	
+	public static JsonResponse get(HikariDataSource ds, Request request) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = ds.getConnection();
+			return new JsonResponse("SUCCESS", ItemFilter.getEvents(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return new JsonResponse("ERROR", "", "SQLException in get_all_events");
+		}
+		finally {
+			conn.close();
+		}
 	}
 	
 }

@@ -18,6 +18,10 @@ import java.util.stream.Stream;
 import com.google.gson.JsonObject;
 
 import platypus.api.models.Category;
+import platypus.api.models.Document;
+import platypus.api.models.DocumentWrapper;
+import platypus.api.models.Event;
+import platypus.api.models.EventWrapper;
 import platypus.api.models.ItemType;
 import platypus.api.models.Priority;
 import platypus.api.models.Task;
@@ -58,13 +62,96 @@ public class ItemFilter {
 		rs.close();
 		
 		Stream<TaskWrapper> stream = tasks.stream().filter(t -> {
-			if (t.getTask().getCategory().equals(category) && dateWithin(weeksAhead, t.getTask().getDeadline()) && t.getTask().isPinned() == pinned) {
+			if (t.getTask().getCategory().equals(category) && (t.getTask().getDeadline() != null && dateWithin(weeksAhead, t.getTask().getDeadline())) && t.getTask().isPinned() == pinned) {
 				return true;
 			}
 			return false;
 		});
 			
 		return stream.toArray(TaskWrapper[]::new);
+	}
+	
+	public static EventWrapper[] getEvents(Connection conn, HashMap<String, JsonObject> filterMap) throws SQLException {
+		
+		JsonObject user = filterMap.get("user");
+		JsonObject group = filterMap.get("group");
+		JsonObject filter = filterMap.get("filter");
+		
+		int userId = user.get("userId").getAsInt();
+		Category category = Category.valueOf(filter.get("category").getAsString());
+		int weeksAhead = filter.get("weeksAhead").getAsInt();
+		boolean pinned = filter.get("pinned").getAsBoolean();
+		
+		// Get resultSet from util method.
+		ResultSet rs = Queries.getItems(ItemType.EVENT, conn, userId);
+		
+		ArrayList<EventWrapper> events = new ArrayList<>();
+		
+		while (rs.next()) {
+			Event e = new Event();
+			e.setItemID(rs.getInt(getColumnWithName("taskID", rs)));
+			e.setType(ItemType.TASK);
+			e.setName(rs.getString(getColumnWithName("name", rs)));
+			e.setDescription(rs.getString(getColumnWithName("description", rs)));
+			e.setCategory(Category.valueOf(rs.getString(getColumnWithName("category", rs)).toUpperCase()));
+			e.setStart(rs.getDate(getColumnWithName("startDate", rs)));
+			e.setEnd(rs.getDate(getColumnWithName("endDate", rs)));
+			e.setLocation(rs.getString(getColumnWithName("location", rs)));
+			e.setNotification(rs.getDate(getColumnWithName("notification", rs)));
+			e.setPinned(rs.getBoolean(getColumnWithName("pinned", rs)));
+			events.add(new EventWrapper(e, rs.getInt(getColumnWithName("groupID", rs))));
+		}
+		rs.close();
+		
+		Stream<EventWrapper> stream = events.stream().filter(t -> {
+			if (t.getEvent().getCategory().equals(category) && dateWithin(weeksAhead, t.getEvent().getStart()) && t.getEvent().isPinned() == pinned) {
+				return true;
+			}
+			return false;
+		});
+			
+		return stream.toArray(EventWrapper[]::new);
+	}
+	
+public static DocumentWrapper[] getDocuments(Connection conn, HashMap<String, JsonObject> filterMap) throws SQLException {
+		
+		JsonObject user = filterMap.get("user");
+		JsonObject group = filterMap.get("group");
+		JsonObject filter = filterMap.get("filter");
+		
+		int userId = user.get("userId").getAsInt();
+		Category category = Category.valueOf(filter.get("category").getAsString());
+		int weeksAhead = filter.get("weeksAhead").getAsInt();
+		boolean pinned = filter.get("pinned").getAsBoolean();
+		
+		// Get resultSet from util method.
+		ResultSet rs = Queries.getItems(ItemType.EVENT, conn, userId);
+		
+		ArrayList<DocumentWrapper> documents = new ArrayList<>();
+		
+		while (rs.next()) {
+			Document d = new Document();
+			d.setItemID(rs.getInt(getColumnWithName("taskID", rs)));
+			d.setType(ItemType.TASK);
+			d.setName(rs.getString(getColumnWithName("name", rs)));
+			d.setDescription(rs.getString(getColumnWithName("description", rs)));
+			d.setCategory(Category.valueOf(rs.getString(getColumnWithName("category", rs)).toUpperCase()));
+			d.setFileName(rs.getString(getColumnWithName("fileName", rs)));
+			d.setExpiration(rs.getDate(getColumnWithName("expirationDate", rs)));
+			d.setNotification(rs.getDate(getColumnWithName("notification", rs)));
+			d.setPinned(rs.getBoolean(getColumnWithName("pinned", rs)));
+			documents.add(new DocumentWrapper(d, rs.getInt(getColumnWithName("groupID", rs))));
+		}
+		rs.close();
+		
+		Stream<DocumentWrapper> stream = documents.stream().filter(t -> {
+			if (t.getDocument().getCategory().equals(category) && (t.getDocument().getExpiration() != null && dateWithin(weeksAhead, t.getDocument().getExpiration())) && t.getDocument().isPinned() == pinned) {
+				return true;
+			}
+			return false;
+		});
+			
+		return stream.toArray(DocumentWrapper[]::new);
 	}
 
 	private static int getColumnWithName(String s, ResultSet rs) throws SQLException {

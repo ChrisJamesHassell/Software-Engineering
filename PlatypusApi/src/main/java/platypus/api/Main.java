@@ -61,7 +61,7 @@ public class Main {
 		                    Spark.post("/delete", (req, res) -> TaskHandler.removeTask(ds, req), gson::toJson);
 			            });
 			            Spark.path("/event", () -> {
-			         //   	Spark.get("/get", (req, res) -> EventApi.get(ds, req), gson::toJson);
+			            	Spark.get("", (req, res) -> EventHandler.get(ds, req), gson::toJson);
 			                Spark.post("/add", (req, res) -> EventHandler.addEvent(ds, req), gson::toJson);
 			                Spark.post("/update", (req, res) -> EventHandler.editEvent(ds, req), gson::toJson);
 		                    Spark.post("/delete", (req, res) -> EventHandler.removeEvent(ds, req), gson::toJson);
