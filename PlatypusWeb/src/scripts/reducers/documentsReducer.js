@@ -2,10 +2,6 @@ const sortByExpiryDate = (a, b) => new Date(a.expiryDate).getTime() - new Date(b
 
 export default (
   state = {
-    Appliances: [],
-    Auto: [],
-    Home: [],
-    Meals: [],
     Medical: [
       {
         docID: 1,
@@ -16,7 +12,6 @@ export default (
         expiryDate: '2018-10-29T21:29:56.940Z',
       },
     ],
-    Miscellaneous: [],
   },
   action,
 ) => {

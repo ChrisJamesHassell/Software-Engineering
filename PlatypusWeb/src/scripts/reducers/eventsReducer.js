@@ -2,11 +2,6 @@ const sortByStartDate = (a, b) => new Date(a.start).getTime() - new Date(b.start
 
 export default (
   state = {
-    Appliances: [],
-    Auto: [],
-    Home: [],
-    Meals: [],
-    Medical: [],
     Miscellaneous: [
       {
         eventID: 1,

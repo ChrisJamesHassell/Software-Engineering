@@ -2,11 +2,6 @@ const sortByPriority = (a, b) => b.priority - a.priority;
 
 export default (
   state = {
-    Appliances: [],
-    Auto: [],
-    Home: [],
-    Meals: [],
-    Medical: [],
     Miscellaneous: [
       {
         taskID: 3,
