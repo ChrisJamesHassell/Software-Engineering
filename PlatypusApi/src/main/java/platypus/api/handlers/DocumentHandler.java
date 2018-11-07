@@ -156,7 +156,7 @@ public class DocumentHandler {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
-			return new JsonResponse("ERROR", "", "SQLException in get_all_events");
+			return new JsonResponse("ERROR", "", "SQLException in get_all_documents");
 		}
 		finally {
 			conn.close();
