@@ -24,6 +24,7 @@ const events = [
         start: new Date(2018, 10, 29, 9, 0, 0),
         end: new Date(2018, 10, 29, 13, 0, 0),
         resourceId: 1,
+        isSelf: false,
     },
     {
         id: 1,
@@ -32,6 +33,7 @@ const events = [
         start: new Date(2018, 10, 29, 14, 0, 0),
         end: new Date(2018, 10, 29, 16, 30, 0),
         resourceId: 2,
+        isSelf: false,
     },
     {
         id: 2,
@@ -39,6 +41,7 @@ const events = [
         start: new Date(2018, 10, 29, 8, 30, 0),
         end: new Date(2018, 10, 29, 12, 30, 0),
         resourceId: 3,
+        isSelf: true,
     },
     {
         id: 11,
@@ -46,6 +49,7 @@ const events = [
         start: new Date(2018, 10, 30, 7, 0, 0),
         end: new Date(2018, 10, 30, 10, 30, 0),
         resourceId: 4,
+        isSelf: true,
     },
 ]
 
@@ -75,7 +79,7 @@ export class Events extends React.Component {
 
     handleSelect = (props) => {
         const title = window.prompt('New Event name')
-        console.log(props)
+        console.log(props);
         const { start, end } = props
         if (title)
             this.setState({
@@ -90,25 +94,40 @@ export class Events extends React.Component {
             })
     }
 
+    handleEventSelect = (props) => {
+        console.log('handleevent slot:', props);
+
+    }
+
+    eventStyleGetter = (event) => {
+        console.log('event style getter event: ', event);
+        var backgroundColor = event.isSelf ? 'pink' : 'green';
+        var style = {
+            backgroundColor: backgroundColor,
+            borderRadius: '0px',
+            opacity: 0.8,
+            color: 'black',
+            border: '0px',
+            display: 'block'
+        };
+        return {
+            style: style
+        };
+    }
+    
     render() {
         return (
             <BigCalendar
+                popup
                 selectable
                 localizer={localizer}
                 events={this.state.events}
                 defaultView={BigCalendar.Views.MONTH}
                 scrollToTime={new Date(1970, 1, 1, 6)}
                 defaultDate={new Date()}
-                onSelectEvent={event => alert(event.title)}
-                onSelectSlot={this.handleSelect}
-                //   components={{
-                //     day: { header: MyCustomHeader },
-                //     week: { header: MyCustomHeader },
-                //     month: { header: MyCustomHeader },
-                //   }}
-                // resources={resourceMap}
-                // resourceIdAccessor="resourceId"
-                // resourceTitleAccessor="resourceTitle"
+                onSelectEvent={event => this.handleEventSelect(event)}
+                onSelectSlot={event => this.handleSelect(event)}
+                eventPropGetter={event => this.eventStyleGetter(event)}
             />
         )
     }
