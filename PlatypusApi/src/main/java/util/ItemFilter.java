@@ -53,7 +53,8 @@ public class ItemFilter {
 		tasks.stream().filter(new Predicate<TaskWrapper>() {
 
 			@Override
-			public boolean test(TaskWrapper arg0) {
+			public boolean test(TaskWrapper t) {
+				
 				// TODO, write predicate
 				return false;
 			}

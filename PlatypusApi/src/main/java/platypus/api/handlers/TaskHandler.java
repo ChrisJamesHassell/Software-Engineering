@@ -12,7 +12,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import platypus.api.models.Priority;
 import spark.Request;
 
-public class TaskApi {
+public class TaskHandler {
 	
 	public static JsonResponse addTask(HikariDataSource ds, Request req) throws SQLException {
 		
@@ -70,10 +70,11 @@ public class TaskApi {
 			stmt = conn.prepareStatement("UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
 			stmt.setString(1, task.get("name").getAsString());
 			stmt.setString(2, task.get("description").getAsString());
-			stmt.setString(3, task.get("deadline").getAsString());
-			stmt.setString(4, task.get("priority").getAsString());
-			stmt.setString(5, task.get("completed").getAsString());
-			stmt.setInt(6, task.get("taskID").getAsInt());
+			stmt.setString(3, task.get("category").getAsString());
+			stmt.setString(4, task.get("deadline").getAsString());
+			stmt.setString(5, task.get("priority").getAsString());
+			stmt.setString(6, task.get("completed").getAsString());
+			stmt.setInt(7, task.get("taskID").getAsInt());
 			
 			int ret = stmt.executeUpdate();		
 			

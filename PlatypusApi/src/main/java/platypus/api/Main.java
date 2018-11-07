@@ -6,15 +6,15 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.handlers.IndexHandler;
 import platypus.api.handlers.LoginHandler;
-import platypus.api.handlers.TaskApi;
+import platypus.api.handlers.TaskHandler;
 //import platypus.api.handlers.SettingsHandler;
-import platypus.api.handlers.UserApi;
+import platypus.api.handlers.UserHandler;
 import platypus.api.handlers.AuthFilter;
 import platypus.api.handlers.CreateHandler;
-import platypus.api.handlers.DocumentApi;
+import platypus.api.handlers.DocumentHandler;
 import platypus.api.services.*;
 import platypus.api.models.*;
-import platypus.api.handlers.EventApi;
+import platypus.api.handlers.EventHandler;
 import spark.Spark;
 
 
@@ -54,22 +54,22 @@ public class Main {
 			            Spark.path("/task", () -> {
 			            	
 			            	// TODO, validate that this path works
-			            	Spark.get("", (req, res) -> TaskApi.get(ds, req), gson::toJson);
+			            	Spark.get("", (req, res) -> TaskHandler.get(ds, req), gson::toJson);
 			            	
-			            	Spark.post("/add", (req, res) -> TaskApi.addTask(ds, req), gson::toJson);
-			                Spark.post("/update", (req, res) -> TaskApi.editTask(ds, req), gson::toJson);
-		                    Spark.post("/delete", (req, res) -> TaskApi.removeTask(ds, req), gson::toJson);
+			            	Spark.post("/add", (req, res) -> TaskHandler.addTask(ds, req), gson::toJson);
+			                Spark.post("/update", (req, res) -> TaskHandler.editTask(ds, req), gson::toJson);
+		                    Spark.post("/delete", (req, res) -> TaskHandler.removeTask(ds, req), gson::toJson);
 			            });
 			            Spark.path("/event", () -> {
 			         //   	Spark.get("/get", (req, res) -> EventApi.get(ds, req), gson::toJson);
-			                Spark.post("/add", (req, res) -> EventApi.addEvent(ds, req), gson::toJson);
-			                Spark.post("/update", (req, res) -> EventApi.editEvent(ds, req), gson::toJson);
-		                    Spark.post("/delete", (req, res) -> EventApi.removeEvent(ds, req), gson::toJson);
+			                Spark.post("/add", (req, res) -> EventHandler.addEvent(ds, req), gson::toJson);
+			                Spark.post("/update", (req, res) -> EventHandler.editEvent(ds, req), gson::toJson);
+		                    Spark.post("/delete", (req, res) -> EventHandler.removeEvent(ds, req), gson::toJson);
 			            });
 			            Spark.path("/doc", () -> {
-			            	Spark.post("/add", (req, res) -> DocumentApi.addDoc(ds, req), gson::toJson);
-			            	Spark.post("/update", (req, res) -> DocumentApi.editDoc(ds, req), gson::toJson);
-			            	Spark.post("/delete", (req, res) -> DocumentApi.removeDoc(ds, req), gson::toJson);
+			            	Spark.post("/add", (req, res) -> DocumentHandler.addDoc(ds, req), gson::toJson);
+			            	Spark.post("/update", (req, res) -> DocumentHandler.editDoc(ds, req), gson::toJson);
+			            	Spark.post("/delete", (req, res) -> DocumentHandler.removeDoc(ds, req), gson::toJson);
 		                });
 
 			        }); //end app path grouping
