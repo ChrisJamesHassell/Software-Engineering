@@ -139,7 +139,9 @@ class Tasks extends React.Component {
 
     if (!newPriority) return;
 
-    const task = tasks.find(tsk => tsk.taskID === draggableId);
+    const task = Object.values(tasks)
+      .reduce((prev, curr) => [...prev, ...curr], [])
+      .find(tsk => tsk.taskID === draggableId);
 
     if (!task) return;
 
