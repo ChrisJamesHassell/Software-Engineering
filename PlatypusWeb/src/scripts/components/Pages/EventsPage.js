@@ -3,8 +3,8 @@ import React, { PureComponent, createRef } from 'react'
 import PropTypes from 'prop-types'
 import day from 'dayjs'
 import { Glyphicon, Panel } from 'react-bootstrap';
-import Calendar from 'react-calendar';
-import BaseCalendar from 'tui-calendar';
+// import Calendar from 'react-calendar';
+// import BaseCalendar from 'tui-calendar';
 import NavIcons from '../../../images/icons/NavIcons';
 import { categories } from '../../fetchHelpers';
 import BigCalendar from 'react-big-calendar';
@@ -106,9 +106,9 @@ export class Events extends React.Component {
                 //     week: { header: MyCustomHeader },
                 //     month: { header: MyCustomHeader },
                 //   }}
-                resources={resourceMap}
-                resourceIdAccessor="resourceId"
-                resourceTitleAccessor="resourceTitle"
+                // resources={resourceMap}
+                // resourceIdAccessor="resourceId"
+                // resourceTitleAccessor="resourceTitle"
             />
         )
     }
