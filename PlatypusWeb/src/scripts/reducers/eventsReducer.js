@@ -6,18 +6,7 @@ export default (
     Auto: [],
     Home: [],
     Meals: [],
-    Medical: [],
-    Miscellaneous: [
-      {
-        eventID: 1,
-        name: 'Event Name',
-        description: 'Event Description',
-        category: 'Miscellaneous',
-        start: '2018-10-29T21:29:48.475Z',
-        end: '2018-10-29T21:29:56.940Z',
-        location: 'That one place',
-      },
-    ],
+    Medical: []
   },
   action,
 ) => {

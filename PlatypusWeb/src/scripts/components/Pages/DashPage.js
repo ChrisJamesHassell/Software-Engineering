@@ -67,8 +67,6 @@ class Dash extends React.Component {
     }
 }
 
-
-
 const mapStateToProps = state => ({
     Appliances: {
         events: state.events.Appliances,
@@ -89,11 +87,6 @@ const mapStateToProps = state => ({
         events: state.events.Medical,
         documents: state.documents.Medical,
         tasks: state.tasks.Medical,
-    },
-    Miscellaneous: {
-        events: state.events.Miscellaneous,
-        documents: state.documents.Miscellaneous,
-        tasks: state.tasks.Miscellaneous,
     }
 });
 
