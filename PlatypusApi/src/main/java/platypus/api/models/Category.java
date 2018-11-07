@@ -4,9 +4,8 @@ public enum Category {
 	
 	MEDICAL,
 	AUTO,
+	APPLIANCES,
 	MEALS,
-	MISCELLANEOUS,
-	APPLIANCES
-	// MISC??
+	MISCELLANEOUS
 
 }

@@ -9,8 +9,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
+import platypus.api.JsonParser;
 import platypus.api.models.Priority;
 import spark.Request;
+import util.ItemFilter;
 
 public class TaskHandler {
 	
@@ -134,8 +136,19 @@ public class TaskHandler {
 		} 
 	}
 	
-	public static JsonResponse get(HikariDataSource ds, Request request) {
-		return null;
+	public static JsonResponse get(HikariDataSource ds, Request request) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = ds.getConnection();
+			return new JsonResponse("SUCCESS", ItemFilter.getTasks(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return new JsonResponse("ERROR", "", "SQLException in get_all_tasks");
+		}
+		finally {
+			conn.close();
+		}
 	}
 
 }
