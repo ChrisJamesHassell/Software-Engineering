@@ -99,21 +99,21 @@ export class Events extends React.Component {
 
     }
 
-    eventStyleGetter = (event) => {
-        console.log('event style getter event: ', event);
-        var backgroundColor = event.isSelf ? 'pink' : 'green';
-        var style = {
-            backgroundColor: backgroundColor,
-            borderRadius: '0px',
-            opacity: 0.8,
-            color: 'black',
-            border: '0px',
-            display: 'block'
-        };
-        return {
-            style: style
-        };
-    }
+    // eventStyleGetter = (event) => {
+    //     console.log('event style getter event: ', event);
+    //     var backgroundColor = event.isSelf ? 'pink' : 'green';
+    //     var style = {
+    //         backgroundColor: backgroundColor,
+    //         borderRadius: '0px',
+    //         opacity: 0.8,
+    //         color: 'black',
+    //         border: '0px',
+    //         display: 'block'
+    //     };
+    //     return {
+    //         style: style
+    //     };
+    // }
     
     render() {
         return (
@@ -127,7 +127,7 @@ export class Events extends React.Component {
                 defaultDate={new Date()}
                 onSelectEvent={event => this.handleEventSelect(event)}
                 onSelectSlot={event => this.handleSelect(event)}
-                eventPropGetter={event => this.eventStyleGetter(event)}
+                // eventPropGetter={event => this.eventStyleGetter(event)}
             />
         )
     }

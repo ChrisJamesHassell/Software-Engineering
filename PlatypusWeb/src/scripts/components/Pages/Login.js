@@ -79,30 +79,31 @@ export default class Login extends React.Component {
 
   handleJsonResponse(response) {
     this.setState({ loading: false });
-    const {
-      data: {
-        documents, events, tasks, ...user
-      },
-      status,
-    } = response;
+    // const {
+    //   data: {
+    //     documents, events, tasks, ...user
+    //   },
+    //   status,
+    // } = response;
 
-    this.props.dispatch({
-      type: 'ADD_DOCUMENTS',
-      payload: documents,
-    });
-    this.props.dispatch({
-      type: 'ADD_EVENTS',
-      payload: events,
-    });
-    this.props.dispatch({
-      type: 'ADD_TASKS',
-      payload: tasks,
-    });
-    this.props.dispatch({
-      type: 'UPDATE_USER',
-      payload: user,
-    });
+    // this.props.dispatch({
+    //   type: 'ADD_DOCUMENTS',
+    //   payload: documents,
+    // });
+    // this.props.dispatch({
+    //   type: 'ADD_EVENTS',
+    //   payload: events,
+    // });
+    // this.props.dispatch({
+    //   type: 'ADD_TASKS',
+    //   payload: tasks,
+    // });
+    // this.props.dispatch({
+    //   type: 'UPDATE_USER',
+    //   payload: user,
+    // });
 
+    const { status } = response;
     const isSuccess = status === 'SUCCESS';
     const data = Object.assign({}, response.data);
     Object.keys(data).forEach((key) =>{

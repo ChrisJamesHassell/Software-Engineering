@@ -1,7 +1,5 @@
 package platypus.api;
 
-import java.util.Properties;
-
 import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -19,8 +17,11 @@ import platypus.api.models.*;
 import platypus.api.handlers.EventHandler;
 import spark.Spark;
 
-public class Main {
 
+import java.util.Properties;
+
+public class Main {
+	
 	public final static boolean IS_PRODUCTION = false;
 
 	public static void main(String[] args) {
@@ -30,14 +31,25 @@ public class Main {
 		// server in some non public folder.
 		// Then on server `java -jar
 		// platypus-api-1.0-SNAPSHOT-jar-with-dependencies.jar`
-
+		
 		final Gson gson = new Gson();
 		final HikariDataSource ds = InitService.initDatabase();
 		final Properties emailConfig = InitService.initEmailConfig();
 		InitService.initNotificationService(ds, emailConfig);
 		InitService.initSparkConfig();
-
+ 
 		final AuthFilter authFilter = new AuthFilter();
+		
+			Spark.path("/api", () -> {
+		            Spark.path("/user", () -> {
+		                Spark.post("/create", new CreateHandler(ds, authFilter), gson::toJson);
+		                Spark.post("/login", new LoginHandler(ds, authFilter), gson::toJson);
+		            });
+		            Spark.before("/app/*", authFilter);
+		            Spark.path("/app", () -> {
+			            Spark.get("/test", (req, res) -> {
+			                return "hi " + req.attribute(AuthFilter.USERNAME);
+			            });
 
 			            Spark.path("/task", () -> {
 			            	
@@ -60,20 +72,8 @@ public class Main {
 			            	Spark.post("/delete", (req, res) -> DocumentHandler.removeDoc(ds, req), gson::toJson);
 		                });
 
-				Spark.path("/task", () -> {
-
-				});
-				Spark.path("/event", () -> {
-					Spark.post("/add", (req, res) -> EventApi.AddEvent(ds, req), gson::toJson);
-					Spark.post("/update", (req, res) -> EventApi.EditEvent(ds, req), gson::toJson);
-					Spark.post("/delete", (req, res) -> EventApi.RemoveEvent(ds, req), gson::toJson);
-				});
-				Spark.path("/doc", () -> {
-
-				});
-
-			}); // end app path grouping
-		}); // End api path grouping
-
+			        }); //end app path grouping
+			    });	//End api path grouping
+				
 	}
 }
