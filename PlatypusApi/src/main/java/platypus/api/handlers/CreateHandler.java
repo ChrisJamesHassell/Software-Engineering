@@ -93,7 +93,7 @@ public class CreateHandler implements Route {
 			st.setString(5, BCrypt.hashpw(u.getPassword(), BCrypt.gensalt()));
 			st.setString(6, u.getDateOfBirth());
 			st.executeUpdate();
-
+			
 			// Get user id for cookie
 			ps = conn.prepareStatement("SELECT userID FROM users WHERE username = ?");
 			ps.setString(1, u.getUsername());
@@ -108,7 +108,7 @@ public class CreateHandler implements Route {
 				id = rows.getInt(1);
 			}
 			rows.close();
-
+			
 			// Branch cookie settings depending on if using production environment.
 			if (!Main.IS_PRODUCTION) {
 				// set cookie here
