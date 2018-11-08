@@ -10,7 +10,6 @@ import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
-import platypus.api.models.Priority;
 import spark.Request;
 import util.ItemFilter;
 
@@ -54,8 +53,6 @@ public class TaskHandler {
 			conn.close();
 		}
 	}
-	
-	public static JsonResponse editTask(HikariDataSource ds, Request req) throws SQLException {
 
 	public static JsonResponse editTask(HikariDataSource ds, Request req) throws SQLException {
 

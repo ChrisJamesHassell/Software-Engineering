@@ -55,8 +55,6 @@ public class EventHandler {
 			conn.close();
 		} 
 	}
-	
-	public static JsonResponse editEvent(HikariDataSource ds, Request req) throws SQLException {
 
 	public static JsonResponse editEvent(HikariDataSource ds, Request req) throws SQLException {
 
@@ -158,20 +156,6 @@ public class EventHandler {
 			return new JsonResponse("ERROR", "", "SQLException in get_all_events");
 		}
 		finally {
-			conn.close();
-		}
-	}
-
-	public static JsonResponse get(HikariDataSource ds, Request request) throws SQLException {
-		Connection conn = null;
-		try {
-			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS",
-					ItemFilter.getEvents(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return new JsonResponse("ERROR", "", "SQLException in get_all_events");
-		} finally {
 			conn.close();
 		}
 	}
