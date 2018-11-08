@@ -1,27 +1,27 @@
 package platypus.api.models;
 
-import java.sql.Date;
+import java.nio.file.Path;
 
 public class Document extends Item {
 
-	private String fileName;
-	private Date expiration;
+	private Path fileName;
+	private String expiration;
 	
 	public Document() {
 		super();
 	}
 
-	public Document(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned, String fileName, Date expiration) {
-		super(itemID, type, name, description, category, notification, pinned);
+	public Document(int itemID, ItemType type, String name, String description, Category category, Path fileName, String expiration) {
+		super(itemID, type, name, description, category);
 		this.fileName = fileName;
 		this.expiration = expiration;
 	}
 
-	public String getFileName() {
+	public Path getFileName() {
 		return fileName;
 	}
 	
-	public void setFileName(String fileName) {
+	public void setFileName(Path fileName) {
 		this.fileName = fileName;
 	}
 	
