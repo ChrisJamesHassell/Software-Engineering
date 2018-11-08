@@ -1,8 +1,12 @@
 package platypus.api.handlers;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
@@ -15,28 +19,57 @@ public class TaskHandler {
 	public static JsonResponse addTask(HikariDataSource ds, Request req) throws SQLException {
 
 		Connection conn = null;
+		CallableStatement stmt = null;
+
 		try {
+			// Parse request body to get the task stuff.
+			Gson gson = new Gson();
+			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
+
+			JsonObject user = jsonO.get("user").getAsJsonObject();
+			JsonObject group = jsonO.get("group").getAsJsonObject();
+			JsonObject task = jsonO.get("task").getAsJsonObject();
+
 			conn = ds.getConnection();
 
-			return new JsonResponse("SUCCESS", "", "Success Edit event");
+			//Prepare the call from request body
+			stmt = conn.prepareCall("{call insertTask(?, ?, ?, ?, ?, ?, ?, ?)}");
+			stmt.setString(1, task.get("pinned").getAsString());
+			stmt.setString(2, task.get("notification").getAsString());
+			stmt.setInt(3, group.get("groupID").getAsInt());
+			stmt.setString(4, task.get("name").getAsString());
+			stmt.setString(5, task.get("description").getAsString());
+			stmt.setString(6, task.get("category").getAsString());
+			stmt.setString(7, task.get("deadline").getAsString());
+			stmt.setString(8, task.get("priority").getAsString());
+
+			stmt.executeUpdate();
+
+			// Need to return CacheEntry for this user + the Task stuff
+			return new JsonResponse("SUCCESS", "", "Successfully inserted task.");
 		} catch (SQLException sqlE) {
-			return new JsonResponse("ERROR", "", "SQLError in EditEvent");
+			sqlE.printStackTrace();
+			return new JsonResponse("ERROR", "", "SQLError in Add Task");
 		} finally {
 			conn.close();
 		}
-
-		// return null;
 	}
 
-	public static JsonResponse edit(Task t, HikariDataSource ds) throws SQLException {
+	public static JsonResponse editTask(HikariDataSource ds, Request req) throws SQLException {
 
 		Connection conn = null;
+		PreparedStatement stmt = null;
+
 		try {
+			// Parse request body to get the task stuff.
+			Gson gson = new Gson();
+			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
+			JsonObject task = jsonO.get("task").getAsJsonObject();
+
 			conn = ds.getConnection();
 
-			// Prepare the call from request body
-			stmt = conn.prepareStatement(
-					"UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
+			//Prepare the call from request body
+			stmt = conn.prepareStatement("UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
 			stmt.setString(1, task.get("name").getAsString());
 			stmt.setString(2, task.get("description").getAsString());
 			stmt.setString(3, task.get("category").getAsString());
@@ -57,19 +90,47 @@ public class TaskHandler {
 			}
 
 		} catch (SQLException sqlE) {
-			return new JsonResponse("ERROR", "", "SQLError in EditEvent");
+			return new JsonResponse("ERROR", "", "SQLError in Edit Task");
 		} finally {
 			conn.close();
 		}
 	}
 
-	public static JsonResponse remove(Task t, HikariDataSource ds) throws SQLException {
+	// Successfully removes the task from all appropriate tables.
+	// TODO: -Build the response correctly.
+	//		 -Test more extensively.
+	public static JsonResponse removeTask(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
+		CallableStatement stmt = null;
+
 		try {
+			// Parse request body to get the task stuff.
+			Gson gson = new Gson();
+			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
+
+			// Still necessary to build the CacheEntry response.
+			JsonObject user = jsonO.get("user").getAsJsonObject();
+			JsonObject group = jsonO.get("group").getAsJsonObject();
+			JsonObject task = jsonO.get("task").getAsJsonObject();
+
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", "", "Success remove event");
+
+			//Prepare the call from request body
+			stmt = conn.prepareCall("{call delTask(?)}");
+			stmt.setInt(1, task.get("taskID").getAsInt());
+
+			int ret = stmt.executeUpdate();
+			if (ret != 0) {
+				// TODO: Need to return CacheEntry for this user + the TaskInfo
+				return new JsonResponse("SUCCESS", "", "Successfully deleted task.");
+			}
+			else {
+				// There is no task with that taskID
+				return new JsonResponse("FAIL", "", "There is no task with that ID, failed task deletion.");
+			}
+
 		} catch (SQLException sqlE) {
-			return new JsonResponse("ERROR", "", "SQLError in RemoveEvent");
+			return new JsonResponse("ERROR", "", "SQLError in Add Task");
 		} finally {
 			conn.close();
 		}
@@ -79,12 +140,13 @@ public class TaskHandler {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS",
-					ItemFilter.getTasks(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
-		} catch (SQLException e) {
+			return new JsonResponse("SUCCESS", ItemFilter.getTasks(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
+		}
+		catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_tasks");
-		} finally {
+		}
+		finally {
 			conn.close();
 		}
 	}

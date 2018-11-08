@@ -3,6 +3,7 @@ package util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,10 +26,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import platypus.api.models.CacheEntry;
+import platypus.api.models.Category;
+import platypus.api.models.Document;
+import platypus.api.models.DocumentWrapper;
+import platypus.api.models.Event;
+import platypus.api.models.EventWrapper;
 import platypus.api.models.GroupyWrapper;
+import platypus.api.models.ItemType;
+import platypus.api.models.LoginEntry;
+import platypus.api.models.Priority;
+import platypus.api.models.Task;
+import platypus.api.models.TaskWrapper;
 import spark.Request;
 
 public class CacheUtil {
+
+	/*
 
 	public static CacheEntry buildCacheEntry(Request req, Connection conn) throws SQLException {
 
@@ -41,8 +54,7 @@ public class CacheUtil {
 
 		// Use request info to get a list of all groups associated with the user.
 		// TODO: Update to retrieve all correct info later.
-		PreparedStatement ps = conn.prepareStatement(
-				"SELECT groupId, groupName FROM belongs_to inner join groups on groupId where belongs_to.userID = ?");
+		PreparedStatement ps = conn.prepareStatement("SELECT groupId, groupName FROM belongs_to inner join groups on groupId where belongs_to.userID = ?");
 		ps.setInt(1, userId);
 		ResultSet rs = ps.executeQuery();
 		ps.close();
@@ -51,31 +63,34 @@ public class CacheUtil {
 
 		int ct = 0;
 		while (rs.next()) {
-			groupyWrappers[0] = new GroupyWrapper(rs.getInt(1), rs.getString(2));
+			groupyWrappers[ct] = new GroupyWrapper(rs.getInt(1), rs.getString(2));
+			ct++;
 		}
 
 		return new CacheEntry(userName, userId, groupId, groupName, groupyWrappers);
 
 	}
 
+	*/
+
 	public static CacheEntry buildCacheEntry(String userName, int id, Connection conn) throws SQLException {
 
 		// Use userId to get groupId & groupName for the user's self group.
-		PreparedStatement ps = conn
-				.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
-						+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID " + "WHERE belongs_to.userID = ?");
+		PreparedStatement ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
+													+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
+													+ "WHERE belongs_to.userID = ? and belongs_to.self = '1'");
 		ps.setInt(1, id);
 		ResultSet rs = ps.executeQuery();
 		ps.close();
 
-		// Get id and name
 		rs.next();
 		int groupId = rs.getInt(getColumnWithName("groupID", rs));
 		String groupName = rs.getString(getColumnWithName("groupName", rs));
 		rs.close();
 
 		ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
-				+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID " + "WHERE belongs_to.userID = ?");
+									+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
+									+ "WHERE belongs_to.userID = ?");
 		ps.setInt(1, id);
 		rs = ps.executeQuery();
 		ps.close();
@@ -89,8 +104,7 @@ public class CacheUtil {
 		}
 		rs.close();
 
-		// TODO, verify that a user with multiple groups gets the right cacheEntry
-		// return.
+		// TODO, verify that a user with multiple groups gets the right cacheEntry return.
 		// Needs a user in multiple groups.
 		return new CacheEntry(userName, id, groupId, groupName, groupyWrappers);
 
@@ -171,11 +185,87 @@ public class CacheUtil {
 		ArrayList<TaskWrapper> a = new ArrayList<>(Arrays.asList(taskWrappers));
 		Stream<TaskWrapper> taskStream = a.stream().filter(new Predicate<TaskWrapper>() {
 
-		rs.close();
+			@Override
+			public boolean test(TaskWrapper t) {
+				if (!t.getTask().isCompleted() && dateWithin(2, t.getTask().getDeadline())) {
+					return true;
+				}
+				return false;
+			}
 
-		return new CacheEntry(userName, id, groupId, groupName,
-				new GroupyWrapper[] { new GroupyWrapper(groupId, groupName) });
+		});
+		taskWrappers = taskStream.toArray(TaskWrapper[]::new);
 
+		ArrayList<EventWrapper> b = new ArrayList<>(Arrays.asList(eventWrappers));
+		Stream<EventWrapper> eventStream = b.stream().filter(new Predicate<EventWrapper>() {
+
+			@Override
+			public boolean test(EventWrapper e) {
+				if (dateWithin(2, e.getEvent().getStart())) {
+					return true;
+				}
+				return false;
+			}
+
+		});
+		eventWrappers = eventStream.toArray(EventWrapper[]::new);
+
+		ArrayList<DocumentWrapper> c = new ArrayList<>(Arrays.asList(documentWrappers));
+		Stream<DocumentWrapper> documentStream = c.stream().filter(new Predicate<DocumentWrapper>() {
+
+			@Override
+			public boolean test(DocumentWrapper d) {
+				if (dateWithin(2, d.getDocument().getExpiration())) {
+					return true;
+				}
+				return false;
+			}
+
+		});
+		documentWrappers = documentStream.toArray(DocumentWrapper[]::new);
+
+		loginEntry.setTasks(taskWrappers);
+		loginEntry.setEvents(eventWrappers);
+		loginEntry.setDocuments(documentWrappers);
+
+		return loginEntry;
+
+	}
+
+	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {
+
+		// TODO, verify that MM-dd is correct and not dd-MM;
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+		if (itemDate != null) {
+
+			Date currentDate = new Date();
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)), ZoneId.systemDefault());
+			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
+			System.out.println("Date to compare to: " + DateFormat.getDateInstance().format(dateToCompareTo));
+
+			if (itemDate.compareTo(dateToCompareTo) < 0) {
+				System.out.println("Here");
+				return true;
+			}
+
+		}
+		return false;
+	}
+
+	private static int getColumnWithName(String s, ResultSet rs) throws SQLException {
+		ResultSetMetaData md = rs.getMetaData();
+		int count = md.getColumnCount();
+		for (int i = 1; i <= count; i++) {
+		    if (md.getColumnName(i).equals(s)) {
+		        return i;
+		    }
+		}
+
+		// Doesn't exist
+		return -1;
 	}
 
 	private static int getResultSetSize(ResultSet rs) throws SQLException {
