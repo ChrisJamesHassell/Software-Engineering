@@ -36,6 +36,8 @@ export default (
         ),
       };
     }
+    case 'REMOVE_ALL_DOCUMENTS':
+      return {};
     case 'REMOVE_DOCUMENT':
       return {
         ...state,

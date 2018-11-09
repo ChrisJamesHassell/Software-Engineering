@@ -24,6 +24,8 @@ export default (
         ),
       };
     }
+    case 'REMOVE_ALL_TASKS':
+      return {};
     case 'REMOVE_TASK':
       return {
         ...state,

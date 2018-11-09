@@ -36,6 +36,8 @@ export default (
         ),
       };
     }
+    case 'REMOVE_ALL_EVENTS':
+      return {};
     case 'REMOVE_EVENT':
       return {
         ...state,
