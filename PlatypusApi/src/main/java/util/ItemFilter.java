@@ -36,9 +36,10 @@ public class ItemFilter {
 		JsonObject filter = filterMap.get("filter");
 
 		int userId = user.get("userId").getAsInt();
-		Category category = Category.valueOf(filter.get("category").getAsString());
+		Category category = filter.get("category").isJsonNull() ? null
+				: Category.valueOf(filter.get("category").getAsString());
 		int weeksAhead = filter.get("weeksAhead").getAsInt();
-		Boolean pinned = filter.isJsonNull() ? null : filter.get("pinned").getAsBoolean();
+		Boolean pinned = filter.get("pinned").isJsonNull() ? null : filter.get("pinned").getAsBoolean();
 
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.TASK, conn, userId);
@@ -63,7 +64,8 @@ public class ItemFilter {
 
 		Stream<TaskWrapper> stream = tasks.stream().filter(t -> {
 			if ((category == null || t.getTask().getCategory().equals(category))
-					&& ((weeksAhead == -1 || (t.getTask().getDeadline() != null && dateWithin(weeksAhead, t.getTask().getDeadline()))))
+					&& ((weeksAhead == -1
+							|| (t.getTask().getDeadline() != null && dateWithin(weeksAhead, t.getTask().getDeadline()))))
 					&& (pinned == null || t.getTask().isPinned() == pinned)) {
 				return true;
 			}
@@ -117,7 +119,8 @@ public class ItemFilter {
 		return stream.toArray(EventWrapper[]::new);
 	}
 
-	public static DocumentWrapper[] getDocuments(Connection conn, HashMap<String, JsonObject> filterMap) throws SQLException {
+	public static DocumentWrapper[] getDocuments(Connection conn, HashMap<String, JsonObject> filterMap)
+			throws SQLException {
 
 		JsonObject user = filterMap.get("user");
 		JsonObject group = filterMap.get("group");
@@ -150,7 +153,8 @@ public class ItemFilter {
 
 		Stream<DocumentWrapper> stream = documents.stream().filter(t -> {
 			if ((category == null || t.getDocument().getCategory().equals(category))
-					&& (weeksAhead == -1 || (t.getDocument().getExpiration() != null && dateWithin(weeksAhead, t.getDocument().getExpiration())))
+					&& (weeksAhead == -1
+							|| (t.getDocument().getExpiration() != null && dateWithin(weeksAhead, t.getDocument().getExpiration())))
 					&& (pinned == null || t.getDocument().isPinned() == pinned)) {
 				return true;
 			}
@@ -164,9 +168,9 @@ public class ItemFilter {
 		ResultSetMetaData md = rs.getMetaData();
 		int count = md.getColumnCount();
 		for (int i = 1; i <= count; i++) {
-		    if (md.getColumnName(i).equals(s)) {
-		        return i;
-		    }
+			if (md.getColumnName(i).equals(s)) {
+				return i;
+			}
 		}
 
 		// Doesn't exist
@@ -181,7 +185,8 @@ public class ItemFilter {
 		if (itemDate != null) {
 
 			Date currentDate = new Date();
-			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)), ZoneId.systemDefault());
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)),
+					ZoneId.systemDefault());
 			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
 			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
