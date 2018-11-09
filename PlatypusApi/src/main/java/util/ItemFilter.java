@@ -36,10 +36,11 @@ public class ItemFilter {
 		JsonObject filter = filterMap.get("filter");
 		
 		int userId = user.get("userId").getAsInt();
-		Category category = Category.valueOf(filter.get("category").getAsString());
+		Category category = filter.get("category").isJsonNull() ? null
+				: Category.valueOf(filter.get("category").getAsString());
 		int weeksAhead = filter.get("weeksAhead").getAsInt();
-		Boolean pinned = filter.isJsonNull() ? null : filter.get("pinned").getAsBoolean();
-		
+		Boolean pinned = filter.get("pinned").isJsonNull() ? null : filter.get("pinned").getAsBoolean();
+
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.TASK, conn, userId);
 		
@@ -164,9 +165,9 @@ public class ItemFilter {
 		ResultSetMetaData md = rs.getMetaData();
 		int count = md.getColumnCount();
 		for (int i = 1; i <= count; i++) {
-		    if (md.getColumnName(i).equals(s)) {
-		        return i;
-		    }
+			if (md.getColumnName(i).equals(s)) {
+				return i;
+			}
 		}
 		
 		// Doesn't exist
@@ -181,7 +182,8 @@ public class ItemFilter {
 		if (itemDate != null) {
 			
 			Date currentDate = new Date();
-			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)), ZoneId.systemDefault());
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)),
+					ZoneId.systemDefault());
 			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 			
 			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
