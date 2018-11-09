@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { Fragment } from 'react';
 import {
   Button,
@@ -13,6 +14,7 @@ import {
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { connect } from 'react-redux';
 
+import { path } from '../../fetchHelpers';
 import TaskForm, { priorityOptions } from '../Forms/TaskForm';
 
 const Task = ({
@@ -168,28 +170,49 @@ class Tasks extends React.Component {
     },
   });
 
-  onTaskCreate = (values) => {
-    const newID = Math.max(...this.props.tasks.map(task => task.taskID)) + 1;
+  onTaskCreate = async (values) => {
+    const {
+      data: { data: task },
+    } = await axios.post(`${path}/app/task/add`, {
+      group: {
+        groupID: localStorage.getItem('selfGroupId'),
+      },
+      task: values,
+      user: {
+        userID: localStorage.getItem('userId'),
+      },
+    });
 
     this.props.dispatch({
       type: 'ADD_TASK',
-      payload: {
-        ...values,
-        taskID: newID,
-      },
+      payload: task,
     });
     this.onHideModal();
   };
 
   onTaskCreateClick = () => this.changeModal('create-task');
 
-  onTaskDelete = ({ taskID, category }) => this.props.dispatch({
-    type: 'REMOVE_TASK',
-    payload: {
-      category,
-      taskID,
-    },
-  });
+  onTaskDelete = async ({ taskID, category }) => {
+    await axios.post(`${path}/app/task/delete`, {
+      group: {
+        groupID: localStorage.getItem('selfGroupId'),
+      },
+      task: {
+        taskID,
+      },
+      user: {
+        userID: localStorage.getItem('userId'),
+      },
+    });
+
+    this.props.dispatch({
+      type: 'REMOVE_TASK',
+      payload: {
+        category,
+        taskID,
+      },
+    });
+  };
 
   onTaskDeleteClick = id => (event) => {
     event.preventDefault();
@@ -207,10 +230,16 @@ class Tasks extends React.Component {
     this.changeModal(`edit-${id}`);
   };
 
-  onTaskUpdate = (values) => {
+  onTaskUpdate = async (values) => {
+    const {
+      data: { data: task },
+    } = await axios.post(`${path}/app/task/update`, {
+      task: values,
+    });
+
     this.props.dispatch({
       type: 'UPDATE_TASK',
-      payload: values,
+      payload: task,
     });
     this.onHideModal();
   };
