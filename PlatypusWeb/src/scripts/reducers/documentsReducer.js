@@ -19,7 +19,7 @@ export default (
     case 'ADD_DOCUMENT':
       return {
         ...state,
-        [action.payload.category]: [...state[action.payload.category], action.payload].sort(
+        [action.payload.category]: [...(state[action.payload.category] || []), action.payload].sort(
           sortByExpiryDate,
         ),
       };
@@ -30,9 +30,10 @@ export default (
 
       return {
         ...state,
-        [action.payload[0].category]: [...state[action.payload.category], ...action.payload].sort(
-          sortByExpiryDate,
-        ),
+        [action.payload[0].category]: [
+          ...(state[action.payload.category] || []),
+          ...action.payload,
+        ].sort(sortByExpiryDate),
       };
     }
     case 'REMOVE_ALL_DOCUMENTS':
