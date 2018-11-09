@@ -24,7 +24,6 @@ export default (
         ),
       };
     case 'ADD_DOCUMENTS': {
-      console.log(action.payload);
       if (action.payload.length === 0) {
         return state;
       }
