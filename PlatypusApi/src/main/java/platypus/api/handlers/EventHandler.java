@@ -1,5 +1,4 @@
 package platypus.api.handlers;
-
 import spark.Request;
 import util.ItemFilter;
 
@@ -12,12 +11,12 @@ import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
-
 public class EventHandler {
 
+
 	// TODO: -Set up the response body to return CacheEntry + Event stuff
-	// -Test more extensively if needed
-	public static JsonResponse addEvent(HikariDataSource ds, Request req) throws SQLException {
+	//		 -Test more extensively if needed
+	public static JsonResponse addEvent(HikariDataSource ds, Request req) throws SQLException  {
 		Connection conn = null;
 		CallableStatement stmt = null;
 
@@ -32,7 +31,8 @@ public class EventHandler {
 
 			conn = ds.getConnection();
 
-			// Prepare the call from request body
+
+			//Prepare the call from request body
 			stmt = conn.prepareCall("{call insertEvent(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setString(1, event.get("pinned").getAsString());
 			stmt.setString(2, event.get("notification").getAsString());
@@ -50,7 +50,8 @@ public class EventHandler {
 			return new JsonResponse("SUCCESS", "", "Successfully inserted event.");
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in Add Event");
-		} finally {
+		}
+		finally {
 			conn.close();
 		}
 	}
@@ -66,11 +67,12 @@ public class EventHandler {
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
+
+
 			conn = ds.getConnection();
 
-			// Prepare the call from request body
-			stmt = conn.prepareStatement(
-					"UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
+			//Prepare the call from request body
+			stmt = conn.prepareStatement("UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
 			stmt.setString(1, event.get("name").getAsString());
 			stmt.setString(2, event.get("description").getAsString());
 			stmt.setString(3, event.get("category").getAsString());
@@ -78,6 +80,7 @@ public class EventHandler {
 			stmt.setString(5, event.get("endDate").getAsString());
 			stmt.setString(6, event.get("location").getAsString());
 			stmt.setInt(7, event.get("eventID").getAsInt());
+
 
 			int ret = stmt.executeUpdate();
 			// Successful update
@@ -91,17 +94,22 @@ public class EventHandler {
 
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in EditEvent");
-		} finally {
+		}
+		finally {
 			conn.close();
 		}
 	}
 
+
+
 	// Successfully removes the event from all appropriate tables.
 	// TODO: -Build the response correctly.
-	// -Test more extensively.
+	//		 -Test more extensively.
 	public static JsonResponse removeEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
+
+
 
 		try {
 			// Parse request body to get the event stuff.
@@ -115,22 +123,27 @@ public class EventHandler {
 
 			conn = ds.getConnection();
 
-			// Prepare the call from request body
+
+			//Prepare the call from request body
 			stmt = conn.prepareCall("{call delEvent(?)}");
 			stmt.setInt(1, event.get("eventID").getAsInt());
 			int ret = stmt.executeUpdate();
 
+
+
 			if (ret != 0) {
 				// TODO: Need to return CacheEntry for this user + the EventInfo
-				return new JsonResponse("SUCCESS", "", "Successfully deleted event.");
+					return new JsonResponse("SUCCESS", "", "Successfully deleted event.");
 			} else {
 				// There is no event with that eventID
-				return new JsonResponse("FAIL", "", "There is no event with that ID, failed event deletion.");
+					return new JsonResponse("FAIL", "", "There is no event with that ID, failed event deletion.");
 			}
+
 
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in Add Event");
-		} finally {
+		}
+		finally {
 			conn.close();
 		}
 	}
@@ -139,12 +152,13 @@ public class EventHandler {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS",
-					ItemFilter.getEvents(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
-		} catch (SQLException e) {
+			return new JsonResponse("SUCCESS", ItemFilter.getEvents(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
+		}
+		catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_events");
-		} finally {
+		}
+		finally {
 			conn.close();
 		}
 	}

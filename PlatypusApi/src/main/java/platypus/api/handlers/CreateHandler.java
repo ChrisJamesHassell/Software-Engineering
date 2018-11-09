@@ -34,32 +34,18 @@ public class CreateHandler implements Route {
 		this.authFilter = authFilter;
 	}
 
-
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
 		User u = JsonParser.getObject(User.class, request.body());
 
 		/*
-
-		 How the input from FE will look.
-
-		 {
-		 	"user": {
-		 		"id":1234
-		 		"name":"MYNAME"
-		 	}
-		 	"group": {
-		 		"id":1234
-		 		"name":"GROUPIE NAME"
-		 	}
-		 	"task": {
-		 		"id":123
-		 		"name":"name"
-		 		"desc":"desc123"
-		 		"other shit":""
-		 	}
-		 }
-
+		 * 
+		 * How the input from FE will look.
+		 * 
+		 * { "user": { "id":1234 "name":"MYNAME" } "group": { "id":1234
+		 * "name":"GROUPIE NAME" } "task": { "id":123 "name":"name" "desc":"desc123"
+		 * "other shit":"" } }
+		 * 
 		 */
 
 		if (!matchesRegexRequirements(u)) {
@@ -103,8 +89,7 @@ public class CreateHandler implements Route {
 
 			if (!rows.next()) {
 				return new JsonResponse("ERROR", "", "Error in retrieving userId for cookie.");
-			}
-			else {
+			} else {
 				id = rows.getInt(1);
 			}
 			rows.close();
@@ -115,15 +100,16 @@ public class CreateHandler implements Route {
 				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 						60 * 60 * 24 * 7, false, false);
 				// Insert success, return success
-				return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn), "Account created successfully.");
-			}
-			else {
+				return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn),
+						"Account created successfully.");
+			} else {
 				final URI uri = new URI(request.headers("Origin"));
-				if("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())){
+				if ("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())) {
 					response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 							60 * 60 * 24 * 7, false, false);
 					// Insert success, return success
-					return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn), "Account created successfully.");
+					return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn),
+							"Account created successfully.");
 				}
 				return new JsonResponse("ERROR", "", "The request is from an unknown origin");
 			}
@@ -135,7 +121,8 @@ public class CreateHandler implements Route {
 			errorMap.put("email: " + u.getEmail(), error.indexOf("unique_email"));
 			errorMap.put("username: " + u.getUsername(), error.indexOf("unique_username"));
 			for (String key : errorMap.keySet()) {
-			    if(errorMap.get(key) > -1) error = "ERROR: User with " + key + " already exists.";
+				if (errorMap.get(key) > -1)
+					error = "ERROR: User with " + key + " already exists.";
 			}
 
 			return new JsonResponse("ERROR", "", error);

@@ -28,23 +28,23 @@ import platypus.api.models.Task;
 import platypus.api.models.TaskWrapper;
 
 public class ItemFilter {
-	
+
 	public static TaskWrapper[] getTasks(Connection conn, HashMap<String, JsonObject> filterMap) throws SQLException {
-		
+
 		JsonObject user = filterMap.get("user");
 		JsonObject group = filterMap.get("group");
 		JsonObject filter = filterMap.get("filter");
-		
+
 		int userId = user.get("userId").getAsInt();
 		Category category = Category.valueOf(filter.get("category").getAsString());
 		int weeksAhead = filter.get("weeksAhead").getAsInt();
 		Boolean pinned = filter.isJsonNull() ? null : filter.get("pinned").getAsBoolean();
-		
+
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.TASK, conn, userId);
-		
+
 		ArrayList<TaskWrapper> tasks = new ArrayList<>();
-		
+
 		while (rs.next()) {
 			Task t = new Task();
 			t.setItemID(rs.getInt(getColumnWithName("taskID", rs)));
@@ -60,35 +60,35 @@ public class ItemFilter {
 			tasks.add(new TaskWrapper(t, rs.getInt(getColumnWithName("groupID", rs))));
 		}
 		rs.close();
-		
+
 		Stream<TaskWrapper> stream = tasks.stream().filter(t -> {
-			if ((category == null || t.getTask().getCategory().equals(category)) 
+			if ((category == null || t.getTask().getCategory().equals(category))
 					&& ((weeksAhead == -1 || (t.getTask().getDeadline() != null && dateWithin(weeksAhead, t.getTask().getDeadline()))))
 					&& (pinned == null || t.getTask().isPinned() == pinned)) {
 				return true;
 			}
 			return false;
 		});
-			
+
 		return stream.toArray(TaskWrapper[]::new);
 	}
-	
+
 	public static EventWrapper[] getEvents(Connection conn, HashMap<String, JsonObject> filterMap) throws SQLException {
-		
+
 		JsonObject user = filterMap.get("user");
 		JsonObject group = filterMap.get("group");
 		JsonObject filter = filterMap.get("filter");
-		
+
 		int userId = user.get("userId").getAsInt();
 		Category category = Category.valueOf(filter.get("category").getAsString());
 		int weeksAhead = filter.get("weeksAhead").getAsInt();
 		Boolean pinned = filter.get("pinned").getAsBoolean();
-		
+
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.EVENT, conn, userId);
-		
+
 		ArrayList<EventWrapper> events = new ArrayList<>();
-		
+
 		while (rs.next()) {
 			Event e = new Event();
 			e.setItemID(rs.getInt(getColumnWithName("eventID", rs)));
@@ -104,35 +104,35 @@ public class ItemFilter {
 			events.add(new EventWrapper(e, rs.getInt(getColumnWithName("groupID", rs))));
 		}
 		rs.close();
-		
+
 		Stream<EventWrapper> stream = events.stream().filter(t -> {
-			if ((category == null || t.getEvent().getCategory().equals(category)) 
-					&& (weeksAhead == -1 || dateWithin(weeksAhead, t.getEvent().getStart())) 
+			if ((category == null || t.getEvent().getCategory().equals(category))
+					&& (weeksAhead == -1 || dateWithin(weeksAhead, t.getEvent().getStart()))
 					&& (pinned == null || t.getEvent().isPinned() == pinned)) {
 				return true;
 			}
 			return false;
 		});
-			
+
 		return stream.toArray(EventWrapper[]::new);
 	}
-	
+
 	public static DocumentWrapper[] getDocuments(Connection conn, HashMap<String, JsonObject> filterMap) throws SQLException {
-		
+
 		JsonObject user = filterMap.get("user");
 		JsonObject group = filterMap.get("group");
 		JsonObject filter = filterMap.get("filter");
-		
+
 		int userId = user.get("userId").getAsInt();
 		Category category = Category.valueOf(filter.get("category").getAsString());
 		int weeksAhead = filter.get("weeksAhead").getAsInt();
 		Boolean pinned = filter.get("pinned").getAsBoolean();
-		
+
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.DOCUMENT, conn, userId);
-		
+
 		ArrayList<DocumentWrapper> documents = new ArrayList<>();
-		
+
 		while (rs.next()) {
 			Document d = new Document();
 			d.setItemID(rs.getInt(getColumnWithName("documentID", rs)));
@@ -147,16 +147,16 @@ public class ItemFilter {
 			documents.add(new DocumentWrapper(d, rs.getInt(getColumnWithName("groupID", rs))));
 		}
 		rs.close();
-		
+
 		Stream<DocumentWrapper> stream = documents.stream().filter(t -> {
-			if ((category == null || t.getDocument().getCategory().equals(category)) 
-					&& (weeksAhead == -1 || (t.getDocument().getExpiration() != null && dateWithin(weeksAhead, t.getDocument().getExpiration()))) 
+			if ((category == null || t.getDocument().getCategory().equals(category))
+					&& (weeksAhead == -1 || (t.getDocument().getExpiration() != null && dateWithin(weeksAhead, t.getDocument().getExpiration())))
 					&& (pinned == null || t.getDocument().isPinned() == pinned)) {
 				return true;
 			}
 			return false;
 		});
-			
+
 		return stream.toArray(DocumentWrapper[]::new);
 	}
 
@@ -168,25 +168,25 @@ public class ItemFilter {
 		        return i;
 		    }
 		}
-		
+
 		// Doesn't exist
 		return -1;
 	}
-	
+
 	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {
-		
+
 		// TODO, verify that MM-dd is correct and not dd-MM;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		
+
 		if (itemDate != null) {
-			
+
 			Date currentDate = new Date();
 			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)), ZoneId.systemDefault());
 			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-			
+
 			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
 			System.out.println("Date to compare to: " + DateFormat.getDateInstance().format(dateToCompareTo));
-			
+
 			if (itemDate.compareTo(dateToCompareTo) < 0) {
 				System.out.println("Here");
 				return true;
@@ -194,7 +194,7 @@ public class ItemFilter {
 
 		}
 		return false;
-	
+
 	}
-	
+
 }
