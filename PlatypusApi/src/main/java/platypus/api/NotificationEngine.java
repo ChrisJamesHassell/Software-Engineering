@@ -67,27 +67,29 @@ public class NotificationEngine implements Runnable {
 		try (Connection conn = dataSource.getConnection()) {
 			
 			try (PreparedStatement stmt = conn.prepareStatement("SELECT userID, email, username FROM users")) {
-				ResultSet rs = stmt.executeQuery();
-				// rs now has all users in db.
-				while (rs.next()) {
-					// Get all items for each user in the result set, while filtering for those with a notification
-					// date of today.
-					EventWrapper events[] = getNotifEvents(conn, rs.getInt(1));
-					TaskWrapper tasks[] = getNotifTasks(conn, rs.getInt(1));
-					DocumentWrapper docs[] = getNotifDocs(conn, rs.getInt(1));
-					emailBody = buildEmailBody(events, tasks, docs);
-					
-					if (emailBody.equals("")) {
-						System.out.println("No notification for this user");
-					} else {
-						System.out.println("Sending email for user: " + rs.getInt(1));
-						try {
-							sendEmail(session, NOTIF_EMAIL, rs.getString(2), emailBody);
-						} catch (MessagingException e) {
-							e.printStackTrace();
+
+				try (ResultSet rs = stmt.executeQuery()) {
+					// rs now has all users in db.
+					while (rs.next()) {
+						// Get all items for each user in the result set, while filtering for those with a notification
+						// date of today.
+						EventWrapper events[] = getNotifEvents(conn, rs.getInt(1));
+						TaskWrapper tasks[] = getNotifTasks(conn, rs.getInt(1));
+						DocumentWrapper docs[] = getNotifDocs(conn, rs.getInt(1));
+						emailBody = buildEmailBody(events, tasks, docs);
+						
+						if (emailBody.equals("")) {
+							System.out.println("No notification for this user");
+						} else {
+							System.out.println("Sending email for user: " + rs.getInt(1));
+							try {
+								sendEmail(session, NOTIF_EMAIL, rs.getString(2), emailBody);
+							} catch (MessagingException e) {
+								e.printStackTrace();
+							}
 						}
+						
 					}
-					
 				}
 			}
 			
@@ -206,7 +208,7 @@ public class NotificationEngine implements Runnable {
 	
 	
 	private static boolean dateEquals(java.sql.Date itemDate) {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 					
 		if (itemDate != null) {
 			Date test = new Date();
