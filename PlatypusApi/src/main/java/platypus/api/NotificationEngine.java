@@ -45,7 +45,7 @@ public class NotificationEngine implements Runnable {
 
 	private final DataSource dataSource;
 	private final Properties emailConfig;
-	private final String NOTIF_EMAIL = "se.test105@gmail.com";
+	private final String NOTIF_EMAIL = "setest465@gmail.com";
 	
 	public NotificationEngine(DataSource dataSource, Properties emailConfig) {
 		this.dataSource = dataSource;
@@ -58,10 +58,10 @@ public class NotificationEngine implements Runnable {
 		Session session = Session.getInstance(emailConfig, new Authenticator() {
 	    @Override
 		    protected PasswordAuthentication getPasswordAuthentication() {
-	    		System.out.println("Getting session:)");
 		        return new PasswordAuthentication(emailConfig.getProperty("username"), emailConfig.getProperty("password"));
 		    }
 		});
+		
 		String emailBody = null;
 		
 		try (Connection conn = dataSource.getConnection()) {
@@ -111,6 +111,7 @@ public class NotificationEngine implements Runnable {
 	}
 	
 	
+	// Iterates through the item wrappers for a user and builds their notification email body.
 	private static String buildEmailBody(EventWrapper[] events, TaskWrapper[] tasks, DocumentWrapper[] docs) {
 		String emailBody = "";
 	
@@ -129,9 +130,8 @@ public class NotificationEngine implements Runnable {
 		return emailBody;
 	}
 	
-	/* 
-	 *  Gets all events for the given user that need to be notified today.
-	 */
+	 
+	//  Gets all events for the given user that need to be notified today.
 	private static EventWrapper[] getNotifEvents(Connection conn, int userID) throws SQLException {
 		ResultSet items = Queries.getItems(ItemType.EVENT, conn, userID);
 		ArrayList<EventWrapper> events = new ArrayList<>();
@@ -179,6 +179,8 @@ public class NotificationEngine implements Runnable {
 		
 		return stream.toArray(TaskWrapper[]::new);
 	}
+	
+	
 	
 	public static DocumentWrapper[] getNotifDocs(Connection conn, int userID) throws SQLException {
 		ResultSet rs = Queries.getItems(ItemType.DOCUMENT, conn, userID);
