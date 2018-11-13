@@ -52,10 +52,7 @@ public class Main {
 			            });
 
 			            Spark.path("/task", () -> {
-			            	
-			            	// TODO, validate that this path works
 			            	Spark.get("", (req, res) -> TaskHandler.get(ds, req), gson::toJson);
-			            	
 			            	Spark.post("/add", (req, res) -> TaskHandler.addTask(ds, req), gson::toJson);
 			                Spark.post("/update", (req, res) -> TaskHandler.editTask(ds, req), gson::toJson);
 		                    Spark.post("/delete", (req, res) -> TaskHandler.removeTask(ds, req), gson::toJson);
@@ -67,6 +64,7 @@ public class Main {
 		                    Spark.post("/delete", (req, res) -> EventHandler.removeEvent(ds, req), gson::toJson);
 			            });
 			            Spark.path("/doc", () -> {
+			            	Spark.get("", (req, res) -> DocumentHandler.get(ds, req), gson::toJson);
 			            	Spark.post("/add", (req, res) -> DocumentHandler.addDoc(ds, req), gson::toJson);
 			            	Spark.post("/update", (req, res) -> DocumentHandler.editDoc(ds, req), gson::toJson);
 			            	Spark.post("/delete", (req, res) -> DocumentHandler.removeDoc(ds, req), gson::toJson);

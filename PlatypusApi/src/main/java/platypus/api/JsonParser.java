@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import platypus.api.models.Category;
 import spark.Request;
 
 public class JsonParser {
@@ -35,14 +36,5 @@ public class JsonParser {
 	 	}
 	 }
 	 */
-	public static HashMap<String, JsonObject> getFilterRequestObjects(Request r) {
-		JsonObject o = gson.fromJson(r.body(), JsonObject.class);
-		HashMap<String, JsonObject> map = new HashMap<>();
-		
-		ArrayList<String> keys = new ArrayList<>(Arrays.asList("user", "group", "filter"));
-		keys.forEach(key -> map.put(key, o.get(key).getAsJsonObject()));
-		
-		return map;
-	}
 	
 }
