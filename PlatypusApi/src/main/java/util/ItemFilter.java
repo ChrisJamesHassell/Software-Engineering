@@ -156,9 +156,9 @@ public class ItemFilter {
 		ResultSetMetaData md = rs.getMetaData();
 		int count = md.getColumnCount();
 		for (int i = 1; i <= count; i++) {
-		    if (md.getColumnName(i).equals(s)) {
-		        return i;
-		    }
+			if (md.getColumnName(i).equals(s)) {
+				return i;
+			}
 		}
 		
 		// Doesn't exist
@@ -172,7 +172,8 @@ public class ItemFilter {
 		if (itemDate != null) {
 			
 			Date currentDate = new Date();
-			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)), ZoneId.systemDefault());
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)),
+					ZoneId.systemDefault());
 			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 			
 			/*
