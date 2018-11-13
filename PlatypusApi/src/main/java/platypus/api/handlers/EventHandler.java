@@ -1,5 +1,7 @@
 package platypus.api.handlers;
 import spark.Request;
+import util.ItemFilter;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,7 +9,9 @@ import java.sql.SQLException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
-public class EventApi {
+
+import platypus.api.JsonParser;
+public class EventHandler {
 	
 	
 	// TODO: -Set up the response body to return CacheEntry + Event stuff
@@ -68,13 +72,14 @@ public class EventApi {
 			conn = ds.getConnection();
 			
 			//Prepare the call from request body
-			stmt = conn.prepareStatement("UPDATE userevents SET name = ?, description = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
+			stmt = conn.prepareStatement("UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
 			stmt.setString(1, event.get("name").getAsString());
 			stmt.setString(2, event.get("description").getAsString());
-			stmt.setString(3, event.get("startDate").getAsString());
-			stmt.setString(4, event.get("endDate").getAsString());
-			stmt.setString(5, event.get("location").getAsString());
-			stmt.setInt(6, event.get("eventID").getAsInt());
+			stmt.setString(3, event.get("category").getAsString());
+			stmt.setString(4, event.get("startDate").getAsString());
+			stmt.setString(5, event.get("endDate").getAsString());
+			stmt.setString(6, event.get("location").getAsString());
+			stmt.setInt(7, event.get("eventID").getAsInt());
 			
 			
 			int ret = stmt.executeUpdate();			
@@ -141,6 +146,21 @@ public class EventApi {
 		finally {
 			conn.close();
 		} 
+	}
+	
+	public static JsonResponse get(HikariDataSource ds, Request request) throws SQLException {
+		Connection conn = null;
+		try {
+			conn = ds.getConnection();
+			return new JsonResponse("SUCCESS", ItemFilter.getEvents(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return new JsonResponse("ERROR", "", "SQLException in get_all_events");
+		}
+		finally {
+			conn.close();
+		}
 	}
 	
 }

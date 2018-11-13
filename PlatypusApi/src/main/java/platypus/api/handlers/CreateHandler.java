@@ -86,7 +86,6 @@ public class CreateHandler implements Route {
 
 			// Create account in the database
 			CallableStatement st = conn.prepareCall("{call insertUser(?, ?, ?, ?, ?, ?)}");
-			System.out.println("HERE");
 			st.setString(1, u.getUsername());
 			st.setString(2, u.getFirstName());
 			st.setString(3, u.getLastName());
@@ -94,13 +93,11 @@ public class CreateHandler implements Route {
 			st.setString(5, BCrypt.hashpw(u.getPassword(), BCrypt.gensalt()));
 			st.setString(6, u.getDateOfBirth());
 			st.executeUpdate();
-			System.out.println("HERE2");
 			
 			// Get user id for cookie
 			ps = conn.prepareStatement("SELECT userID FROM users WHERE username = ?");
 			ps.setString(1, u.getUsername());
 			ResultSet rows = ps.executeQuery();
-			System.out.println("HERE3");
 			ps.close();
 			int id;
 			
@@ -108,12 +105,9 @@ public class CreateHandler implements Route {
 				return new JsonResponse("ERROR", "", "Error in retrieving userId for cookie.");
 			} 
 			else {
-				System.out.println("HERE4");
 				id = rows.getInt(1);
-				System.out.println("HERE5");
 			}
 			rows.close();
-			System.out.println("HERE6");
 			
 			// Branch cookie settings depending on if using production environment.
 			if (!Main.IS_PRODUCTION) {
@@ -121,7 +115,6 @@ public class CreateHandler implements Route {
 				response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 						60 * 60 * 24 * 7, false, false);
 				// Insert success, return success
-				System.out.println("HERE???? WTF2222");
 				return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn), "Account created successfully.");
 			}
 			else {
@@ -130,10 +123,8 @@ public class CreateHandler implements Route {
 					response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 							60 * 60 * 24 * 7, false, false);
 					// Insert success, return success
-					System.out.println("HERE???? WTF111");
 					return new JsonResponse("SUCCESS", CacheUtil.buildCacheEntry(u.getUsername(), id, conn), "Account created successfully.");
 				}
-				System.out.println("HERE???? WTF");
 				return new JsonResponse("ERROR", "", "The request is from an unknown origin");
 			}
 		} catch (SQLException e) {
