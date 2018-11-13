@@ -299,12 +299,13 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-	IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
+	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
 	IN `fileName` VARCHAR(32),
 	IN `expirationDate` DATE
 
 ,
 	OUT `returnID` INT(11)
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -342,12 +343,13 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-	IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
+	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
 	IN `startDate` DATE,
 	IN `endDate` DATE,
 	IN `location` VARCHAR(100)
 ,
 	OUT `returnID` INT(11)
+
 
 )
 BEGIN
@@ -419,11 +421,12 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-	IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
+	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
 	IN `deadline` DATE,
 	IN `priority` enum('Low','Mid','High')
 ,
 	OUT `returnID` INT(11)
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
