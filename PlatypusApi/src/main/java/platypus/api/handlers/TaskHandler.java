@@ -151,7 +151,7 @@ public class TaskHandler {
 		try {
 			conn = ds.getConnection();
 			
-			return new JsonResponse("SUCCESS", ItemFilter.getTasks(ds.getConnection(), request), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getTasks(conn, request), "Berfect!");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
