@@ -102,7 +102,7 @@ public class TaskHandler {
 				stmt.close();
 				
 				if (ret == 1) {
-					return new JsonResponse("SUCCESS", getReturnedTask(task.get("taskID").getAsInt(), conn), "Successfully edited event");	
+					return new JsonResponse("SUCCESS", getReturnedTask(task.get("taskID").getAsInt(), conn), "Successfully edited task");	
 				} else {
 					return new JsonResponse("FAIL", "", "Failure updating the relational table");
 				}
