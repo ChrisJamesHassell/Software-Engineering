@@ -68,6 +68,9 @@ export default class SignupForm extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
+  componentDidMount() {
+    this.props.clearErrorAlert();
+  }
   // componentDidUpdate(prevProps, nextProps) {
   //   const stateChanged = JSON.stringify(nextProps) !== JSON.stringify(this.state);
   //   const objCount = Object.keys(this.state.data).length;
@@ -84,6 +87,8 @@ export default class SignupForm extends React.Component {
   //     console.log({ nextProps, state: this.state });
   //   }
   // }
+
+  
 
   setValidationState(id, validProps) {
     const mergedProps = Object.assign(this.state.data[id], validProps);
