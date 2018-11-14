@@ -1,4 +1,5 @@
 import axios from 'axios';
+import qs from 'qs';
 import React, { Fragment } from 'react';
 import {
   Button,
@@ -68,7 +69,7 @@ export class TaskList extends React.Component {
 
     return (
       <Fragment>
-        {[2, 1, 0].map((value, index) => {
+        {['HIGH', 'MID', 'LOW'].map((value, index) => {
           const priority = priorityOptions.find(op => op.value === value);
 
           if (!priority) return null;
@@ -117,6 +118,24 @@ class Tasks extends React.Component {
   state = {
     activeModal: null,
   };
+
+  async componentDidMount() {
+    const response = await fetch(`${path}/app/task?${qs.stringify({
+      category: 'null',
+      groupID: localStorage.getItem('selfGroupId'),
+      pinned: 'null',
+      userID: localStorage.getItem('userId'),
+      weeksAhead: -1,
+    })}`, {
+      credentials: 'include',
+    });
+    const { data: tasks } = await response.json();
+
+    this.props.dispatch({
+      type: 'ADD_TASKS',
+      payload: tasks.map(task => task.task),
+    });
+  }
 
   changeModal = value => this.setState({ activeModal: value });
 
@@ -171,17 +190,20 @@ class Tasks extends React.Component {
   });
 
   onTaskCreate = async (values) => {
-    const {
-      data: { data: task },
-    } = await axios.post(`${path}/app/task/add`, {
-      group: {
-        groupID: localStorage.getItem('selfGroupId'),
-      },
-      task: values,
-      user: {
-        userID: localStorage.getItem('userId'),
-      },
+    const response = await fetch(`${path}/app/task/add`, {
+      body: JSON.stringify({
+        group: {
+          groupID: localStorage.getItem('selfGroupId'),
+        },
+        task: values,
+        user: {
+          userID: localStorage.getItem('userId'),
+        },
+      }),
+      credentials: 'include',
+      method: 'POST',
     });
+    const { data: task } = await response.json();
 
     this.props.dispatch({
       type: 'ADD_TASK',

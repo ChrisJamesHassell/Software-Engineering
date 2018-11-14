@@ -4,17 +4,18 @@ import React from 'react';
 import { Button, FormControl, FormGroup } from 'react-bootstrap';
 import Select from 'react-select';
 
+const boolOptions = [{ label: 'Yes', value: true }, { label: 'No', value: false }];
 const categoryOptions = [
-  { label: 'Auto', value: 'Auto' },
-  { label: 'Home', value: 'Home' },
-  { label: 'Medical', value: 'Medical' },
-  { label: 'Miscellaneous', value: 'Miscellaneous' },
-  { label: 'ToDo', value: 'ToDo' },
+  { label: 'Appliances', value: 'APPLIANCES' },
+  { label: 'Auto', value: 'AUTO' },
+  { label: 'Meals', value: 'MEALS' },
+  { label: 'Medical', value: 'MEDICAL' },
+  { label: 'Miscellaneous', value: 'MISCELLANEOUS' },
 ];
 export const priorityOptions = [
-  { label: 'High', value: 2 },
-  { label: 'Medium', value: 1 },
-  { label: 'Low', value: 0 },
+  { label: 'High', value: 'HIGH' },
+  { label: 'Medium', value: 'MID' },
+  { label: 'Low', value: 'LOW' },
 ];
 
 export default class TaskForm extends React.Component {
@@ -24,7 +25,7 @@ export default class TaskForm extends React.Component {
     this.props.onSubmit({
       ...values,
       category: values.category.value,
-      deadline: new Date(values.deadline).toISOString(),
+      pinned: values.pinned.value ? 1 : 0,
       priority: values.priority.value,
     });
     setSubmitting(false);
@@ -41,6 +42,8 @@ export default class TaskForm extends React.Component {
               ...task,
               category: categoryOptions.find(op => op.value === task.category),
               deadline: moment(task.deadline).format('YYYY-MM-DD'),
+              notification: moment(task.notification).format('YYYY-MM-DD'),
+              pinned: boolOptions.find(op => op.value === task.pinned),
               priority: priorityOptions.find(op => op.value === task.priority),
             }
             : {
@@ -48,6 +51,8 @@ export default class TaskForm extends React.Component {
               deadline: '',
               description: '',
               name: '',
+              notification: '',
+              pinned: null,
               priority: null,
             }
         }
@@ -58,6 +63,7 @@ export default class TaskForm extends React.Component {
         }) => (
           <Form>
             <FormGroup>
+              <label>Name</label>
               <FormControl
                 autoFocus
                 name="name"
@@ -67,6 +73,7 @@ export default class TaskForm extends React.Component {
               />
             </FormGroup>
             <FormGroup>
+              <label>Description</label>
               <FormControl
                 name="description"
                 onChange={handleChange}
@@ -75,6 +82,7 @@ export default class TaskForm extends React.Component {
               />
             </FormGroup>
             <FormGroup>
+              <label>Category</label>
               <Select
                 onChange={this.onSelectChange('category', setFieldValue)}
                 options={categoryOptions}
@@ -83,20 +91,39 @@ export default class TaskForm extends React.Component {
               />
             </FormGroup>
             <FormGroup>
+              <label>Deadline</label>
               <FormControl
                 name="deadline"
                 onChange={handleChange}
-                placeholder="Deadline"
                 type="date"
                 value={values.deadline}
               />
             </FormGroup>
             <FormGroup>
+              <label>Notification</label>
+              <FormControl
+                name="notification"
+                onChange={handleChange}
+                type="date"
+                value={values.notification}
+              />
+            </FormGroup>
+            <FormGroup>
+              <label>Priority</label>
               <Select
                 onChange={this.onSelectChange('priority', setFieldValue)}
                 options={priorityOptions}
                 placeholder="Select Priority..."
                 value={values.priority}
+              />
+            </FormGroup>
+            <FormGroup>
+              <label>Pinned?</label>
+              <Select
+                onChange={this.onSelectChange('pinned', setFieldValue)}
+                options={boolOptions}
+                placeholder="Select Pinned..."
+                value={values.pinned}
               />
             </FormGroup>
             <Button bsSize="sm" bsStyle="primary" disabled={isSubmitting} type="submit">
