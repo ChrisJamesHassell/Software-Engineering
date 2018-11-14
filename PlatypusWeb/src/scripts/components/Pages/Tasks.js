@@ -162,7 +162,7 @@ class Tasks extends React.Component {
 
     const task = Object.values(tasks)
       .reduce((prev, curr) => [...prev, ...curr], [])
-      .find(tsk => tsk.taskID === draggableId);
+      .find(tsk => tsk.itemID === draggableId);
 
     if (!task) return;
 
@@ -214,24 +214,28 @@ class Tasks extends React.Component {
 
   onTaskCreateClick = () => this.changeModal('create-task');
 
-  onTaskDelete = async ({ taskID, category }) => {
-    await axios.post(`${path}/app/task/delete`, {
-      group: {
-        groupID: localStorage.getItem('selfGroupId'),
-      },
-      task: {
-        taskID,
-      },
-      user: {
-        userID: localStorage.getItem('userId'),
-      },
+  onTaskDelete = async ({ itemID, category }) => {
+    await fetch(`${path}/app/task/delete`, {
+      body: JSON.stringify({
+        group: {
+          groupID: localStorage.getItem('selfGroupId'),
+        },
+        task: {
+          taskID: itemID,
+        },
+        user: {
+          userID: localStorage.getItem('userId'),
+        },
+      }),
+      credentials: 'include',
+      method: 'POST',
     });
 
     this.props.dispatch({
       type: 'REMOVE_TASK',
       payload: {
         category,
-        taskID,
+        itemID,
       },
     });
   };
@@ -272,9 +276,10 @@ class Tasks extends React.Component {
     let modalTask;
 
     if (activeModal && activeModal.includes('-')) {
+      console.log(activeModal, tasks);
       modalTask = Object.values(tasks)
         .reduce((prev, curr) => [...prev, ...curr], [])
-        .find(task => task.taskID === Number(activeModal.split('-')[1]));
+        .find(task => task.itemID === Number(activeModal.split('-')[1]));
     }
 
     return (
@@ -350,11 +355,11 @@ class Tasks extends React.Component {
                 <TaskList
                   tasks={tasks[value].map(task => ({
                     ...task,
-                    id: task.taskID,
+                    id: task.itemID,
                     onTaskClick: this.onTaskClick(task),
                     onTaskComplete: this.onTaskComplete(task),
-                    onTaskDeleteClick: this.onTaskDeleteClick(task.taskID),
-                    onTaskEditClick: this.onTaskEditClick(task.taskID),
+                    onTaskDeleteClick: this.onTaskDeleteClick(task.itemID),
+                    onTaskEditClick: this.onTaskEditClick(task.itemID),
                   }))}
                 />
               </DragDropContext>
