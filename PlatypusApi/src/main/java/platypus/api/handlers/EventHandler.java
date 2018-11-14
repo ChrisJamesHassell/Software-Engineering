@@ -1,4 +1,5 @@
 package platypus.api.handlers;
+
 import spark.Request;
 import util.ItemFilter;
 
@@ -19,12 +20,12 @@ import platypus.api.models.Event;
 import platypus.api.models.ItemType;
 import platypus.api.models.Priority;
 import platypus.api.models.Task;
+
 public class EventHandler {
 
-
 	// TODO: -Set up the response body to return CacheEntry + Event stuff
-	//		 -Test more extensively if needed
-	public static JsonResponse addEvent(HikariDataSource ds, Request req) throws SQLException  {
+	// -Test more extensively if needed
+	public static JsonResponse addEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
 
@@ -38,7 +39,6 @@ public class EventHandler {
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
 			conn = ds.getConnection();
-
 
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertEvent(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
@@ -63,8 +63,7 @@ public class EventHandler {
 		} catch (SQLException sqlE) {
 			sqlE.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLError in Add Event");
-		}
-		finally {
+		} finally {
 			conn.close();
 		}
 	}
@@ -82,8 +81,9 @@ public class EventHandler {
 
 			conn = ds.getConnection();
 
-			//Prepare the call from request body
-			stmt = conn.prepareStatement("UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
+			// Prepare the call from request body
+			stmt = conn.prepareStatement(
+					"UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
 			stmt.setString(1, event.get("name").getAsString());
 			stmt.setString(2, event.get("description").getAsString());
 			stmt.setString(3, event.get("category").getAsString());
@@ -106,17 +106,14 @@ public class EventHandler {
 
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in EditEvent");
-		}
-		finally {
+		} finally {
 			conn.close();
 		}
 	}
 
-
-
 	// Successfully removes the event from all appropriate tables.
 	// TODO: -Build the response correctly.
-	//		 -Test more extensively.
+	// -Test more extensively.
 	public static JsonResponse removeEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
@@ -133,8 +130,7 @@ public class EventHandler {
 
 			conn = ds.getConnection();
 
-
-			//Prepare the call from request body
+			// Prepare the call from request body
 			stmt = conn.prepareCall("{call delEvent(?)}");
 			stmt.setInt(1, event.get("eventID").getAsInt());
 			int ret = stmt.executeUpdate();
@@ -142,17 +138,15 @@ public class EventHandler {
 
 			if (ret != 0) {
 				// TODO: Need to return CacheEntry for this user + the EventInfo
-					return new JsonResponse("SUCCESS", "", "Successfully deleted event.");
+				return new JsonResponse("SUCCESS", "", "Successfully deleted event.");
 			} else {
 				// There is no event with that eventID
-					return new JsonResponse("FAIL", "", "There is no event with that ID, failed event deletion.");
+				return new JsonResponse("FAIL", "", "There is no event with that ID, failed event deletion.");
 			}
-
 
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in Add Event");
-		}
-		finally {
+		} finally {
 			conn.close();
 		}
 	}
@@ -162,19 +156,18 @@ public class EventHandler {
 		try {
 			conn = ds.getConnection();
 			return new JsonResponse("SUCCESS", ItemFilter.getEvents(ds.getConnection(), request), "Berfect!");
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_events");
-		}
-		finally {
+		} finally {
 			conn.close();
 		}
 	}
 
 	private static Event getReturnedEvent(int eventID, Connection conn) throws SQLException {
 
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM userevents INNER JOIN has_events ON userevents.eventID = has_events.eventID WHERE userevents.eventID = ?");
+		PreparedStatement ps = conn.prepareStatement(
+				"SELECT * FROM userevents INNER JOIN has_events ON userevents.eventID = has_events.eventID WHERE userevents.eventID = ?");
 		ps.setInt(1, eventID);
 
 		ResultSet rs = ps.executeQuery();
@@ -201,7 +194,5 @@ public class EventHandler {
 		return e;
 
 	}
-
-}
 
 }

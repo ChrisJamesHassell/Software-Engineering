@@ -39,8 +39,7 @@ public class DocumentHandler {
 
 			conn = ds.getConnection();
 
-
-			//Prepare the call from request body
+			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertDoc(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setString(1, document.get("pinned").getAsString());
 			stmt.setString(2, document.get("notification").getAsString());
@@ -156,8 +155,7 @@ public class DocumentHandler {
 		try {
 			conn = ds.getConnection();
 			return new JsonResponse("SUCCESS", ItemFilter.getDocuments(ds.getConnection(), request), "Berfect!");
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_documents");
 		} finally {
@@ -167,7 +165,8 @@ public class DocumentHandler {
 
 	private static Document getReturnedDocument(int docID, Connection conn) throws SQLException {
 
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM documents INNER JOIN has_documents ON documents.docID = has_documents.docID WHERE documents.docID = ?");
+		PreparedStatement ps = conn.prepareStatement(
+				"SELECT * FROM documents INNER JOIN has_documents ON documents.docID = has_documents.docID WHERE documents.docID = ?");
 		ps.setInt(1, docID);
 
 		ResultSet rs = ps.executeQuery();
@@ -193,7 +192,5 @@ public class DocumentHandler {
 		return d;
 
 	}
-
-}
 
 }
