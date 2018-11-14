@@ -1,17 +1,18 @@
-import { connect } from 'react-redux';
-import React, { PureComponent, createRef } from 'react'
-import PropTypes from 'prop-types'
-import day from 'dayjs'
-import { Glyphicon, Panel } from 'react-bootstrap';
+// import { connect } from 'react-redux';
+// import React, { PureComponent, createRef } from 'react'
+import React from 'react'
+// import PropTypes from 'prop-types'
+// import day from 'dayjs'
+// import { Glyphicon, Panel } from 'react-bootstrap';
 // import Calendar from 'react-calendar';
 // import BaseCalendar from 'tui-calendar';
-import NavIcons from '../../../images/icons/NavIcons';
-import { categories } from '../../fetchHelpers';
+// import NavIcons from '../../../images/icons/NavIcons';
+// import { categories } from '../../fetchHelpers';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 
 
-import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
+// import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.less'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -53,20 +54,20 @@ const events = [
     },
 ]
 
-let MyOtherNestedComponent = () => <div>NESTED COMPONENT</div>
-const resourceMap = [
-    { resourceId: 1, resourceTitle: 'Board room' },
-    { resourceId: 2, resourceTitle: 'Training room' },
-    { resourceId: 3, resourceTitle: 'Meeting room 1' },
-    { resourceId: 4, resourceTitle: 'Meeting room 2' },
-]
-let MyCustomHeader = ({ label }) => (
-    <div>
-        CUSTOM HEADER:
-    <div>{label}</div>
-        <MyOtherNestedComponent />
-    </div>
-)
+// let MyOtherNestedComponent = () => <div>NESTED COMPONENT</div>
+// const resourceMap = [
+//     { resourceId: 1, resourceTitle: 'Board room' },
+//     { resourceId: 2, resourceTitle: 'Training room' },
+//     { resourceId: 3, resourceTitle: 'Meeting room 1' },
+//     { resourceId: 4, resourceTitle: 'Meeting room 2' },
+// ]
+// let MyCustomHeader = ({ label }) => (
+//     <div>
+//         CUSTOM HEADER:
+//     <div>{label}</div>
+//         <MyOtherNestedComponent />
+//     </div>
+// )
 
 export class Events extends React.Component {
     constructor(...args) {

@@ -2,7 +2,7 @@ import React from 'react';
 import {
   BrowserRouter as Router, Route, Redirect, withRouter,
 } from 'react-router-dom';
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
 import { AuthLayout } from '../Layouts/AuthLayout';
 import { hasCookie } from '../../fetchHelpers';
 import AppNavbar from '../Navbar/AppNavbar';
@@ -34,13 +34,13 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   />
 );
 
-const App = () => {
+const App = ({store}) => {
   const home = hasCookie ? '/dashboard' : '/login';
   return (
     <Router>
       <div id="container">
         <AppNavbar isAuth={hasCookie} />
-        <Route path="/login" render={props => <Login {...props} />} />
+        <Route path="/login" render={props => <Login {...props} store={store} />} />
         <PrivateRoute path="/dashboard" component={AuthLayout} />
         <Home home={home} />
       </div>
@@ -48,10 +48,11 @@ const App = () => {
   );
 };
 
-const mapStateToProps = state => ({
-  pinFilter: state.pinFilter,
-  categoryFilter: state.categoryFilter,
-  groupFilter: state.groupFilter,
-});
-
-export default connect(mapStateToProps)(App);
+export default App;
+// const mapStateToProps = (state) => {
+//   var obj = {}
+//   Object.entries(state.user).forEach(([key, value]) => {
+//     obj[key] = value;
+//   });
+// }
+// export default connect(mapStateToProps)(App);

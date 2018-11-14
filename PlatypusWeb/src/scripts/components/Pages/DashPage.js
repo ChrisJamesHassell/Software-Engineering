@@ -3,7 +3,9 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Glyphicon, Panel } from 'react-bootstrap';
 import NavIcons from '../../../images/icons/NavIcons';
-import { categories } from '../../fetchHelpers';
+import { categories, path } from '../../fetchHelpers';
+import { setUserData } from '../../actions/actions';
+import fetch from 'cross-fetch';
 
 const DashBoxBody = (props) => (
     <div className='dash-body'>BODEH
@@ -47,6 +49,74 @@ class Dash extends React.Component {
         super(props);
         this.state = {}
     }
+
+    componentDidMount() {
+        console.log("DASH MOUNTED");
+        let userId = parseInt(localStorage.getItem('userId'));
+        let selfGroupId = parseInt(localStorage.getItem('selfGroupId'));
+        let groupList = JSON.parse(localStorage.getItem('groupList'));
+
+        let userData = {
+            username: localStorage.getItem('username').toString(),
+            userId: userId,
+            selfGroupId: selfGroupId,
+            groupList: groupList
+        }
+
+        let fetchHeader = {
+            "filter": {
+                "category": null,
+                "pinned": null,
+                "weeksAhead": -1
+            },
+            "group": {
+                "groupId": selfGroupId
+            },
+            "user": {
+                "userId": userId
+            }
+        }
+
+        this.props.dispatch(setUserData(userData)) // set the user data in the store
+
+        const paths = ['task', 'event', 'doc'];
+
+
+        paths.map(url => {
+            var opts = {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'filter': JSON.stringify(fetchHeader.filter),
+                    'group': JSON.stringify(fetchHeader.group),
+                    'user': JSON.stringify(fetchHeader.user)
+                }
+            };
+            fetch(`${path}/app/${url}`, opts)
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        console.log("RESPONSE RESULT: ", result);
+                        this.setState({
+                            isLoaded: true,
+                            items: result.items
+                        });
+                    },
+                    // Note: it's important to handle errors here
+                    // instead of a catch() block so that we don't swallow
+                    // exceptions from actual bugs in components.
+                    (error) => {
+                        console.log("THERE WAS AN ERROR FETCHING: ", url);
+                        this.setState({
+                            isLoaded: true,
+                            error
+                        });
+                    }
+                )
+        })
+    }
+
     render() {
         const appCategories = Object.keys(this.props)
             .filter(key => categories.includes(key))
@@ -59,7 +129,7 @@ class Dash extends React.Component {
             <div id='page-container'>
                 {Object.keys(appCategories).map((category, index) => {
                     return (
-                        <DashBox key={index} category={category} {...this.props[category]} />
+                        <DashBox key={index} category={category} {...this.props[category]} {...this.state} />
                     )
                 })}
             </div>
@@ -87,6 +157,17 @@ const mapStateToProps = state => ({
         events: state.events.Medical,
         documents: state.documents.Medical,
         tasks: state.tasks.Medical,
+    },
+    Miscellaneous: {
+        events: state.events.Miscellaneous,
+        documents: state.documents.Miscellaneous,
+        tasks: state.tasks.Miscellaneous,
+    },
+    User: {
+        username: state.user.username,
+        userId: state.user.userId,
+        selfGroupId: state.user.selfGroupId,
+        groupList: state.user.groupList
     }
 });
 

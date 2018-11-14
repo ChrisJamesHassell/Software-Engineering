@@ -2,9 +2,11 @@ import React from 'react';
 import { Button, Grid, Row, Col, Alert, Modal } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Route, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
 import LoginForm from '../Forms/LoginForm';
 import SignupForm from '../Forms/SignupForm';
 import logo from '../../../images/icons/icon_circle_white.svg';
+// import { setUserData, CategoryFilters, setCategoryFilter } from '../../actions/actions';
 
 const LoginMobileContent = (props) => (
   <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
@@ -44,15 +46,25 @@ const RowSpacer = () => (
   </Row>
 );
 
-export default class Login extends React.Component {
+export class Login extends React.Component {
+  // export default class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       redirect: false,
       error: '',
-      loading: false
+      loading: false,
+      isMounted: false
     }
     this.login = this.login.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({isMounted: true})
+  }
+
+  componentWillUnmount() {
+    this.setState({isMounted: false})
   }
 
   login(route, data) {
@@ -79,38 +91,14 @@ export default class Login extends React.Component {
 
   handleJsonResponse(response) {
     this.setState({ loading: false });
-    // const {
-    //   data: {
-    //     documents, events, tasks, ...user
-    //   },
-    //   status,
-    // } = response;
-
-    // this.props.dispatch({
-    //   type: 'ADD_DOCUMENTS',
-    //   payload: documents,
-    // });
-    // this.props.dispatch({
-    //   type: 'ADD_EVENTS',
-    //   payload: events,
-    // });
-    // this.props.dispatch({
-    //   type: 'ADD_TASKS',
-    //   payload: tasks,
-    // });
-    // this.props.dispatch({
-    //   type: 'UPDATE_USER',
-    //   payload: user,
-    // });
-
     const { status } = response;
     const isSuccess = status === 'SUCCESS';
     const data = Object.assign({}, response.data);
-    Object.keys(data).forEach((key) =>{
+    Object.keys(data).forEach((key) => {
       let value = JSON.stringify(data[key]);
       localStorage.setItem(key, value);
     })
-    
+
     if (isSuccess) this.setState({ redirect: true });
     else this.logError(response.message);
   }
@@ -129,7 +117,7 @@ export default class Login extends React.Component {
   render() {
     const isLogin = this.props.location.pathname === '/login';
     const { redirect } = this.state;
-    
+
     if (redirect) {
       window.location.reload();
       return <Redirect to="/dashboard" />;
@@ -192,3 +180,23 @@ export default class Login extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    user: state.user
+  }
+}
+
+// const mapDispatchToProps = dispatch => ({
+//   setUserData: (data) => dispatch(setUserData(data))
+// })
+// ​
+// const FilterLink = connect(
+//   mapStateToProps,
+//   mapDispatchToProps
+// )(Link)
+
+export default connect(
+  mapStateToProps,
+  // mapDispatchToProps
+  )(Login);

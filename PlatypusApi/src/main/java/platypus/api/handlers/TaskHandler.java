@@ -4,6 +4,8 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -136,10 +138,22 @@ public class TaskHandler {
 	}
 
 	public static JsonResponse get(HikariDataSource ds, Request request) throws SQLException {
+		// For GET requests, we have to put the required data in the HEADERS, not the body
+		HashMap<String, JsonObject> filterMap = new HashMap();
+		Gson g = new Gson();
+		filterMap.put("user", g.fromJson(request.headers("user"), JsonObject.class));
+		filterMap.put("group", g.fromJson(request.headers("group"), JsonObject.class));
+		filterMap.put("filter", g.fromJson(request.headers("filter"), JsonObject.class));
+		System.out.println("GOT TO TASK GET: ");
+		for (Entry<String, JsonObject> entry : filterMap.entrySet()) {
+		    String key = entry.getKey();
+		    Object value = entry.getValue();
+		    System.out.println("KEY: " + key + " || VALUE: " + value);
+		}
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", ItemFilter.getTasks(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getTasks(ds.getConnection(), filterMap), "Berfect!");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

@@ -6,56 +6,32 @@ Perform side effects like API calls and routing transitions;
 
 Call non-pure functions, e.g. Date.now() or Math.random()
 */
-import { PinFilters, CategoryFilters, ItemTypeFilters, GroupFilters } from '../actions/actions'
+import { combineReducers } from 'redux'
+import * as appActions from '../actions/actions';
+
+// const { SHOW_ALL } = appActions.CategoryFilters;
+
 const defaultState = {
-    pinFilter: 'SHOW_ALL', // PINNED_ONLY
-    categoryFilter: 'SHOW_ALL', // 'APPLIANCES', 'AUTO', 'MEALS', 'MEDICAL'
-    itemTypeFilter: 'SHOW_ALL', // 'TASKS', 'EVENTS', 'DOCUMENTS',
-    groupFilter: 'USER_ONLY', // USER_ONLY, GROUP_ONLY, MULTI_GROUP
+    filters: {
+        pinFilter: 'SHOW_ALL', // PINNED_ONLY
+        categoryFilter: 'SHOW_ALL', // 'APPLIANCES', 'AUTO', 'MEALS', 'MEDICAL'
+        itemTypeFilter: 'SHOW_ALL', // 'TASKS', 'EVENTS', 'DOCUMENTS',
+        groupFilter: 'USER_ONLY', // USER_ONLY, GROUP_ONLY, MULTI_GROUP
+    },
     user: { // returned from the Login/Create API call
         username: null,
         userId: null,
         selfGroupId: null,
         groupList: [{}]
     },
-    maxItems: 10,
-    categories: ['Appliances', 'Auto', 'Meals', 'Medical'],
-    subCategories: ['Tasks', 'Events', 'Documents'],
-    items: {
-        'Appliances': {
-            'Tasks': [{
-                type: 'Tasks',
-                id: 0,
-                name: 'task01',
-                pinned: true,
-                description: 'description for task 1',
-                category: 'Medical',
-                data: {}
-            }],
-            'Events': [{}],
-            'Documents': [{}]
-        },
-        'Auto': {
-            'Tasks': [{}],
-            'Events': [{}],
-            'Documents': [{}]
-        },
-        'Meals': {
-            'Tasks': [{}],
-            'Events': [{}],
-            'Documents': [{}]
-        },
-        'Medical': {
-            'Tasks': [{}],
-            'Events': [{}],
-            'Documents': [{}]
-        }
-    }
+    categories: ['Appliances', 'Auto', 'Meals', 'Medical', 'Miscellaneous'],
 }
+
 export const userReducer = (state = defaultState.user, action) => {
     switch (action.type) {
         case 'SET_USER_DATA':
-            return Object.assign({ ...state }, { user: { ...action.userData } })
+            return Object.assign({}, state, action.userData);
+
         case 'GET_USER_DATA':
             return state.user;
         default:
@@ -63,16 +39,7 @@ export const userReducer = (state = defaultState.user, action) => {
     }
 }
 
-export const itemsReducer = (state = defaultState, action) => {
-    switch (action.type) {
-        case 'GET_ITEMS':
-            return state.items;
-        default:
-            return state;
-    }
-}
-
-export const pinFilter = (state = PinFilters.PINNED_ONLY, action) => {
+const pinFilterReducer = (state = appActions.PinFilters.PINNED_ONLY, action) => {
     switch (action.type) {
         case 'SET_PIN_FILTER':
             return action.filter;
@@ -81,16 +48,17 @@ export const pinFilter = (state = PinFilters.PINNED_ONLY, action) => {
     }
 }
 
-export const categoryFilter = (state = CategoryFilters.SHOW_ALL, action) => {
+const categoryFilterReducer = (state = appActions.CategoryFilters.SHOW_ALL, action) => {
     switch (action.type) {
         case 'SET_CATEGORY_FILTER':
+            console.log("GOT TO CAT FILTUH : ", action.filter);
             return action.filter;
         default:
             return state;
     }
 }
 
-export const itemTypeFilter = (state = ItemTypeFilters.SHOW_ALL, action) => {
+const itemTypeFilterReducer = (state = appActions.ItemTypeFilters.SHOW_ALL, action) => {
     switch (action.type) {
         case 'SET_ITEMTYPE_FILTER':
             return action.filter;
@@ -99,7 +67,7 @@ export const itemTypeFilter = (state = ItemTypeFilters.SHOW_ALL, action) => {
     }
 }
 
-export const groupFilter = (state = GroupFilters.SHOW_ALL, action) => {
+const groupFilterReducer = (state = appActions.GroupFilters.SHOW_ALL, action) => {
     switch (action.type) {
         case 'SET_GROUP_FILTER':
             return action.filter;
@@ -108,6 +76,13 @@ export const groupFilter = (state = GroupFilters.SHOW_ALL, action) => {
     }
 }
 
+
+export const filterReducer = combineReducers({
+    pinFilterReducer,
+    categoryFilterReducer,
+    itemTypeFilterReducer,
+    groupFilterReducer,
+});
 
 // export const items = (state = defaultState, action) => {
 //     switch(action.type){

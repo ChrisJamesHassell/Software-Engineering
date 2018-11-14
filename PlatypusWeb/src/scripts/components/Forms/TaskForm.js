@@ -4,12 +4,13 @@ import React from 'react';
 import { Button, FormControl, FormGroup } from 'react-bootstrap';
 import Select from 'react-select';
 
+// THESE ARE THE CATEGORY OPTIONS ['Appliances', 'Auto', 'Meals', 'Medical', 'Miscellaneous'];
 const categoryOptions = [
+  { label: 'Appliances', value: 'Appliances' },
   { label: 'Auto', value: 'Auto' },
-  { label: 'Home', value: 'Home' },
+  { label: 'Meals', value: 'Meals' },
   { label: 'Medical', value: 'Medical' },
   { label: 'Miscellaneous', value: 'Miscellaneous' },
-  { label: 'ToDo', value: 'ToDo' },
 ];
 export const priorityOptions = [
   { label: 'High', value: 2 },
@@ -24,7 +25,7 @@ export default class TaskForm extends React.Component {
     this.props.onSubmit({
       ...values,
       category: values.category.value,
-      deadline: new Date(values.deadline).toISOString(),
+      deadline: values.deadline && new Date(values.deadline).toISOString(),
       priority: values.priority.value,
     });
     setSubmitting(false);
@@ -44,11 +45,11 @@ export default class TaskForm extends React.Component {
               priority: priorityOptions.find(op => op.value === task.priority),
             }
             : {
-              category: null,
+              category: categoryOptions[0].value,
               deadline: '',
               description: '',
               name: '',
-              priority: null,
+              priority: priorityOptions[2].value,
             }
         }
         onSubmit={this.onSubmit}
@@ -61,6 +62,7 @@ export default class TaskForm extends React.Component {
               <FormControl
                 autoFocus
                 name="name"
+                required
                 onChange={handleChange}
                 placeholder="Name"
                 value={values.name}
@@ -78,7 +80,8 @@ export default class TaskForm extends React.Component {
               <Select
                 onChange={this.onSelectChange('category', setFieldValue)}
                 options={categoryOptions}
-                placeholder="Select Category..."
+                required
+                placeholder={categoryOptions[0].value}
                 value={values.category}
               />
             </FormGroup>
@@ -95,7 +98,7 @@ export default class TaskForm extends React.Component {
               <Select
                 onChange={this.onSelectChange('priority', setFieldValue)}
                 options={priorityOptions}
-                placeholder="Select Priority..."
+                placeholder={priorityOptions[2].label}
                 value={values.priority}
               />
             </FormGroup>

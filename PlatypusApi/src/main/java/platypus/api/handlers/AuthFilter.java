@@ -22,6 +22,7 @@ public class AuthFilter implements Filter {
 	public String createSession(String userName) {
 		String token = UUID.randomUUID().toString() + "." + UUID.randomUUID().toString();
 		sessions.put(token, userName);
+		System.out.println(token);
 		return token;
 	}
 

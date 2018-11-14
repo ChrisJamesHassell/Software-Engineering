@@ -6,6 +6,8 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
@@ -146,10 +148,15 @@ public class EventHandler {
 	}
 	
 	public static JsonResponse get(HikariDataSource ds, Request request) throws SQLException {
+		HashMap<String, JsonObject> filterMap = new HashMap();
+		Gson g = new Gson();
+		filterMap.put("user", g.fromJson(request.headers("user"), JsonObject.class));
+		filterMap.put("group", g.fromJson(request.headers("group"), JsonObject.class));
+		filterMap.put("filter", g.fromJson(request.headers("filter"), JsonObject.class));
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", ItemFilter.getEvents(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getEvents(ds.getConnection(), filterMap), "Berfect!");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
