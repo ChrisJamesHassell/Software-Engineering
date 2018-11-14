@@ -39,13 +39,13 @@ public class CreateHandler implements Route {
 		User u = JsonParser.getObject(User.class, request.body());
 
 		/*
-		 * 
+		 *
 		 * How the input from FE will look.
-		 * 
+		 *
 		 * { "user": { "id":1234 "name":"MYNAME" } "group": { "id":1234
 		 * "name":"GROUPIE NAME" } "task": { "id":123 "name":"name" "desc":"desc123"
 		 * "other shit":"" } }
-		 * 
+		 *
 		 */
 
 		if (!matchesRegexRequirements(u)) {
