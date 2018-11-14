@@ -161,7 +161,7 @@ public class EventHandler {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", ItemFilter.getEvents(ds.getConnection(), request), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getEvents(conn, request), "Berfect!");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
