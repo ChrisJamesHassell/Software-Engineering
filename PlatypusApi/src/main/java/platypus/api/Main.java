@@ -19,7 +19,7 @@ import spark.Spark;
 import java.util.Properties;
 
 public class Main {
-	
+
 	public final static boolean IS_PRODUCTION = false;
 
 	public static void main(String[] args) {
@@ -29,26 +29,14 @@ public class Main {
 		// server in some non public folder.
 		// Then on server `java -jar
 		// platypus-api-1.0-SNAPSHOT-jar-with-dependencies.jar`
-		
+
 		final Gson gson = new Gson();
 		final HikariDataSource ds = InitService.initDatabase();
 		final Properties emailConfig = InitService.initEmailConfig();
 		InitService.initNotificationService(ds, emailConfig);
 		InitService.initSparkConfig();
- 
+
 		final AuthFilter authFilter = new AuthFilter();
-		
-			Spark.path("/api", () -> {
-		            Spark.path("/user", () -> {
-		                Spark.post("/create", new CreateHandler(ds, authFilter), gson::toJson);
-		                Spark.post("/login", new LoginHandler(ds, authFilter), gson::toJson);
-		            });
-//		            Spark.before("/app/*", authFilter);
-		            Spark.path("/app", () -> {
-		            	Spark.before("/app/*", authFilter);
-			            Spark.get("/test", (req, res) -> {
-			                return "hi " + req.attribute(AuthFilter.USERNAME);
-			            });
 
 		Spark.path("/api", () -> {
 			Spark.path("/user", () -> {
@@ -57,10 +45,6 @@ public class Main {
 			});
 			Spark.before("/app/*", authFilter);
 			Spark.path("/app", () -> {
-				Spark.get("/test", (req, res) -> {
-					return "hi " + req.attribute(AuthFilter.USERNAME);
-				});
-
 				Spark.path("/task", () -> {
 
 					Spark.get("", (req, res) -> TaskHandler.get(ds, req), gson::toJson);
@@ -84,8 +68,5 @@ public class Main {
 			}); // end app path grouping
 		}); // End api path grouping
 
-			        }); //end app path grouping
-			    });	//End api path grouping
-				
 	}
 }

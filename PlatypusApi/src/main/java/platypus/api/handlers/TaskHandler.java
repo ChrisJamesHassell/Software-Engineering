@@ -42,26 +42,12 @@ public class TaskHandler {
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertTask(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setString(1, task.get("pinned").getAsString());
-			if(task.get("notification").getAsString().length() == 0) {
-				System.out.println("Setting notif to null");
-				stmt.setString(2, null);
-			}
-			else {
-				stmt.setString(2, task.get("notification").getAsString());
-			}
-			
-			stmt.setInt(3, group.get("groupId").getAsInt());
+			stmt.setString(2, task.get("notification").getAsString());
+			stmt.setInt(3, group.get("groupID").getAsInt());
 			stmt.setString(4, task.get("name").getAsString());
 			stmt.setString(5, task.get("description").getAsString());
 			stmt.setString(6, task.get("category").getAsString());
-			if(task.get("deadline").getAsString().length() == 0) {
-				System.out.println("Setting deadline to null");
-				stmt.setString(7, null);
-			}
-			else {
-				stmt.setString(7, task.get("deadline").getAsString());
-			}
-			
+			stmt.setString(7, task.get("deadline").getAsString());
 			stmt.setString(8, task.get("priority").getAsString());
 			stmt.registerOutParameter(9, Types.INTEGER);
 
@@ -120,7 +106,7 @@ public class TaskHandler {
 			return new JsonResponse("ERROR", "", "SQLError in Edit Task");
 		} finally {
 			conn.close();
-		} 
+		}
 	}
 
 	// Successfully removes the task from all appropriate tables.
@@ -163,17 +149,11 @@ public class TaskHandler {
 	}
 
 	public static JsonResponse get(HikariDataSource ds, Request request) throws SQLException {
-		// For GET requests, we have to put the required data in the HEADERS, not the body
-		HashMap<String, JsonObject> filterMap = new HashMap();
-		Gson g = new Gson();
-		filterMap.put("user", g.fromJson(request.headers("user"), JsonObject.class));
-		filterMap.put("group", g.fromJson(request.headers("group"), JsonObject.class));
-		filterMap.put("filter", g.fromJson(request.headers("filter"), JsonObject.class));
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
 
-			return new JsonResponse("SUCCESS", ItemFilter.getTasks(ds.getConnection(), request), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getTasks(conn, request), "Berfect!");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_tasks");

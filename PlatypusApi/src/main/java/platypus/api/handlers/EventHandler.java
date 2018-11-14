@@ -28,16 +28,16 @@ public class EventHandler {
 	public static JsonResponse addEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
-		
+
 		try {
 			// Parse request body to get the event stuff.
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
-			
+
 			JsonObject user = jsonO.get("user").getAsJsonObject();
 			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject event = jsonO.get("event").getAsJsonObject();
-			
+
 			conn = ds.getConnection();
 
 
@@ -64,17 +64,16 @@ public class EventHandler {
 		} catch (SQLException sqlE) {
 			sqlE.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLError in Add Event");
-		}
-		finally {
+		} finally {
 			conn.close();
-		} 
+		}
 	}
 
 	public static JsonResponse editEvent(HikariDataSource ds, Request req) throws SQLException {
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
-		
+
 		try {
 			// Parse request body to get the event stuff.
 			Gson gson = new Gson();
@@ -105,17 +104,14 @@ public class EventHandler {
 				// The eventID does not exist.
 				return new JsonResponse("FAIL", "", "The event does not exist");
 			}
-			
+
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in EditEvent");
-		}
-		finally {
+		} finally {
 			conn.close();
-		} 
+		}
 	}
-	
-	
-	
+
 	// Successfully removes the event from all appropriate tables.
 	// TODO: -Build the response correctly.
 	// -Test more extensively.
@@ -127,16 +123,15 @@ public class EventHandler {
 			// Parse request body to get the event stuff.
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
-			
+
 			// Still necessary to build the CacheEntry response.
 			JsonObject user = jsonO.get("user").getAsJsonObject();
 			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject event = jsonO.get("event").getAsJsonObject();
-			
+
 			conn = ds.getConnection();
 
-			
-			//Prepare the call from request body
+			// Prepare the call from request body
 			stmt = conn.prepareCall("{call delEvent(?)}");
 			stmt.setInt(1, event.get("eventID").getAsInt());
 			int ret = stmt.executeUpdate();
@@ -152,28 +147,21 @@ public class EventHandler {
 
 		} catch (SQLException sqlE) {
 			return new JsonResponse("ERROR", "", "SQLError in Add Event");
-		}
-		finally {
+		} finally {
 			conn.close();
-		} 
+		}
 	}
-	
+
 	public static JsonResponse get(HikariDataSource ds, Request request) throws SQLException {
-		HashMap<String, JsonObject> filterMap = new HashMap();
-		Gson g = new Gson();
-		filterMap.put("user", g.fromJson(request.headers("user"), JsonObject.class));
-		filterMap.put("group", g.fromJson(request.headers("group"), JsonObject.class));
-		filterMap.put("filter", g.fromJson(request.headers("filter"), JsonObject.class));
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", ItemFilter.getEvents(ds.getConnection(), request), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getEvents(conn, request), "Berfect!");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_events");
-		}
-		finally {
+		} finally {
 			conn.close();
 		}
 	}
@@ -209,4 +197,3 @@ public class EventHandler {
 	}
 
 }
-
