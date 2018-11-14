@@ -241,7 +241,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
   `fileName` varchar(128) NOT NULL,
   `expirationDate` date DEFAULT NULL,
   PRIMARY KEY (`docID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.groups
@@ -299,9 +299,13 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-        IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
+	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
 	IN `fileName` VARCHAR(32),
 	IN `expirationDate` DATE
+
+,
+	OUT `returnID` INT(11)
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -314,7 +318,7 @@ BEGIN
     INSERT INTO documents (name, description, category, fileName, expirationDate)
 	 VALUES (name, description, category, fileName, expirationDate);
 
-    SET @docID = last_insert_id(); -- get last inserted task's ID
+    SET @docID = last_insert_id();  -- get last inserted task's ID
     
     INSERT INTO has_documents VALUES (
      groupID,
@@ -325,7 +329,8 @@ BEGIN
     IF `_rollback` THEN
         ROLLBACK;
     ELSE
-        COMMIT;
+		  SET returnID = @docID;				-- prepare to return the ID
+		  COMMIT;
     END IF;
 END//
 DELIMITER ;
@@ -338,10 +343,14 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-        IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
+	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
 	IN `startDate` DATE,
 	IN `endDate` DATE,
 	IN `location` VARCHAR(100)
+,
+	OUT `returnID` INT(11)
+
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -365,6 +374,7 @@ BEGIN
     IF `_rollback` THEN
         ROLLBACK;
     ELSE
+        SET returnID = @eventID;
         COMMIT;
     END IF;
 END//
@@ -375,6 +385,7 @@ DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertIntoGroup`(
 	IN `groupID` INT,
 	IN `userID` INT
+
 
 
 )
@@ -410,9 +421,12 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-        IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
+	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
 	IN `deadline` DATE,
-        IN `priority` enum('Low','Mid','High')
+	IN `priority` enum('Low','Mid','High')
+,
+	OUT `returnID` INT(11)
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -436,7 +450,8 @@ BEGIN
     IF `_rollback` THEN
         ROLLBACK;
     ELSE
-        COMMIT;
+        SET returnID = @taskID;
+        COMMIT;        
     END IF;
 END//
 DELIMITER ;
