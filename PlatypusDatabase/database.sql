@@ -1,5 +1,5 @@
 -- --------------------------------------------------------
--- Host:                         127.0.0.1
+-- Host:                         localhost
 -- Server version:               10.3.10-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win64
 -- HeidiSQL Version:             9.4.0.5125
@@ -18,10 +18,10 @@ USE `platypus`;
 
 -- Dumping structure for table platypus.belongs_to
 CREATE TABLE IF NOT EXISTS `belongs_to` (
-  `groupID` INT(11) unsigned NOT NULL,
-  `userID` INT(11) unsigned NOT NULL,
-  `self` enum('0','1') DEFAULT NULL,
-  `owner` INT(11) unsigned DEFAULT NULL,
+  `groupID` int(11) unsigned NOT NULL,
+  `userID` int(11) unsigned NOT NULL,
+  `self` binary(1) DEFAULT NULL,
+  `owner` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`groupID`,`userID`),
   KEY `FK_belongs_to_users` (`userID`),
   CONSTRAINT `FK_belongs_to_group` FOREIGN KEY (`groupID`) REFERENCES `groups` (`groupID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -234,19 +234,19 @@ DELIMITER ;
 
 -- Dumping structure for table platypus.documents
 CREATE TABLE IF NOT EXISTS `documents` (
-  `docID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+  `docID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `category` enum('Appliances', 'Auto', 'Meals', 'Medical') NOT NULL,
+  `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `fileName` varchar(128) NOT NULL,
   `expirationDate` date DEFAULT NULL,
   PRIMARY KEY (`docID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.groups
 CREATE TABLE IF NOT EXISTS `groups` (
-  `groupID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+  `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `groupName` varchar(50) NOT NULL DEFAULT '"Me"',
   PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
@@ -254,9 +254,9 @@ CREATE TABLE IF NOT EXISTS `groups` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_documents
 CREATE TABLE IF NOT EXISTS `has_documents` (
-  `groupID` INT(11) unsigned NOT NULL,
-  `docID` INT(11) unsigned NOT NULL,
-  `pinned` enum('0','1') NOT NULL DEFAULT '0',
+  `groupID` int(11) unsigned NOT NULL,
+  `docID` int(11) unsigned NOT NULL,
+  `pinned` binary(1) NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`docID`),
   UNIQUE KEY `docID` (`docID`),
@@ -267,9 +267,9 @@ CREATE TABLE IF NOT EXISTS `has_documents` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_events
 CREATE TABLE IF NOT EXISTS `has_events` (
-  `groupID` INT(11) unsigned NOT NULL,
-  `eventID` INT(11) unsigned NOT NULL,
-  `pinned` enum('0','1') NOT NULL DEFAULT '0',
+  `groupID` int(11) unsigned NOT NULL,
+  `eventID` int(11) unsigned NOT NULL,
+  `pinned` binary(1) NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`eventID`),
   UNIQUE KEY `eventID` (`eventID`),
@@ -280,9 +280,9 @@ CREATE TABLE IF NOT EXISTS `has_events` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_tasks
 CREATE TABLE IF NOT EXISTS `has_tasks` (
-  `groupID` INT(11) unsigned NOT NULL,
-  `taskID` INT(11) unsigned NOT NULL,
-  `pinned` enum('0','1') NOT NULL DEFAULT '0',
+  `groupID` int(11) unsigned NOT NULL,
+  `taskID` int(11) unsigned NOT NULL,
+  `pinned` binary(1) NOT NULL DEFAULT '0',
   `notification` date DEFAULT NULL,
   PRIMARY KEY (`groupID`,`taskID`),
   UNIQUE KEY `taskID` (`taskID`),
@@ -299,9 +299,13 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-        IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
+	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
 	IN `fileName` VARCHAR(32),
 	IN `expirationDate` DATE
+
+,
+	OUT `returnID` INT(11)
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -314,7 +318,7 @@ BEGIN
     INSERT INTO documents (name, description, category, fileName, expirationDate)
 	 VALUES (name, description, category, fileName, expirationDate);
 
-    SET @docID = last_insert_id(); -- get last inserted task's ID
+    SET @docID = last_insert_id();  -- get last inserted task's ID
     
     INSERT INTO has_documents VALUES (
      groupID,
@@ -325,7 +329,8 @@ BEGIN
     IF `_rollback` THEN
         ROLLBACK;
     ELSE
-        COMMIT;
+		  SET returnID = @docID;				-- prepare to return the ID
+		  COMMIT;
     END IF;
 END//
 DELIMITER ;
@@ -338,10 +343,14 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-        IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
+	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
 	IN `startDate` DATE,
 	IN `endDate` DATE,
 	IN `location` VARCHAR(100)
+,
+	OUT `returnID` INT(11)
+
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -365,7 +374,41 @@ BEGIN
     IF `_rollback` THEN
         ROLLBACK;
     ELSE
+        SET returnID = @eventID;
         COMMIT;
+    END IF;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure platypus.insertIntoGroup
+DELIMITER //
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertIntoGroup`(
+	IN `groupID` INT,
+	IN `userID` INT
+
+
+
+)
+BEGIN
+    DECLARE `_rollback` BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+
+    START TRANSACTION;
+    
+    SELECT owner, DATA INTO @owner FROM belongs_to WHERE groupID = _groupID;
+    
+    INSERT INTO belongs_to (groupID, userID, self, owner)
+    VALUES (
+    groupID,
+    userID,
+    "0",
+    @owner
+    );
+    
+	 IF `_rollback` THEN
+      ROLLBACK;
+    ELSE
+    	COMMIT;
     END IF;
 END//
 DELIMITER ;
@@ -378,9 +421,12 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
-        IN `category` enum('Appliances', 'Auto', 'Meals', 'Medical'),
+	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
 	IN `deadline` DATE,
-        IN `priority` enum('Low','Mid','High')
+	IN `priority` enum('Low','Mid','High')
+,
+	OUT `returnID` INT(11)
+
 )
 BEGIN
     DECLARE `_rollback` BOOL DEFAULT 0;
@@ -404,7 +450,8 @@ BEGIN
     IF `_rollback` THEN
         ROLLBACK;
     ELSE
-        COMMIT;
+        SET returnID = @taskID;
+        COMMIT;        
     END IF;
 END//
 DELIMITER ;
@@ -459,25 +506,61 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Dumping structure for procedure platypus.newGroup
+DELIMITER //
+CREATE DEFINER=`platypus`@`localhost` PROCEDURE `newGroup`(
+	IN `userID` INT,
+	IN `groupName` VARCHAR(50)
+
+
+
+
+)
+BEGIN
+    DECLARE `_rollback` BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
+
+    START TRANSACTION;
+    
+    INSERT INTO groups (groupName)
+    VALUES (groupName);
+    
+    SET @group_id = last_insert_id(); -- retrieve groupID
+    
+    INSERT INTO belongs_to VALUES (
+	 @group_id,
+	 userID,
+	 "0",				-- denotes this is not a self group
+	 userID
+	 );
+	 
+	 IF `_rollback` THEN
+      ROLLBACK;
+    ELSE
+    	COMMIT;
+    END IF;
+END//
+DELIMITER ;
+
 -- Dumping structure for table platypus.tasks
 CREATE TABLE IF NOT EXISTS `tasks` (
-  `taskID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+  `taskID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `category` enum('Appliances', 'Auto', 'Meals', 'Medical') NOT NULL,
+  `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `deadline` date NOT NULL,
   `priority` enum('Low','Mid','High') NOT NULL,
-  `completed` enum('0','1') NOT NULL DEFAULT '0',
+  `completed` binary(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`taskID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.userevents
 CREATE TABLE IF NOT EXISTS `userevents` (
-  `eventID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+  `eventID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `description` varchar(250) NOT NULL,
-  `category` enum('Appliances', 'Auto', 'Meals', 'Medical') NOT NULL,
+  `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `startDate` date NOT NULL,
   `endDate` date NOT NULL,
   `location` varchar(100) DEFAULT NULL,
@@ -487,7 +570,7 @@ CREATE TABLE IF NOT EXISTS `userevents` (
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.users
 CREATE TABLE IF NOT EXISTS `users` (
-  `userID` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(32) NOT NULL,
   `firstName` varchar(32) NOT NULL,
   `lastName` varchar(32) NOT NULL,
