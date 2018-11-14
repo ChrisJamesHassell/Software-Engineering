@@ -50,9 +50,9 @@ public class InitService {
 		emailConfig.put("mail.smtp.auth", true);
 		emailConfig.put("mail.smtp.starttls.enable", "true");
 		emailConfig.put("mail.smtp.host", "smtp.gmail.com"); // TODO
-		emailConfig.put("mail.smtp.port", "587");
-		emailConfig.put("username", "setest465@gmail.com"); // TODO: set this
-		emailConfig.put("password", "mydogfartsblue!ps"); // TODO: set this
+		emailConfig.put("mail.smtp.port", "465");
+		// emailConfig.put("username", "someuser"); // TODO: set this
+		// emailConfig.put("password", "somepass"); // TODO: set this
 		return emailConfig;
 	}
 
