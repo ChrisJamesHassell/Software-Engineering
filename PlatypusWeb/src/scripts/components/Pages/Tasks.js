@@ -120,15 +120,18 @@ class Tasks extends React.Component {
   };
 
   async componentDidMount() {
-    const response = await fetch(`${path}/app/task?${qs.stringify({
-      category: 'null',
-      groupID: localStorage.getItem('selfGroupId'),
-      pinned: 'null',
-      userID: localStorage.getItem('userId'),
-      weeksAhead: -1,
-    })}`, {
-      credentials: 'include',
-    });
+    const response = await fetch(
+      `${path}/app/task?${qs.stringify({
+        category: 'null',
+        groupID: localStorage.getItem('selfGroupId'),
+        pinned: 'null',
+        userID: localStorage.getItem('userId'),
+        weeksAhead: -1,
+      })}`,
+      {
+        credentials: 'include',
+      },
+    );
     const { data: tasks } = await response.json();
 
     this.props.dispatch({
@@ -257,16 +260,25 @@ class Tasks extends React.Component {
   };
 
   onTaskUpdate = async (values) => {
-    const {
-      data: { data: task },
-    } = await axios.post(`${path}/app/task/update`, {
-      task: values,
+    console.log({ values });
+    const response = await fetch(`${path}/app/task/update`, {
+      body: JSON.stringify({
+        task: { ...values, completed: values.completed ? 1 : 0, taskID: values.itemID },
+      }),
+      credentials: 'include',
+      method: 'POST',
     });
 
+    if (!response.ok) {
+      throw Error('Error status code');
+    }
+
     this.props.dispatch({
-      type: 'UPDATE_TASK',
-      payload: task,
+      type: 'REMOVE_ALL_TASKS',
     });
+
+    await this.componentDidMount();
+
     this.onHideModal();
   };
 
