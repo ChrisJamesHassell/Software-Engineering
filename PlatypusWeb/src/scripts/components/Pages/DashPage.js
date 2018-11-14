@@ -7,10 +7,79 @@ import { categories, path } from '../../fetchHelpers';
 import { setUserData } from '../../actions/actions';
 import fetch from 'cross-fetch';
 
-const DashBoxBody = (props) => (
-    <div className='dash-body'>BODEH
-    </div>
-)
+class DashBoxBody extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoaded: false,
+            task: [],
+            event: [],
+            doc: []
+        }
+    }
+
+    componentDidMount() {
+        let fetchHeader = {
+            "filter": {
+                "category": this.props.category.toUpperCase(),
+                "pinned": true,
+                "weeksAhead": 2
+            },
+            "group": {
+                "groupId": this.props.user.selfGroupId
+            },
+            "user": {
+                "userId": this.props.user.userId
+            }
+        }
+
+        console.log("BODEH FETCH HEADER: ", fetchHeader);
+
+        var opts = {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'filter': JSON.stringify(fetchHeader.filter),
+                'group': JSON.stringify(fetchHeader.group),
+                'user': JSON.stringify(fetchHeader.user)
+            }
+        };
+        fetch(`${path}/app/${this.props.itemType}`, opts)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    console.log("RESPONSE RESULT: for " + this.props.itemType + "category: " + this.props.category + ": ", result);
+                    this.setState({
+                        isLoaded: true,
+                    });
+                    this.setState(state => {
+                        state[this.props.itemType] = [result.data[this.props.itemType]]
+                    })
+                },
+                // Note: it's important to handle errors here
+                // instead of a catch() block so that we don't swallow
+                // exceptions from actual bugs in components.
+                (error) => {
+                    console.log("THERE WAS AN ERROR FETCHING: ", this.props.itemType);
+                    this.setState({
+                        isLoaded: true,
+                        error
+                    });
+                }
+            )
+    }
+
+    render() {
+        return (
+            <div className='dash-body'>{this.props.itemType}</div>
+        )
+    }
+}
+// const DashBoxBody = (props) => (
+// <div className='dash-body'>BODEH
+// </div>
+// )
 
 const DashBoxHeader = (props) => {
     return (
@@ -30,35 +99,75 @@ class DashBox extends React.Component {
                 minWidth: '300px',
                 flex: '1',
                 margin: '20px'
-            }
+            },
+            items: [],
         }
     }
 
     componentDidMount() {
-        let fetchHeader = {
-            "filter": {
-                "category": this.props.category,
-                "pinned": true,
-                "weeksAhead": 2
-            },
-            "group": {
-                "groupId": this.props.user.selfGroupId
-            },
-            "user": {
-                "userId": this.props.user.userId
-            }
-        }
+        // let fetchHeader = {
+        //     "filter": {
+        //         "category": this.props.category.toUpperCase(),
+        //         "pinned": true,
+        //         "weeksAhead": 2
+        //     },
+        //     "group": {
+        //         "groupId": this.props.user.selfGroupId
+        //     },
+        //     "user": {
+        //         "userId": this.props.user.userId
+        //     }
+        // }
+
+        // const paths = ['task', 'event', 'doc'];
+
+        // paths.map(url => {
+        //     var opts = {
+        //         method: 'GET',
+        //         credentials: 'include',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'filter': JSON.stringify(fetchHeader.filter),
+        //             'group': JSON.stringify(fetchHeader.group),
+        //             'user': JSON.stringify(fetchHeader.user)
+        //         }
+        //     };
+        //     fetch(`${path}/app/${url}`, opts)
+        //         .then(res => res.json())
+        //         .then(
+        //             (result) => {
+        //                 console.log("RESPONSE RESULT: for " + url + "category: " + this.props.category + ": ", result);
+        //                 this.setState({
+        //                     isLoaded: true,
+        //                     items: result.items
+        //                 });
+        //             },
+        //             // Note: it's important to handle errors here
+        //             // instead of a catch() block so that we don't swallow
+        //             // exceptions from actual bugs in components.
+        //             (error) => {
+        //                 console.log("THERE WAS AN ERROR FETCHING: ", url);
+        //                 this.setState({
+        //                     isLoaded: true,
+        //                     error
+        //                 });
+        //             }
+        //         )
+        // })
     }
 
     render() {
         return (
             <Panel style={this.state.style}>
                 <Panel.Heading><DashBoxHeader {...this.props} /></Panel.Heading>
-                <Panel.Body><DashBoxBody {...this.props} /></Panel.Body>
+                {['task', 'event', 'doc'].map(itemType => {
+                    return <Panel.Body key={this.props.category + itemType}><DashBoxBody key={this.props.category + itemType} {...this.props} itemType={itemType} /></Panel.Body>
+                })}
             </Panel>
         )
     }
 }
+
 // const DashBox = (props) => {
 //     let style = {
 //         minWidth: '300px',
@@ -99,22 +208,18 @@ DashBox.propTypes = {
 class Dash extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {
+            user: {
+                username: localStorage.getItem('username').toString(),
+                userId: parseInt(localStorage.getItem('userId')),
+                selfGroupId: parseInt(localStorage.getItem('selfGroupId')),
+                groupList: JSON.parse(localStorage.getItem('groupList'))
+            }
+        }
     }
 
     componentDidMount() {
-        let userId = parseInt(localStorage.getItem('userId'));
-        let selfGroupId = parseInt(localStorage.getItem('selfGroupId'));
-        let groupList = JSON.parse(localStorage.getItem('groupList'));
-
-        let userData = {
-            username: localStorage.getItem('username').toString(),
-            userId: userId,
-            selfGroupId: selfGroupId,
-            groupList: groupList
-        }
-
-        this.props.dispatch(setUserData(userData)) // set the user data in the store
+        // this.props.dispatch(setUserData(this.state.user)) // set the user data in the store
     }
 
     render() {
@@ -129,7 +234,7 @@ class Dash extends React.Component {
             <div id='page-container'>
                 {Object.keys(appCategories).map((category, index) => {
                     return (
-                        <DashBox key={index} category={category} {...this.props[category]} user={this.props.User} {...this.state} />
+                        <DashBox key={index} category={category} {...this.props[category]} user={this.state.user} />
                     )
                 })}
             </div>

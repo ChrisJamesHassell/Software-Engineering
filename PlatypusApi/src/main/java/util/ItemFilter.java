@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
@@ -69,14 +70,24 @@ public class ItemFilter {
 		rs.close();
 		
 		Stream<TaskWrapper> stream = tasks.stream().filter(t -> {
-			if ((category == null || t.getTask().getCategory().equals(category)) 
-					&& ((weeksAhead == -1 || (t.getTask().getDeadline() != null && dateWithin(weeksAhead, t.getTask().getDeadline()))))
-					&& (pinned == null || t.getTask().isPinned() == pinned)) {
-				return true;
-			}
-			return false;
+			boolean isValidCat = (category == null || t.getTask().getCategory().equals(category));
+//					&& ((weeksAhead == -1 || (t.getTask().getDeadline() != null && dateWithin(weeksAhead, t.getTask().getDeadline()))))
+//					&& (pinned == null || t.getTask().isPinned() == pinned);
+			System.out.println("VALID?: " + isValidCat);
+//			if ((category == null || t.getTask().getCategory().equals(category)) 
+//					&& ((weeksAhead == -1 || (t.getTask().getDeadline() != null && dateWithin(weeksAhead, t.getTask().getDeadline()))))
+//					&& (pinned == null || t.getTask().isPinned() == pinned)) 
+//			if(isValidCat)
+//			{
+//				return true;
+//			}
+//			return false;
+			return isValidCat;
 		});
-			
+//		for(TaskWrapper tw: tasks) {
+//			System.out.println("Taskwrapppper");
+//			System.out.println(tw.getTask());
+//		}
 		return stream.toArray(TaskWrapper[]::new);
 	}
 	
