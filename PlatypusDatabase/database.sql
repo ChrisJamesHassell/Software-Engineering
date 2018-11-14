@@ -77,9 +77,9 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delGroup`(
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;		-- error flag
 	DECLARE `counter` INT DEFAULT 0;		-- counter for looping over results
-	DECLARE `eventCount` INT DEFAULT 0;
-	DECLARE `docCount` INT DEFAULT 0;
-	DECLARE `taskCount` INT DEFAULT 0;
+	DECLARE `eventMin` INT DEFAULT 0;
+	DECLARE `docMin` INT DEFAULT 0;
+	DECLARE `taskMin` INT DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
 	
@@ -90,9 +90,9 @@ BEGIN
 		WHILE (SELECT COUNT(groupID) FROM has_events WHERE groupID = groupIDparam) > 0
 		DO
 			-- assign min eventID associated with deleting group's ID
-			SET eventCount = (SELECT MIN(eventID) FROM has_events WHERE groupID = groupIDparam);
-			DELETE FROM has_events WHERE eventID = eventCount;
-			DELETE FROM userevents WHERE eventID = eventCount;
+			SET eventMin = (SELECT MIN(eventID) FROM has_events WHERE groupID = groupIDparam);
+			DELETE FROM has_events WHERE eventID = eventMin;
+			DELETE FROM userevents WHERE eventID = eventMin;
 		END WHILE;
 	END IF;	
 	
@@ -101,9 +101,9 @@ BEGIN
 	THEN
 		WHILE (SELECT COUNT(groupID) FROM has_documents WHERE groupID = groupIDparam) > 0
 		DO
-		SET docCount = (SELECT MIN(docID) FROM has_documents WHERE groupID = groupIDparam);
-			DELETE FROM has_documents WHERE docID = docCount;
-			DELETE FROM documents WHERE docID = docCount;
+		SET docMin = (SELECT MIN(docID) FROM has_documents WHERE groupID = groupIDparam);
+			DELETE FROM has_documents WHERE docID = docMin;
+			DELETE FROM documents WHERE docID = docMin;
 		END WHILE;
 	END IF;
 
@@ -112,9 +112,9 @@ BEGIN
 	THEN
 		WHILE (SELECT COUNT(groupID) FROM has_tasks WHERE groupID = groupIDparam) > 0
 		DO
-		SET taskCount = (SELECT MIN(taskID) FROM has_tasks WHERE groupID = groupIDparam);
-			DELETE FROM has_tasks WHERE taskID = taskCount;
-			DELETE FROM tasks WHERE taskID = taskCount;
+		SET taskMin = (SELECT MIN(taskID) FROM has_tasks WHERE groupID = groupIDparam);
+			DELETE FROM has_tasks WHERE taskID = taskMin;
+			DELETE FROM tasks WHERE taskID = taskMin;
 
 		END WHILE;
 	END IF;
@@ -155,10 +155,10 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `delUser`( IN `userIDparam` INT 
 BEGIN
 	DECLARE `_rollback` BOOL DEFAULT 0;
 	DECLARE `counter` INT DEFAULT 0;
-	DECLARE `eventCount` INT DEFAULT 0;
-	DECLARE `docCount` INT DEFAULT 0;
-	DECLARE `taskCount` INT DEFAULT 0;
-	DECLARE `groupIDcheck` INT DEFAULT 0;
+	DECLARE `eventMin` INT DEFAULT 0;
+	DECLARE `docMin` INT DEFAULT 0;
+	DECLARE `taskMin` INT DEFAULT 0;
+	DECLARE `groupIDmin` INT DEFAULT 0;
 	DECLARE `deleteCount` INT DEFAULT 0;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET `_rollback` = 1;
 	START TRANSACTION;
@@ -172,48 +172,48 @@ BEGIN
 		
 		WHILE `deleteCount` > 0
 		DO
-			SET `groupIDcheck` = (SELECT MIN(groupID)
+			SET `groupIDmin` = (SELECT MIN(groupID)
 			FROM (
 				SELECT groupID, userID
 				FROM belongs_to
 				GROUP BY groupID
 				HAVING COUNT(groupID) = 1 AND userID = userIDparam) as M);
 		
-			SET `counter` = (SELECT COUNT(groupID) FROM has_events WHERE groupID = groupIDcheck);
+			SET `counter` = (SELECT COUNT(groupID) FROM has_events WHERE groupID = groupIDmin);
 			IF `counter` > 0
 			THEN
-				WHILE (SELECT COUNT(groupID) FROM has_events WHERE groupID = groupIDcheck) > 0
+				WHILE (SELECT COUNT(groupID) FROM has_events WHERE groupID = groupIDmin) > 0
 				DO
-				SET eventCount = (SELECT MIN(eventID) FROM has_events WHERE groupID = groupIDcheck);
-					DELETE FROM has_events WHERE eventID = eventCount;
-					DELETE FROM userevents WHERE eventID = eventCount;
+				SET eventMin = (SELECT MIN(eventID) FROM has_events WHERE groupID = groupIDmin);
+					DELETE FROM has_events WHERE eventID = eventMin;
+					DELETE FROM userevents WHERE eventID = eventMin;
 				END WHILE;
 			END IF;	
 			
-			SET `counter` = (SELECT COUNT(groupID) FROM has_documents WHERE groupID = groupIDcheck);
+			SET `counter` = (SELECT COUNT(groupID) FROM has_documents WHERE groupID = groupIDmin);
 			IF `counter` > 0
 			THEN
-				WHILE (SELECT COUNT(groupID) FROM has_documents WHERE groupID = groupIDcheck) > 0
+				WHILE (SELECT COUNT(groupID) FROM has_documents WHERE groupID = groupIDmin) > 0
 				DO
-				SET docCount = (SELECT MIN(docID) FROM has_documents WHERE groupID = groupIDcheck);
-					DELETE FROM has_documents WHERE docID = docCount;
-					DELETE FROM documents WHERE docID = docCount;
+				SET docMin = (SELECT MIN(docID) FROM has_documents WHERE groupID = groupIDmin);
+					DELETE FROM has_documents WHERE docID = docMin;
+					DELETE FROM documents WHERE docID = docMin;
 				END WHILE;
 			END IF;
 	
-			SET `counter` = (SELECT COUNT(groupID) FROM has_tasks WHERE groupID = groupIDcheck);
+			SET `counter` = (SELECT COUNT(groupID) FROM has_tasks WHERE groupID = groupIDmin);
 			IF `counter` > 0
 			THEN
-				WHILE (SELECT COUNT(groupID) FROM has_tasks WHERE groupID = groupIDcheck) > 0
+				WHILE (SELECT COUNT(groupID) FROM has_tasks WHERE groupID = groupIDmin) > 0
 				DO
-				SET taskCount = (SELECT MIN(taskID) FROM has_tasks WHERE groupID = groupIDcheck);
-					DELETE FROM has_tasks WHERE taskID = taskCount;
-					DELETE FROM tasks WHERE taskID = taskCount;
+				SET taskMin = (SELECT MIN(taskID) FROM has_tasks WHERE groupID = groupIDmin);
+					DELETE FROM has_tasks WHERE taskID = taskMin;
+					DELETE FROM tasks WHERE taskID = taskMin;
 				END WHILE;
 			END IF;
 			
-			DELETE FROM belongs_to WHERE groupID = groupIDcheck;
-			DELETE FROM groups WHERE groupID = groupIDcheck;
+			DELETE FROM belongs_to WHERE groupID = groupIDmin;
+			DELETE FROM groups WHERE groupID = groupIDmin;
 
 
 			SET `deleteCount` = `deleteCount` - 1;
