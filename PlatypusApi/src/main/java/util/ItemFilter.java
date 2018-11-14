@@ -30,13 +30,16 @@ import spark.Request;
 
 public class ItemFilter {
 	
-	public static TaskWrapper[] getTasks(Connection conn, Request r) throws SQLException {
+	public static TaskWrapper[] getTasks(Connection conn,  HashMap<String, JsonObject> filterMap) throws SQLException {
 		
-		int userId = Integer.parseInt(r.queryParams("userID"));
-		int groupId = Integer.parseInt(r.queryParams("groupID"));
-		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
-		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
-		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
+//		int userId = Integer.parseInt(r.queryParams("userID"));
+//		int groupId = Integer.parseInt(r.queryParams("groupID"));
+//		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
+//		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
+//		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
+		JsonObject user = filterMap.get("user");
+		JsonObject group = filterMap.get("group");
+		JsonObject filter = filterMap.get("filter");
 		
 		int userId = user.get("userId").getAsInt();
 		Category category = filter.get("category").isJsonNull() ? null
@@ -77,13 +80,23 @@ public class ItemFilter {
 		return stream.toArray(TaskWrapper[]::new);
 	}
 	
-	public static EventWrapper[] getEvents(Connection conn, Request r) throws SQLException {
+	public static EventWrapper[] getEvents(Connection conn,  HashMap<String, JsonObject> filterMap) throws SQLException {
+//		
+//		int userId = Integer.parseInt(r.queryParams("userID"));
+//		int groupId = Integer.parseInt(r.queryParams("groupID"));
+//		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
+//		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
+//		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
 		
-		int userId = Integer.parseInt(r.queryParams("userID"));
-		int groupId = Integer.parseInt(r.queryParams("groupID"));
-		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
-		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
-		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
+		JsonObject user = filterMap.get("user");
+		JsonObject group = filterMap.get("group");
+		JsonObject filter = filterMap.get("filter");
+		
+		int userId = user.get("userId").getAsInt();
+		Category category = filter.get("category").isJsonNull() ? null
+				: Category.valueOf(filter.get("category").getAsString());
+		int weeksAhead = filter.get("weeksAhead").getAsInt();
+		Boolean pinned = filter.get("pinned").isJsonNull() ? null : filter.get("pinned").getAsBoolean();
 		
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.EVENT, conn, userId);
@@ -118,14 +131,22 @@ public class ItemFilter {
 		return stream.toArray(EventWrapper[]::new);
 	}
 	
-	public static DocumentWrapper[] getDocuments(Connection conn, Request r) throws SQLException {
+	public static DocumentWrapper[] getDocuments(Connection conn, HashMap<String, JsonObject> filterMap) throws SQLException {
 		
-		int userId = Integer.parseInt(r.queryParams("userID"));
-		int groupId = Integer.parseInt(r.queryParams("groupID"));
-		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
-		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
-		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
+//		int userId = Integer.parseInt(r.queryParams("userID"));
+//		int groupId = Integer.parseInt(r.queryParams("groupID"));
+//		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
+//		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
+//		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
+		JsonObject user = filterMap.get("user");
+		JsonObject group = filterMap.get("group");
+		JsonObject filter = filterMap.get("filter");
 		
+		int userId = user.get("userId").getAsInt();
+		Category category = filter.get("category").isJsonNull() ? null
+				: Category.valueOf(filter.get("category").getAsString());
+		int weeksAhead = filter.get("weeksAhead").getAsInt();
+		Boolean pinned = filter.get("pinned").isJsonNull() ? null : filter.get("pinned").getAsBoolean();
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.DOCUMENT, conn, userId);
 		
