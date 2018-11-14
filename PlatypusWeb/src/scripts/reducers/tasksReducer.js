@@ -14,13 +14,13 @@ export default (state = {}, action) => {
         return state;
       }
 
-      return {
-        ...state,
-        [action.payload[0].category]: [
-          ...(state[action.payload.category] || []),
-          ...action.payload,
-        ].sort(sortByPriority),
-      };
+      return action.payload.reduce(
+        (prev, curr) => ({
+          ...prev,
+          [curr.category]: [...(prev[curr.category] || []), curr].sort(sortByPriority),
+        }),
+        { ...state },
+      );
     }
     case 'REMOVE_ALL_TASKS':
       return {};
