@@ -38,7 +38,8 @@ public class TaskHandler {
 			JsonObject task = jsonO.get("task").getAsJsonObject();
 
 			conn = ds.getConnection();
-			//Prepare the call from request body
+
+			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertTask(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setString(1, task.get("pinned").getAsString());
 			if(task.get("notification").getAsString().length() == 0) {
@@ -63,13 +64,13 @@ public class TaskHandler {
 			
 			stmt.setString(8, task.get("priority").getAsString());
 			stmt.registerOutParameter(9, Types.INTEGER);
-			
+
 			stmt.executeUpdate();
 			int outID = stmt.getInt(9);
 			stmt.close();
-			
+
 			Task t = getReturnedTask(outID, conn);
-		
+
 			return new JsonResponse("SUCCESS", t, "Successfully inserted task.");
 		} catch (SQLException sqlE) {
 			sqlE.printStackTrace();
@@ -92,8 +93,9 @@ public class TaskHandler {
 
 			conn = ds.getConnection();
 
-			//Prepare the call from request body
-			stmt = conn.prepareStatement("UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
+			// Prepare the call from request body
+			stmt = conn.prepareStatement(
+					"UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
 			stmt.setString(1, task.get("name").getAsString());
 			stmt.setString(2, task.get("description").getAsString());
 			stmt.setString(3, task.get("category").getAsString());
@@ -101,10 +103,10 @@ public class TaskHandler {
 			stmt.setString(5, task.get("priority").getAsString());
 			stmt.setString(6, task.get("completed").getAsString());
 			stmt.setInt(7, task.get("taskID").getAsInt());
-			
-			int ret = stmt.executeUpdate();		
+
+			int ret = stmt.executeUpdate();
 			stmt.close();
-			
+
 			// Successful update
 			if (ret == 1) {
 				// TODO: Build the CacheEntry + new Task stuff.
@@ -123,7 +125,7 @@ public class TaskHandler {
 
 	// Successfully removes the task from all appropriate tables.
 	// TODO: -Build the response correctly.
-	//		 -Test more extensively.
+	// -Test more extensively.
 	public static JsonResponse removeTask(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
@@ -140,16 +142,15 @@ public class TaskHandler {
 
 			conn = ds.getConnection();
 
-			//Prepare the call from request body
+			// Prepare the call from request body
 			stmt = conn.prepareCall("{call delTask(?)}");
 			stmt.setInt(1, task.get("taskID").getAsInt());
 
 			int ret = stmt.executeUpdate();
 			stmt.close();
 			if (ret != 0) {
-				return new JsonResponse("SUCCESS", "", "Successfully deleted task.");	
-			} 
-			else {
+				return new JsonResponse("SUCCESS", "", "Successfully deleted task.");
+			} else {
 				// There is no task with that taskID
 				return new JsonResponse("FAIL", "", "There is no task with that ID, failed task deletion.");
 			}
@@ -171,27 +172,27 @@ public class TaskHandler {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", ItemFilter.getTasks(conn, filterMap), "Berfect!");
-		}
-		catch (SQLException e) {
+
+			return new JsonResponse("SUCCESS", ItemFilter.getTasks(ds.getConnection(), request), "Berfect!");
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_tasks");
-		}
-		finally {
+		} finally {
 			conn.close();
 		}
 	}
-	
+
 	private static Task getReturnedTask(int taskID, Connection conn) throws SQLException {
-		
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM tasks INNER JOIN has_tasks ON tasks.taskID = has_tasks.taskID WHERE tasks.taskID = ?");
+
+		PreparedStatement ps = conn.prepareStatement(
+				"SELECT * FROM tasks INNER JOIN has_tasks ON tasks.taskID = has_tasks.taskID WHERE tasks.taskID = ?");
 		ps.setInt(1, taskID);
-		
+
 		ResultSet rs = ps.executeQuery();
 		ps.close();
-		
+
 		Task t = null;
-		
+
 		// Get first task
 		if (rs.next()) {
 			t = new Task();
@@ -207,9 +208,9 @@ public class TaskHandler {
 			t.setPinned(rs.getBoolean(ItemFilter.getColumnWithName("pinned", rs)));
 		}
 		rs.close();
-		
+
 		return t;
-		
+
 	}
 
 }

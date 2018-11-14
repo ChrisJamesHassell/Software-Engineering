@@ -40,7 +40,7 @@ public class EventHandler {
 			
 			conn = ds.getConnection();
 
-			
+
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertEvent(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setString(1, event.get("pinned").getAsString());
@@ -53,13 +53,13 @@ public class EventHandler {
 			stmt.setString(8, event.get("endDate").getAsString());
 			stmt.setString(9, event.get("location").getAsString());
 			stmt.registerOutParameter(10, Types.INTEGER);
-			
+
 			stmt.executeUpdate();
 			int outID = stmt.getInt(10);
 			stmt.close();
-			
+
 			Event e = getReturnedEvent(outID, conn);
-			
+
 			return new JsonResponse("SUCCESS", e, "Successfully inserted event.");
 		} catch (SQLException sqlE) {
 			sqlE.printStackTrace();
@@ -80,7 +80,7 @@ public class EventHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 			JsonObject event = jsonO.get("event").getAsJsonObject();
-			
+
 			conn = ds.getConnection();
 
 			// Prepare the call from request body
@@ -93,10 +93,10 @@ public class EventHandler {
 			stmt.setString(5, event.get("endDate").getAsString());
 			stmt.setString(6, event.get("location").getAsString());
 			stmt.setInt(7, event.get("eventID").getAsInt());
-			
-			int ret = stmt.executeUpdate();			
+
+			int ret = stmt.executeUpdate();
 			stmt.close();
-			
+
 			// Successful update
 			if (ret == 1) {
 				// TODO: Build the CacheEntry + new Event stuff.
@@ -122,7 +122,7 @@ public class EventHandler {
 	public static JsonResponse removeEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
-	
+
 		try {
 			// Parse request body to get the event stuff.
 			Gson gson = new Gson();
@@ -141,7 +141,7 @@ public class EventHandler {
 			stmt.setInt(1, event.get("eventID").getAsInt());
 			int ret = stmt.executeUpdate();
 			stmt.close();
-			
+
 			if (ret != 0) {
 				// TODO: Need to return CacheEntry for this user + the EventInfo
 				return new JsonResponse("SUCCESS", "", "Successfully deleted event.");
@@ -167,7 +167,7 @@ public class EventHandler {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", ItemFilter.getEvents(conn, filterMap), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getEvents(ds.getConnection(), request), "Berfect!");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
@@ -177,17 +177,17 @@ public class EventHandler {
 			conn.close();
 		}
 	}
-	
+
 	private static Event getReturnedEvent(int eventID, Connection conn) throws SQLException {
-		
+
 		PreparedStatement ps = conn.prepareStatement("SELECT * FROM userevents INNER JOIN has_events ON userevents.eventID = has_events.eventID WHERE userevents.eventID = ?");
 		ps.setInt(1, eventID);
-		
+
 		ResultSet rs = ps.executeQuery();
 		ps.close();
-		
+
 		Event e = null;
-		
+
 		// Get first event
 		if (rs.next()) {
 			e = new Event();
@@ -203,10 +203,10 @@ public class EventHandler {
 			e.setPinned(rs.getBoolean(ItemFilter.getColumnWithName("pinned", rs)));
 		}
 		rs.close();
-		
+
 		return e;
-		
+
 	}
-	
+
 }
 

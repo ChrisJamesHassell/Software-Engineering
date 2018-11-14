@@ -20,7 +20,7 @@ export default (
     case 'ADD_EVENT':
       return {
         ...state,
-        [action.payload.category]: [...state[action.payload.category], action.payload].sort(
+        [action.payload.category]: [...(state[action.payload.category] || []), action.payload].sort(
           sortByStartDate,
         ),
       };
@@ -31,11 +31,14 @@ export default (
 
       return {
         ...state,
-        [action.payload[0].category]: [...state[action.payload.category], ...action.payload].sort(
-          sortByStartDate,
-        ),
+        [action.payload[0].category]: [
+          ...(state[action.payload.category] || []),
+          ...action.payload,
+        ].sort(sortByStartDate),
       };
     }
+    case 'REMOVE_ALL_EVENTS':
+      return {};
     case 'REMOVE_EVENT':
       return {
         ...state,

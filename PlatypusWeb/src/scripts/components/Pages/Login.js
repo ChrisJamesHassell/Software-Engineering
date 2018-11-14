@@ -1,5 +1,8 @@
 import React from 'react';
-import { Button, Grid, Row, Col, Alert, Modal } from 'react-bootstrap';
+import {
+  Button, Grid, Row, Col, Alert, Modal,
+} from 'react-bootstrap';
+import { connect } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -8,16 +11,19 @@ import SignupForm from '../Forms/SignupForm';
 import logo from '../../../images/icons/icon_circle_white.svg';
 // import { setUserData, CategoryFilters, setCategoryFilter } from '../../actions/actions';
 
-const LoginMobileContent = (props) => (
-  <Col id='login-logo' smHidden mdHidden lgHidden xs={12}>
-    <div><img src={props.logoUrl} id='logo-hidden' alt='white logo' /></div>
-    <div id='login-logo-brand'>
-      <span id='brand-platy'>platy</span><span id='brand-pus'>pus</span>
+const LoginMobileContent = props => (
+  <Col id="login-logo" smHidden mdHidden lgHidden xs={12}>
+    <div>
+      <img src={props.logoUrl} id="logo-hidden" alt="white logo" />
+    </div>
+    <div id="login-logo-brand">
+      <span id="brand-platy">platy</span>
+      <span id="brand-pus">pus</span>
     </div>
   </Col>
 );
 
-const LoadingModal = (props) => (
+const LoadingModal = props => (
   <Modal show={props.loading}>
     <Modal.Body>
       <b>Loading...</b>
@@ -26,36 +32,34 @@ const LoadingModal = (props) => (
 );
 
 const LoginLargeContent = () => (
-  <Col id='login-extra' xsHidden md={8}>
+  <Col id="login-extra" xsHidden md={8}>
     <div>
       <h1>Organize.</h1>
       <h1>Plan.</h1>
       <h1>Live.</h1>
       <p>
-        Hey, adulting is hard. We get it. That's why Platypus provides
-        a sleek, modern interface to help you adult at maximum efficiency.
-            </p>
-      <p><Button bsStyle='success' bsSize='large'>Learn More</Button></p>
+        Hey, adulting is hard. We get it. That's why Platypus provides a sleek, modern interface to
+        help you adult at maximum efficiency.
+      </p>
+      <p>
+        <Button bsStyle="success" bsSize="large">
+          Learn More
+        </Button>
+      </p>
     </div>
   </Col>
 );
 
-const RowSpacer = () => (
-  <Row id='row-space'>
+const RowSpacer = () => <Row id="row-space" />;
 
-  </Row>
-);
-
-export class Login extends React.Component {
-  // export default class Login extends React.Component {
+class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       redirect: false,
       error: '',
       loading: false,
-      isMounted: false
-    }
+    };
     this.login = this.login.bind(this);
   }
 
@@ -69,35 +73,53 @@ export class Login extends React.Component {
 
   login(route, data) {
     this.setState({ loading: true });
-    var opts = {
+    const opts = {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     };
     fetch(route, opts)
-      .then(response => this.validateResponse(response)) // If not valid, skips rest and goes to catch
-      .then(validResponse => { return validResponse.json() })
+      // If not valid, skips rest and goes to catch
+      .then(response => this.validateResponse(response))
+      .then(validResponse => validResponse.json())
       .then(jsonResponse => this.handleJsonResponse(jsonResponse))
       .catch(error => this.logError(error));
   }
 
-  validateResponse(result) {
+  validateResponse = (result) => {
     if (!result.ok) throw Error(result.statusText);
     return result;
   };
 
   handleJsonResponse(response) {
     this.setState({ loading: false });
-    const { status } = response;
+    const {
+      data: { documents, events, tasks },
+      status,
+    } = response;
+
+    this.props.dispatch({
+      type: 'ADD_DOCUMENTS',
+      payload: documents,
+    });
+    this.props.dispatch({
+      type: 'ADD_EVENTS',
+      payload: events,
+    });
+    this.props.dispatch({
+      type: 'ADD_TASKS',
+      payload: tasks,
+    });
+
     const isSuccess = status === 'SUCCESS';
     const data = Object.assign({}, response.data);
     Object.keys(data).forEach((key) => {
-      let value = JSON.stringify(data[key]);
+      const value = JSON.stringify(data[key]);
       localStorage.setItem(key, value);
-    })
+    });
 
     if (isSuccess) this.setState({ redirect: true });
     else this.logError(response.message);
@@ -105,7 +127,7 @@ export class Login extends React.Component {
 
   logError(error) {
     this.setState({ loading: false });
-    var err = error.toString();
+    let err = error.toString();
     if (err.includes('Failed to fetch')) err = 'There was a problem connecting to the server. Please contact the service administrator.';
     this.setState({ error: err });
   }
@@ -170,8 +192,7 @@ export class Login extends React.Component {
                     </Button>
                   </LinkContainer>
                 </div>
-                <div>
-                </div>
+                <div />
               </div>
             </Col>
           </Row>
@@ -181,22 +202,4 @@ export class Login extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    user: state.user
-  }
-}
-
-// const mapDispatchToProps = dispatch => ({
-//   setUserData: (data) => dispatch(setUserData(data))
-// })
-// ​
-// const FilterLink = connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(Link)
-
-export default connect(
-  mapStateToProps,
-  // mapDispatchToProps
-  )(Login);
+export default connect()(Login);

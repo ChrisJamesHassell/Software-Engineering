@@ -16,9 +16,9 @@ import platypus.api.models.User;
 
 
 public class UserHandler {
-	
+
 	/*
-	 * Return a JsonObject of the User, (This is to retrieve all Groups a user is in) 
+	 * Return a JsonObject of the User, (This is to retrieve all Groups a user is in)
 	 */
 	public static Object getUserInfo(HikariDataSource ds, UserTuple userSess) throws SQLException {
 		Connection conn = null;
@@ -34,7 +34,7 @@ public class UserHandler {
 			stmt.setInt(1, userSess.getId());
 			ResultSet rows = stmt.executeQuery();
 			stmt.close();
-			
+
 			//Grab all groups for this userID.
 			while (rows.next()) {
 				System.out.println("User: " + rows.getInt(2) + " is in group: " + rows.getInt(1));
@@ -42,13 +42,13 @@ public class UserHandler {
 			}
 
 			json = new Gson().toJson(test);
-			
+
 		} catch (SQLException e) {
 			return new JsonResponse("ERROR", "", "SQL fuckywuckied in UserApi.");
 		} finally {
 			conn.close();
 		}
-		
+
 		return new JsonResponse("SUCCESS", json, "Got all user contents.");
 	}
 }

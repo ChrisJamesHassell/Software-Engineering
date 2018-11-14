@@ -19,23 +19,25 @@ export default (
     case 'ADD_DOCUMENT':
       return {
         ...state,
-        [action.payload.category]: [...state[action.payload.category], action.payload].sort(
+        [action.payload.category]: [...(state[action.payload.category] || []), action.payload].sort(
           sortByExpiryDate,
         ),
       };
     case 'ADD_DOCUMENTS': {
-      console.log(action.payload);
       if (action.payload.length === 0) {
         return state;
       }
 
       return {
         ...state,
-        [action.payload[0].category]: [...state[action.payload.category], ...action.payload].sort(
-          sortByExpiryDate,
-        ),
+        [action.payload[0].category]: [
+          ...(state[action.payload.category] || []),
+          ...action.payload,
+        ].sort(sortByExpiryDate),
       };
     }
+    case 'REMOVE_ALL_DOCUMENTS':
+      return {};
     case 'REMOVE_DOCUMENT':
       return {
         ...state,

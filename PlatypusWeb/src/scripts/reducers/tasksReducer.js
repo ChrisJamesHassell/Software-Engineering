@@ -1,14 +1,11 @@
 const sortByPriority = (a, b) => b.priority - a.priority;
 
-export default (
-  state = {},
-  action,
-) => {
+export default (state = {}, action) => {
   switch (action.type) {
     case 'ADD_TASK':
       return {
         ...state,
-        [action.payload.category]: [...state[action.payload.category], action.payload].sort(
+        [action.payload.category]: [...(state[action.payload.category] || []), action.payload].sort(
           sortByPriority,
         ),
       };
@@ -19,11 +16,14 @@ export default (
 
       return {
         ...state,
-        [action.payload[0].category]: [...state[action.payload.category], ...action.payload].sort(
-          sortByPriority,
-        ),
+        [action.payload[0].category]: [
+          ...(state[action.payload.category] || []),
+          ...action.payload,
+        ].sort(sortByPriority),
       };
     }
+    case 'REMOVE_ALL_TASKS':
+      return {};
     case 'REMOVE_TASK':
       return {
         ...state,
