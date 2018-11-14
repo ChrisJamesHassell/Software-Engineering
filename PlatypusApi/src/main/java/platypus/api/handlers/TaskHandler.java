@@ -87,13 +87,25 @@ public class TaskHandler {
 			stmt.setString(6, task.get("completed").getAsString());
 			stmt.setInt(7, task.get("taskID").getAsInt());
 			
-			int ret = stmt.executeUpdate();		
+			int ret = stmt.executeUpdate();
 			stmt.close();
 			
 			// Successful update
 			if (ret == 1) {
-				// TODO: Build the CacheEntry + new Task stuff.
-				return new JsonResponse("SUCCESS", "", "Successfully edited task");
+				// Given a successful update, update the relational table too.
+				stmt = conn.prepareStatement("UPDATE has_tasks SET pinned = ?, notification = ? WHERE taskID = ?");
+				stmt.setString(1, task.get("pinned").getAsString());
+				stmt.setString(2, task.get("notification").getAsString());
+				stmt.setInt(3, task.get("taskID").getAsInt());
+				
+				ret = stmt.executeUpdate();
+				stmt.close();
+				
+				if (ret == 1) {
+					return new JsonResponse("SUCCESS", getReturnedTask(task.get("taskID").getAsInt(), conn), "Successfully edited event");	
+				} else {
+					return new JsonResponse("FAIL", "", "Failure updating the relational table");
+				}
 			} else {
 				// The tasktID does not exist.
 				return new JsonResponse("FAIL", "", "The task does not exist");

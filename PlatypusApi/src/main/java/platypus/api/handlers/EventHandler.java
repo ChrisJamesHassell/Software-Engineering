@@ -97,8 +97,20 @@ public class EventHandler {
 			
 			// Successful update
 			if (ret == 1) {
-				// TODO: Build the CacheEntry + new Event stuff.
-				return new JsonResponse("SUCCESS", "", "Successfully edited event");
+				// Given a successful update, update the relational table too.
+				stmt = conn.prepareStatement("UPDATE has_events SET pinned = ?, notification = ? WHERE eventID = ?");
+				stmt.setString(1, event.get("pinned").getAsString());
+				stmt.setString(2, event.get("notification").getAsString());
+				stmt.setInt(3, event.get("eventID").getAsInt());
+				
+				ret = stmt.executeUpdate();
+				stmt.close();
+				
+				if (ret == 1) {
+					return new JsonResponse("SUCCESS", getReturnedEvent(event.get("eventID").getAsInt(), conn), "Successfully edited event");	
+				} else {
+					return new JsonResponse("FAIL", "", "Failure updating the relational table");
+				}
 			} else {
 				// The eventID does not exist.
 				return new JsonResponse("FAIL", "", "The event does not exist");
