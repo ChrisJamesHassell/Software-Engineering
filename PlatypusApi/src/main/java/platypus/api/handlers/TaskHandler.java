@@ -38,16 +38,29 @@ public class TaskHandler {
 			JsonObject task = jsonO.get("task").getAsJsonObject();
 
 			conn = ds.getConnection();
-
 			//Prepare the call from request body
 			stmt = conn.prepareCall("{call insertTask(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setString(1, task.get("pinned").getAsString());
-			stmt.setString(2, task.get("notification").getAsString());
-			stmt.setInt(3, group.get("groupID").getAsInt());
+			if(task.get("notification").getAsString().length() == 0) {
+				System.out.println("Setting notif to null");
+				stmt.setString(2, null);
+			}
+			else {
+				stmt.setString(2, task.get("notification").getAsString());
+			}
+			
+			stmt.setInt(3, group.get("groupId").getAsInt());
 			stmt.setString(4, task.get("name").getAsString());
 			stmt.setString(5, task.get("description").getAsString());
 			stmt.setString(6, task.get("category").getAsString());
-			stmt.setString(7, task.get("deadline").getAsString());
+			if(task.get("deadline").getAsString().length() == 0) {
+				System.out.println("Setting deadline to null");
+				stmt.setString(7, null);
+			}
+			else {
+				stmt.setString(7, task.get("deadline").getAsString());
+			}
+			
 			stmt.setString(8, task.get("priority").getAsString());
 			stmt.registerOutParameter(9, Types.INTEGER);
 			
@@ -155,16 +168,10 @@ public class TaskHandler {
 		filterMap.put("user", g.fromJson(request.headers("user"), JsonObject.class));
 		filterMap.put("group", g.fromJson(request.headers("group"), JsonObject.class));
 		filterMap.put("filter", g.fromJson(request.headers("filter"), JsonObject.class));
-		System.out.println("GOT TO TASK GET: ");
-		for (Entry<String, JsonObject> entry : filterMap.entrySet()) {
-		    String key = entry.getKey();
-		    Object value = entry.getValue();
-		    System.out.println("KEY: " + key + " || VALUE: " + value);
-		}
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", ItemFilter.getTasks(ds.getConnection(), filterMap), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getTasks(conn, filterMap), "Berfect!");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

@@ -169,7 +169,7 @@ public class DocumentHandler {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", ItemFilter.getDocuments(ds.getConnection(), filterMap), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getDocuments(conn, filterMap), "Berfect!");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

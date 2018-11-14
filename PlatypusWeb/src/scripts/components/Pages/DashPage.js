@@ -22,19 +22,71 @@ const DashBoxHeader = (props) => {
     )
 }
 
-const DashBox = (props) => {
-    let style = {
-        minWidth: '300px',
-        flex: '1',
-        margin: '20px'
+class DashBox extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            style: {
+                minWidth: '300px',
+                flex: '1',
+                margin: '20px'
+            }
+        }
     }
-    return (
-        <Panel style={style}>
-            <Panel.Heading><DashBoxHeader {...props} /></Panel.Heading>
-            <Panel.Body><DashBoxBody {...props} /></Panel.Body>
-        </Panel>
-    )
+
+    componentDidMount() {
+        let fetchHeader = {
+            "filter": {
+                "category": this.props.category,
+                "pinned": true,
+                "weeksAhead": 2
+            },
+            "group": {
+                "groupId": this.props.user.selfGroupId
+            },
+            "user": {
+                "userId": this.props.user.userId
+            }
+        }
+    }
+
+    render() {
+        return (
+            <Panel style={this.state.style}>
+                <Panel.Heading><DashBoxHeader {...this.props} /></Panel.Heading>
+                <Panel.Body><DashBoxBody {...this.props} /></Panel.Body>
+            </Panel>
+        )
+    }
 }
+// const DashBox = (props) => {
+//     let style = {
+//         minWidth: '300px',
+//         flex: '1',
+//         margin: '20px'
+//     }
+
+//     let fetchHeader = {
+//         "filter": {
+//             "category": props.category,
+//             "pinned": true,
+//             "weeksAhead": 2
+//         },
+//         "group": {
+//             "groupId": this.props.user.selfGroupId
+//         },
+//         "user": {
+//             "userId": this.props.user.userId
+//         }
+//     }
+
+//     return (
+//         <Panel style={style}>
+//             <Panel.Heading><DashBoxHeader {...props} /></Panel.Heading>
+//             <Panel.Body><DashBoxBody {...props} /></Panel.Body>
+//         </Panel>
+//     )
+// }
 
 DashBox.propTypes = {
     icon: PropTypes.any,
@@ -51,7 +103,6 @@ class Dash extends React.Component {
     }
 
     componentDidMount() {
-        console.log("DASH MOUNTED");
         let userId = parseInt(localStorage.getItem('userId'));
         let selfGroupId = parseInt(localStorage.getItem('selfGroupId'));
         let groupList = JSON.parse(localStorage.getItem('groupList'));
@@ -63,58 +114,7 @@ class Dash extends React.Component {
             groupList: groupList
         }
 
-        let fetchHeader = {
-            "filter": {
-                "category": null,
-                "pinned": null,
-                "weeksAhead": -1
-            },
-            "group": {
-                "groupId": selfGroupId
-            },
-            "user": {
-                "userId": userId
-            }
-        }
-
         this.props.dispatch(setUserData(userData)) // set the user data in the store
-
-        const paths = ['task', 'event', 'doc'];
-
-
-        paths.map(url => {
-            var opts = {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'filter': JSON.stringify(fetchHeader.filter),
-                    'group': JSON.stringify(fetchHeader.group),
-                    'user': JSON.stringify(fetchHeader.user)
-                }
-            };
-            fetch(`${path}/app/${url}`, opts)
-                .then(res => res.json())
-                .then(
-                    (result) => {
-                        console.log("RESPONSE RESULT: ", result);
-                        this.setState({
-                            isLoaded: true,
-                            items: result.items
-                        });
-                    },
-                    // Note: it's important to handle errors here
-                    // instead of a catch() block so that we don't swallow
-                    // exceptions from actual bugs in components.
-                    (error) => {
-                        console.log("THERE WAS AN ERROR FETCHING: ", url);
-                        this.setState({
-                            isLoaded: true,
-                            error
-                        });
-                    }
-                )
-        })
     }
 
     render() {
@@ -129,7 +129,7 @@ class Dash extends React.Component {
             <div id='page-container'>
                 {Object.keys(appCategories).map((category, index) => {
                     return (
-                        <DashBox key={index} category={category} {...this.props[category]} {...this.state} />
+                        <DashBox key={index} category={category} {...this.props[category]} user={this.props.User} {...this.state} />
                     )
                 })}
             </div>
