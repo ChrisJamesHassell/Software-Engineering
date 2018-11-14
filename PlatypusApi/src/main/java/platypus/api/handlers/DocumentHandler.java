@@ -8,11 +8,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
+import platypus.api.models.Category;
+import platypus.api.models.Document;
+import platypus.api.models.Event;
+import platypus.api.models.ItemType;
 
 public class DocumentHandler {
 
@@ -34,7 +40,7 @@ public class DocumentHandler {
 			conn = ds.getConnection();
 
 			// Prepare the call from request body
-			stmt = conn.prepareCall("{call insertDoc(?, ?, ?, ?, ?, ?, ?, ?)}");
+			stmt = conn.prepareCall("{call insertDoc(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setString(1, document.get("pinned").getAsString());
 			stmt.setString(2, document.get("notification").getAsString());
 			stmt.setInt(3, group.get("groupID").getAsInt());
@@ -43,14 +49,18 @@ public class DocumentHandler {
 			stmt.setString(6, document.get("category").getAsString());
 			stmt.setString(7, document.get("fileName").getAsString());
 			stmt.setString(8, document.get("expirationDate").getAsString());
+			stmt.registerOutParameter(9, Types.INTEGER);
 
 			stmt.executeUpdate();
+			int outID = stmt.getInt(9);
+			stmt.close();
+
+			Document d = getReturnedDocument(outID, conn);
 
 			// TODO: Actually insert the document on the file system. :(
-
-			// Need to return CacheEntry for this user + the document stuff
-			return new JsonResponse("SUCCESS", "", "Successfully inserted document.");
+			return new JsonResponse("SUCCESS", d, "Successfully inserted document.");
 		} catch (SQLException sqlE) {
+			sqlE.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLError in Add document");
 		} finally {
 			conn.close();
@@ -80,7 +90,7 @@ public class DocumentHandler {
 			stmt.setInt(5, document.get("documentID").getAsInt());
 
 			int ret = stmt.executeUpdate();
-			System.out.println(ret);
+			stmt.close();
 			// Successful update
 			if (ret == 1) {
 				// Should not need to touch anything on the file system here, since we only
@@ -122,6 +132,7 @@ public class DocumentHandler {
 			stmt = conn.prepareCall("{call delDoc(?)}");
 			stmt.setInt(1, document.get("documentID").getAsInt());
 			int ret = stmt.executeUpdate();
+			stmt.close();
 
 			if (ret != 0) {
 				// TODO: Need to return CacheEntry for this user + the documentInfo
@@ -143,14 +154,43 @@ public class DocumentHandler {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS",
-					ItemFilter.getDocuments(ds.getConnection(), JsonParser.getFilterRequestObjects(request)), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getDocuments(ds.getConnection(), request), "Berfect!");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_documents");
 		} finally {
 			conn.close();
 		}
+	}
+
+	private static Document getReturnedDocument(int docID, Connection conn) throws SQLException {
+
+		PreparedStatement ps = conn.prepareStatement(
+				"SELECT * FROM documents INNER JOIN has_documents ON documents.docID = has_documents.docID WHERE documents.docID = ?");
+		ps.setInt(1, docID);
+
+		ResultSet rs = ps.executeQuery();
+		ps.close();
+
+		Document d = null;
+
+		// Get first doc
+		if (rs.next()) {
+			d = new Document();
+			d.setItemID(rs.getInt(ItemFilter.getColumnWithName("docID", rs)));
+			d.setType(ItemType.DOCUMENT);
+			d.setName(rs.getString(ItemFilter.getColumnWithName("name", rs)));
+			d.setDescription(rs.getString(ItemFilter.getColumnWithName("description", rs)));
+			d.setCategory(Category.valueOf(rs.getString(ItemFilter.getColumnWithName("category", rs)).toUpperCase()));
+			d.setExpiration(rs.getDate(ItemFilter.getColumnWithName("expirationDate", rs)));
+			d.setFileName(rs.getString(ItemFilter.getColumnWithName("fileName", rs)));
+			d.setNotification(rs.getDate(ItemFilter.getColumnWithName("notification", rs)));
+			d.setPinned(rs.getBoolean(ItemFilter.getColumnWithName("pinned", rs)));
+		}
+		rs.close();
+
+		return d;
+
 	}
 
 }

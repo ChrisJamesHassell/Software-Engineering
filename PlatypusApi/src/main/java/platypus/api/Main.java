@@ -51,7 +51,6 @@ public class Main {
 
 				Spark.path("/task", () -> {
 
-					// TODO, validate that this path works
 					Spark.get("", (req, res) -> TaskHandler.get(ds, req), gson::toJson);
 
 					Spark.post("/add", (req, res) -> TaskHandler.addTask(ds, req), gson::toJson);
