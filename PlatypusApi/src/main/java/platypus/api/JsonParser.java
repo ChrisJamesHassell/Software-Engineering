@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import platypus.api.models.Category;
 import spark.Request;
 
 public class JsonParser {

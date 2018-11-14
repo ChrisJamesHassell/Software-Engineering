@@ -159,7 +159,7 @@ public class CacheUtil {
 		DocumentWrapper[] documentWrappers = new DocumentWrapper[getResultSetSize(rs)];
 		while (rs.next()) {
 			Document d = new Document();
-			d.setItemID(rs.getInt(getColumnWithName("eventID", rs)));
+			d.setItemID(rs.getInt(getColumnWithName("docID", rs)));
 			d.setType(ItemType.DOCUMENT);
 			d.setName(rs.getString(getColumnWithName("name", rs)));
 			d.setDescription(rs.getString(getColumnWithName("description", rs)));
