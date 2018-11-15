@@ -212,13 +212,64 @@ button[disabled] {
 .dash-body-type{
   font-family: 'Raleway', sans-serif;
   font-weight: 600;
-  font-size: 1em;
+  font-size: 1.5em;
   /* border-bottom: 2px dashed #18bc9c; */
-  margin-bottom: .5em;
-  color: #18bc9c;
+  margin: 1em 0 1em 0;
+  color: #8c9198;
   text-transform: uppercase;
-  /* letter-spacing: 1px; */
+  letter-spacing: 1px;
 }
+.ReactTable{
+  border: 0;
+}
+.ReactTable .rt-thead.-header{
+  box-shadow: none;
+  background: white;
+  font-weight: 600;
+  color: #8c9198;
+  border-bottom: 3px dotted rgba(140, 145, 152, .5)
+}
+.ReactTable .rt-tr{
+  align-items: center;
+}
+
+.ReactTable .-pagination{
+  box-shadow: none;
+}
+.ReactTable .rt-tr > .rt-td{
+  display: flex;
+  justify-content: center;
+}
+
+.label {
+  padding: .6em;
+  border-radius: .4em;
+}
+/* === CUSTOM CHECKBOX === */
+/* Hide the default checkbox */
+.checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"]{
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+.cb {
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 5px;
+}
+
+.cb:hover{
+  background-color: #ccc;
+}
+
+span.cb-check{
+  margin-left: -15px;
+  margin-top: 4px;
+}
+
 /* ***********************************XSmall devices (landscape phones, 0px and up)*********************************** */
 
 @media (min-width: 0px) {
