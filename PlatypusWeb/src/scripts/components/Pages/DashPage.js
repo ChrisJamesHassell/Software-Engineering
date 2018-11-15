@@ -1,13 +1,65 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Glyphicon, Panel } from 'react-bootstrap';
+import { Glyphicon, Panel, Label, Checkbox } from 'react-bootstrap';
 import NavIcons from '../../../images/icons/NavIcons';
 import { categories, path } from '../../fetchHelpers';
-import { setUserData } from '../../actions/actions';
+// import { setUserData } from '../../actions/actions';
 import qs from 'qs';
 import fetch from 'cross-fetch';
+import ReactTable from 'react-table';
+import 'react-table/react-table.css'
 
+// class DashBoxBody extends React.Component {
+//     constructor(props) {
+//         super(props);
+//         this.state = {
+//             isLoaded: false,
+//             items: []
+//         }
+//     }
+
+//     async componentDidMount() {
+//         const response = await fetch(`${path}/app/${this.props.itemType}?${qs.stringify({
+//             category: this.props.category.toUpperCase(),
+//             groupID: localStorage.getItem('selfGroupId'),
+//             pinned: 'null',
+//             userID: localStorage.getItem('userId'),
+//             weeksAhead: -1,
+//         })}`, {
+//                 method: 'GET',
+//                 credentials: 'include',
+//             });
+
+//         const { data: items } = await response.json();
+//         this.setState({ items });
+//     }
+
+//     getPriorityStyle(key) {
+//         let priorityMap = {
+//             "LOW": "info",
+//             "MED": "warning",
+//             "HIGH": "danger"
+//         }
+//         return priorityMap[key];
+//     }
+
+//     render() {
+//         const columns = [{
+//             id: 'name',
+//             Header: 'Name',
+//             accessor: d => d.data.name
+//         },]
+
+//         const priority = this.props.itemType.toLowerCase() === "task";
+//         return (
+//             <div className='dash-body'>
+//                 <div className='dash-body-type'>{this.props.itemType}</div>
+//                 {/* <ReactTable data={this.state.items} resolveData={data => data.map(row => row)} /> */}
+//             </div>
+//         )
+//     }
+// }
 class DashBoxBody extends React.Component {
     constructor(props) {
         super(props);
@@ -19,25 +71,60 @@ class DashBoxBody extends React.Component {
 
     async componentDidMount() {
         const response = await fetch(`${path}/app/${this.props.itemType}?${qs.stringify({
-          category: this.props.category.toUpperCase(),
-          groupID: localStorage.getItem('selfGroupId'),
-          pinned: 'null',
-          userID: localStorage.getItem('userId'),
-          weeksAhead: -1,
+            category: this.props.category.toUpperCase(),
+            groupID: localStorage.getItem('selfGroupId'),
+            pinned: 'null',
+            userID: localStorage.getItem('userId'),
+            weeksAhead: -1,
         })}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
+                method: 'GET',
+                credentials: 'include',
+            });
 
         const { data: items } = await response.json();
         this.setState({ items });
-      }
+    }
+
+    getPriorityStyle(key) {
+        let priorityMap = {
+            "LOW": "info",
+            "MED": "warning",
+            "HIGH": "danger"
+        }
+        return priorityMap[key];
+    }
 
     render() {
+        var data = [];
+        this.state.items.forEach(item => {
+            item.task && data.push(item.task)
+        })
+
+        const columns = [
+            {
+                Header: 'Completed',
+                accessor: 'completed',
+                Cell: props => <Checkbox></Checkbox>
+            },
+            {
+                Header: 'Name',
+                accessor: 'name'
+            },
+            {
+                Header: 'Priority',
+                accessor: 'priority',
+                Cell: props => <Label bsStyle={this.getPriorityStyle(props.value)}>{props.value}</Label>
+            },
+        ]
+        console.log("DATA: ", data);
+        const priority = this.props.itemType.toLowerCase() === "task";
         return (
             <div className='dash-body'>
                 <div className='dash-body-type'>{this.props.itemType}</div>
-                {this.state.items.map((item, index) => <div key={index} className='dash-body-data'>{item[this.props.itemType].name}</div> )}
+                {this.state.items.length > 0 ?
+                    // this.state.items.map((item, index) => <div key={index} className='dash-body-data'><span>{item[this.props.itemType].pinned && <Glyphicon glyph="pushpin" style={{ color: '#9aa1a7' }} />}  </span>{item[this.props.itemType].name}<span> {priority && <Label bsStyle={this.getPriorityStyle(item[this.props.itemType].priority)}>{item[this.props.itemType].priority}</Label>}</span></div>)
+                    <ReactTable defaultPageSize={5} data={data} columns={columns} />
+                    : <div style={{ display: 'flex', justifyContent: 'center' }}><Glyphicon glyph="thumbs-up" style={{ color: '#18bc9c', fontSize: '3em' }} />Bitch, you done</div>}
             </div>
         )
     }
@@ -46,9 +133,9 @@ class DashBoxBody extends React.Component {
 const DashBoxHeader = (props) => {
     return (
         <div className='dash-header' style={{ display: 'inline-flex' }}>
-            <div className='dash-header icon' style={{position:'relative'}}><NavIcons icon={props.category} width={40} height={40} spanStyle={{background: '#18bc9c', borderRadius: '50%', position: 'absolute', paddingBottom: '11px', paddingRight: '17px'}} /></div>
+            <div className='dash-header icon' style={{ position: 'relative' }}><NavIcons icon={props.category} width={40} height={40} spanStyle={{ background: '#18bc9c', borderRadius: '50%', position: 'absolute', paddingBottom: '11px', paddingRight: '17px' }} /></div>
             <div className='dash-header category'>{props.category}</div>
-            <div className='dash-header options'><Glyphicon glyph="cog" /></div>
+            <div className='dash-header options'><Glyphicon glyph="cog" style={{ color: '#9aa1a7', fontSize: '1.5em' }} /></div>
         </div>
     )
 }
@@ -124,8 +211,8 @@ class DashBox extends React.Component {
                 <Panel.Heading><DashBoxHeader {...this.props} /></Panel.Heading>
                 {//['task', 'event', 'doc']
                     ['task', 'event'].map(itemType => {
-                    return <Panel.Body key={this.props.category + itemType}><DashBoxBody key={this.props.category + itemType} {...this.props} itemType={itemType} /></Panel.Body>
-                })}
+                        return <Panel.Body key={this.props.category + itemType}><DashBoxBody key={this.props.category + itemType} {...this.props} itemType={itemType} /></Panel.Body>
+                    })}
             </Panel>
         )
     }
