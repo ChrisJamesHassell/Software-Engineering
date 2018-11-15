@@ -38,8 +38,9 @@ public class Document extends Item {
 	public String toString() {
 		return "Document [fileName=" + fileName + ", expiration=" + expiration + ", getItemID()=" + getItemID()
 				+ ", getType()=" + getType() + ", getName()=" + getName() + ", getDescription()=" + getDescription()
-				+ ", getCategory()=" + getCategory() + ", toString()=" + super.toString() + ", getClass()=" + getClass()
-				+ ", hashCode()=" + hashCode() + "]";
+				+ ", getCategory()=" + getCategory() + ", getNotification()=" + getNotification() + ", isPinned()="
+				+ isPinned() + ", toString()=" + super.toString() + ", getClass()=" + getClass() + ", hashCode()="
+				+ hashCode() + "]";
 	}
 
 }
