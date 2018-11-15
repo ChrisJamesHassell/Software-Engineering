@@ -13,67 +13,13 @@ class DashBoxBody extends React.Component {
         super(props);
         this.state = {
             isLoaded: false,
-            task: [],
-            event: [],
-            doc: []
+            items: []
         }
     }
 
-    // componentDidMount() {
-    //     let fetchHeader = {
-    //         "filter": {
-    //             "category": this.props.category.toUpperCase(),
-    //             "pinned": true,
-    //             "weeksAhead": 2
-    //         },
-    //         "group": {
-    //             "groupId": this.props.user.selfGroupId
-    //         },
-    //         "user": {
-    //             "userId": this.props.user.userId
-    //         }
-    //     }
-
-    //     console.log("BODEH FETCH HEADER: ", fetchHeader);
-
-    //     var opts = {
-    //         method: 'GET',
-    //         credentials: 'include',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'filter': JSON.stringify(fetchHeader.filter),
-    //             'group': JSON.stringify(fetchHeader.group),
-    //             'user': JSON.stringify(fetchHeader.user)
-    //         }
-    //     };
-    //     fetch(`${path}/app/${this.props.itemType}`, opts)
-    //         .then(res => res.json())
-    //         .then(
-    //             (result) => {
-    //                 console.log("RESPONSE RESULT: for " + this.props.itemType + "category: " + this.props.category + ": ", result);
-    //                 this.setState({
-    //                     isLoaded: true,
-    //                 });
-    //                 this.setState(state => {
-    //                     state[this.props.itemType] = [result.data[this.props.itemType]]
-    //                 })
-    //             },
-    //             // Note: it's important to handle errors here
-    //             // instead of a catch() block so that we don't swallow
-    //             // exceptions from actual bugs in components.
-    //             (error) => {
-    //                 console.log("THERE WAS AN ERROR FETCHING: ", this.props.itemType);
-    //                 this.setState({
-    //                     isLoaded: true,
-    //                     error
-    //                 });
-    //             }
-    //         )
-    // }
-
     async componentDidMount() {
-        const response = await fetch(`${path}/app/task?${qs.stringify({
-          category: 'null',
+        const response = await fetch(`${path}/app/${this.props.itemType}?${qs.stringify({
+          category: this.props.category.toUpperCase(),
           groupID: localStorage.getItem('selfGroupId'),
           pinned: 'null',
           userID: localStorage.getItem('userId'),
@@ -83,30 +29,24 @@ class DashBoxBody extends React.Component {
           credentials: 'include',
         });
 
-        const { data: tasks } = await response.json();
-        console.log(" DATA: ", tasks);
-        this.props.dispatch({
-          type: 'ADD_TASKS',
-          payload: tasks.map(task => task.task),
-        });
+        const { data: items } = await response.json();
+        this.setState({ items });
       }
 
     render() {
-        console.log("DASHBOXBODY PROPS: ", this.props);
         return (
-            <div className='dash-body'>{this.props.itemType}</div>
+            <div className='dash-body'>
+                <div className='dash-body-type'>{this.props.itemType}</div>
+                {this.state.items.map((item, index) => <div key={index} className='dash-body-data'>{item[this.props.itemType].name}</div> )}
+            </div>
         )
     }
 }
-// const DashBoxBody = (props) => (
-// <div className='dash-body'>BODEH
-// </div>
-// )
 
 const DashBoxHeader = (props) => {
     return (
         <div className='dash-header' style={{ display: 'inline-flex' }}>
-            <div className='dash-header icon'><NavIcons icon={props.category} fill={'#149c82'} /></div>
+            <div className='dash-header icon' style={{position:'relative'}}><NavIcons icon={props.category} width={40} height={40} spanStyle={{background: '#18bc9c', borderRadius: '50%', position: 'absolute', paddingBottom: '11px', paddingRight: '17px'}} /></div>
             <div className='dash-header category'>{props.category}</div>
             <div className='dash-header options'><Glyphicon glyph="cog" /></div>
         </div>
@@ -179,11 +119,11 @@ class DashBox extends React.Component {
     }
 
     render() {
-        console.log("DASHBOX PROPS: ", this.props);
         return (
             <Panel style={this.state.style}>
                 <Panel.Heading><DashBoxHeader {...this.props} /></Panel.Heading>
-                {['task', 'event', 'doc'].map(itemType => {
+                {//['task', 'event', 'doc']
+                    ['task', 'event'].map(itemType => {
                     return <Panel.Body key={this.props.category + itemType}><DashBoxBody key={this.props.category + itemType} {...this.props} itemType={itemType} /></Panel.Body>
                 })}
             </Panel>
@@ -253,7 +193,6 @@ class Dash extends React.Component {
                 return obj;
             }, {});
 
-        console.log("***DASH PROPS: ", this.props);
         return (
             <div id='page-container'>
                 {Object.keys(appCategories).map((category, index) => {

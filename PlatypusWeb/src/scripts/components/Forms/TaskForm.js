@@ -14,7 +14,7 @@ const categoryOptions = [
 ];
 export const priorityOptions = [
   { label: 'High', value: 'HIGH' },
-  { label: 'Medium', value: 'MID' },
+  { label: 'Medium', value: 'MED' },
   { label: 'Low', value: 'LOW' },
 ];
 
