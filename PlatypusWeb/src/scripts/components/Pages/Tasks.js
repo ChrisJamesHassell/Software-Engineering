@@ -1,7 +1,3 @@
-/**
- * TODO:
- * - Fix Tasks.componentDidMount() to not duplicate tasks in reducer
- */
 import moment from 'moment';
 import qs from 'qs';
 import React, { Fragment } from 'react';
@@ -138,6 +134,9 @@ class Tasks extends React.Component {
     );
     const { data: tasks } = await response.json();
 
+    this.props.dispatch({
+      type: 'REMOVE_ALL_TASKS',
+    });
     this.props.dispatch({
       type: 'ADD_TASKS',
       payload: tasks.map(task => task.task),
