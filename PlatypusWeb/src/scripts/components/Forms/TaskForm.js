@@ -1,5 +1,6 @@
 import { Form, Formik } from 'formik';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Button, FormControl, FormGroup } from 'react-bootstrap';
 import Select from 'react-select';
@@ -19,7 +20,23 @@ export const priorityOptions = [
 ];
 
 export default class TaskForm extends React.Component {
-  onSelectChange = (field, setFieldValue) => option => setFieldValue(field, option);
+  static propTypes = {
+    isInitialValid: PropTypes.bool,
+  };
+
+  handleValidation = (values) => {
+    const errors = {};
+
+    ['category', 'name', 'pinned', 'priority'].forEach((key) => {
+      if (!values[key]) {
+        errors[key] = 'Required field';
+      }
+    });
+
+    return errors;
+  };
+
+  onSelectChange = (field, setFieldValue, defaultValue = null) => option => setFieldValue(field, Array.isArray(option) ? defaultValue : option);
 
   onSubmit = (values, { setSubmitting }) => {
     this.props.onSubmit({
@@ -32,7 +49,7 @@ export default class TaskForm extends React.Component {
   };
 
   render() {
-    const { task } = this.props;
+    const { isInitialValid, task } = this.props;
 
     return (
       <Formik
@@ -52,14 +69,16 @@ export default class TaskForm extends React.Component {
               description: '',
               name: '',
               notification: '',
-              pinned: null,
-              priority: null,
+              pinned: boolOptions.find(op => op.value === false),
+              priority: priorityOptions.find(op => op.value === 'LOW'),
             }
         }
+        isInitialValid={isInitialValid || false}
         onSubmit={this.onSubmit}
+        validate={this.handleValidation}
       >
         {({
-          handleChange, isSubmitting, setFieldValue, values,
+          handleChange, isSubmitting, isValid, setFieldValue, values,
         }) => (
           <Form>
             <FormGroup>
@@ -111,7 +130,11 @@ export default class TaskForm extends React.Component {
             <FormGroup>
               <label>Priority</label>
               <Select
-                onChange={this.onSelectChange('priority', setFieldValue)}
+                onChange={this.onSelectChange(
+                  'priority',
+                  setFieldValue,
+                  priorityOptions.find(op => op.value === 'LOW'),
+                )}
                 options={priorityOptions}
                 placeholder="Select Priority..."
                 value={values.priority}
@@ -120,13 +143,17 @@ export default class TaskForm extends React.Component {
             <FormGroup>
               <label>Pinned?</label>
               <Select
-                onChange={this.onSelectChange('pinned', setFieldValue)}
+                onChange={this.onSelectChange(
+                  'pinned',
+                  setFieldValue,
+                  boolOptions.find(op => op.value === false),
+                )}
                 options={boolOptions}
                 placeholder="Select Pinned..."
                 value={values.pinned}
               />
             </FormGroup>
-            <Button bsSize="sm" bsStyle="primary" disabled={isSubmitting} type="submit">
+            <Button bsSize="sm" bsStyle="primary" disabled={isSubmitting || !isValid} type="submit">
               Submit
             </Button>
           </Form>

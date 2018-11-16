@@ -314,6 +314,7 @@ class Tasks extends React.Component {
           </ModalHeader>
           <ModalBody>
             <TaskForm
+              isInitialValid={true}
               onSubmit={this.onTaskUpdate}
               task={activeModal && activeModal.startsWith('edit') && modalTask}
             />
