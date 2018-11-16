@@ -236,7 +236,7 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `documents` (
   `docID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
-  `description` varchar(250) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
   `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `fileName` varchar(128) NOT NULL,
   `expirationDate` date DEFAULT NULL,
@@ -546,10 +546,10 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `tasks` (
   `taskID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
-  `description` varchar(250) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
   `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
-  `deadline` date NOT NULL,
-  `priority` enum('Low','Mid','High') NOT NULL,
+  `deadline` date DEFAULT NULL,
+  `priority` enum('Low','Mid','High') NOT NULL DEFAULT 'Low',
   `completed` binary(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`taskID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
@@ -559,7 +559,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
 CREATE TABLE IF NOT EXISTS `userevents` (
   `eventID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
-  `description` varchar(250) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
   `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `startDate` date NOT NULL,
   `endDate` date NOT NULL,
