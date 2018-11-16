@@ -13,28 +13,15 @@ import spark.Request;
 public class JsonParser {
 
 	private static final Gson gson = new Gson();
-	
-	public static <T> T getObject(Class<T> type, String json){
+
+	public static <T> T getObject(Class<T> type, String json) {
 		return gson.fromJson(json, type);
 	}
-	
-	
 	/*
-	 What FE request for filtered items should look like
-	 
-	 {
-	 	"user":{
-	 		"userId":xxxxx
-	 	},
-	 	"group":{
-	 		"groupId":xxxxx
-	 	},
-	 	"filter":{
-	 		"category":AUTO,
-	 		"weeksAhead":2,
-	 		"pinned":true
-	 	}
-	 }
+	 * What FE request for filtered items should look like
+	 *
+	 * { "user":{ "userId":xxxxx }, "group":{ "groupId":xxxxx }, "filter":{
+	 * "category":AUTO, "weeksAhead":2, "pinned":true } }
 	 */
-	
+
 }
