@@ -91,12 +91,24 @@ public class DocumentHandler {
 
 			int ret = stmt.executeUpdate();
 			stmt.close();
+
 			// Successful update
 			if (ret == 1) {
-				// Should not need to touch anything on the file system here, since we only
-				// touched the database entry for it.
-				// TODO: Build the CacheEntry + new document stuff.
-				return new JsonResponse("SUCCESS", "", "Successfully edited document");
+				// Given a successful update, update the relational table too.
+				stmt = conn.prepareStatement("UPDATE has_documents SET pinned = ?, notification = ? WHERE docID = ?");
+				stmt.setString(1, document.get("pinned").getAsString());
+				stmt.setString(2, document.get("notification").getAsString());
+				stmt.setInt(3, document.get("documentID").getAsInt());
+
+				ret = stmt.executeUpdate();
+				stmt.close();
+
+				if (ret == 1) {
+					return new JsonResponse("SUCCESS", getReturnedDocument(document.get("documentID").getAsInt(), conn),
+							"Successfully edited document");
+				} else {
+					return new JsonResponse("FAIL", "", "Failure updating the relational table");
+				}
 			} else {
 				// The documentID does not exist.
 				return new JsonResponse("FAIL", "", "The document does not exist");
@@ -154,7 +166,7 @@ public class DocumentHandler {
 		Connection conn = null;
 		try {
 			conn = ds.getConnection();
-			return new JsonResponse("SUCCESS", ItemFilter.getDocuments(ds.getConnection(), request), "Berfect!");
+			return new JsonResponse("SUCCESS", ItemFilter.getDocuments(conn, request), "Berfect!");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_documents");
