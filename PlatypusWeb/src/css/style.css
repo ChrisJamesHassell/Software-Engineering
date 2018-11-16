@@ -202,7 +202,7 @@ button[disabled] {
   font-weight: 600;
   text-transform: lowercase;
   font-size: 1.5em;
-  color: #9aa1a7;
+  color: #b4bfbd;
   letter-spacing: .5px;
 }
 
@@ -211,13 +211,29 @@ button[disabled] {
 }
 .dash-body-type{
   font-family: 'Raleway', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 1.5em;
   /* border-bottom: 2px dashed #18bc9c; */
   margin: 1em 0 1em 0;
-  color: #8c9198;
+  background: #b4bfbd;
+  color: white;
   text-transform: uppercase;
   letter-spacing: 1px;
+  padding-left: 1em;
+}
+
+.dash-body-complete {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+}
+
+.dash-body-complete-glyph{
+  color: #18bc9c;
+  font-size: 3em;
+}
+.dash-body-complete-text{
+  padding: 1em 0 1em 0;
 }
 .ReactTable{
   border: 0;
@@ -268,6 +284,10 @@ button[disabled] {
 span.cb-check{
   margin-left: -15px;
   margin-top: 4px;
+}
+
+.panel-default>.panel-heading{
+  background: white;
 }
 
 /* ***********************************XSmall devices (landscape phones, 0px and up)*********************************** */
