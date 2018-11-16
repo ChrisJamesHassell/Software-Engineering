@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `has_tasks` (
 -- Dumping structure for procedure platypus.insertDoc
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
-	IN `pinned` enum('0', '1'),
+	IN `pinned` BINARY(1),
 	IN `notification` DATE,
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
@@ -305,6 +305,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
 
 ,
 	OUT `returnID` INT(11)
+
 
 )
 BEGIN
@@ -338,7 +339,7 @@ DELIMITER ;
 -- Dumping structure for procedure platypus.insertEvent
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
-	IN `pinned` enum('0', '1'),
+	IN `pinned` BINARY(1),
 	IN `notification` DATE,
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
@@ -349,6 +350,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
 	IN `location` VARCHAR(100)
 ,
 	OUT `returnID` INT(11)
+
 
 
 )
@@ -416,7 +418,7 @@ DELIMITER ;
 -- Dumping structure for procedure platypus.insertTask
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
-	IN `pinned` enum('0', '1'),
+	IN `pinned` BINARY(1),
 	IN `notification` DATE,
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
@@ -426,6 +428,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
 	IN `priority` enum('Low','Mid','High')
 ,
 	OUT `returnID` INT(11)
+
 
 )
 BEGIN
