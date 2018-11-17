@@ -1,4 +1,4 @@
-import axios from 'axios';
+import moment from 'moment';
 import qs from 'qs';
 import React, { Fragment } from 'react';
 import {
@@ -135,6 +135,9 @@ class Tasks extends React.Component {
     const { data: tasks } = await response.json();
 
     this.props.dispatch({
+      type: 'REMOVE_ALL_TASKS',
+    });
+    this.props.dispatch({
       type: 'ADD_TASKS',
       payload: tasks.map(task => task.task),
     });
@@ -184,12 +187,12 @@ class Tasks extends React.Component {
     console.log({ task });
   };
 
-  onTaskComplete = task => () => this.props.dispatch({
-    type: 'UPDATE_TASK',
-    payload: {
-      ...task,
-      completed: !task.completed,
-    },
+  onTaskComplete = task => () => this.onTaskUpdate({
+    ...task,
+    completed: !task.completed,
+    deadline: moment(task.deadline).format('YYYY-MM-DD'),
+    notification: moment(task.notification).format('YYYY-MM-DD'),
+    taskID: task.itemID,
   });
 
   onTaskCreate = async (values) => {
@@ -260,24 +263,25 @@ class Tasks extends React.Component {
   };
 
   onTaskUpdate = async (values) => {
-    console.log({ values });
     const response = await fetch(`${path}/app/task/update`, {
       body: JSON.stringify({
-        task: { ...values, completed: values.completed ? 1 : 0, taskID: values.itemID },
+        task: {
+          ...values,
+          completed: values.completed ? 1 : 0,
+          pinned: values.pinned ? 1 : 0,
+          taskID: values.itemID,
+        },
       }),
       credentials: 'include',
       method: 'POST',
     });
 
-    if (!response.ok) {
-      throw Error('Error status code');
-    }
+    const { data: task } = await response.json();
 
     this.props.dispatch({
-      type: 'REMOVE_ALL_TASKS',
+      type: 'UPDATE_TASK',
+      payload: task,
     });
-
-    await this.componentDidMount();
 
     this.onHideModal();
   };
@@ -310,6 +314,7 @@ class Tasks extends React.Component {
           </ModalHeader>
           <ModalBody>
             <TaskForm
+              isInitialValid={true}
               onSubmit={this.onTaskUpdate}
               task={activeModal && activeModal.startsWith('edit') && modalTask}
             />
