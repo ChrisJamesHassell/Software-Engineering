@@ -67,8 +67,6 @@ class Login extends React.Component {
   }
 
   login(route, data) {
-    console.log("LOGIN - ROUTE: ", route);
-    console.log("LOGIN - DATA: ", data);
     this.setState({ loading: true });
     const opts = {
       method: 'POST',

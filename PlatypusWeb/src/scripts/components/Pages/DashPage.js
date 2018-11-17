@@ -1,19 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Glyphicon, Panel, Label } from 'react-bootstrap';
+// import PropTypes from 'prop-types';
+import { Glyphicon, Panel, Label, Checkbox } from 'react-bootstrap';
 import qs from 'qs';
 import fetch from 'cross-fetch';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css'
 import NavIcons from '../../../images/icons/NavIcons';
-import CustomCheckbox from '../Forms/CustomCheckbox';
 import { categories, path } from '../../fetchHelpers';
-
-
-const CustomTableCell = (props) => (
-    <div className="table-cell-body" style={props.style}>{props.value}</div>
-)
 
 // ================================================================== //
 //  DASHBODY
@@ -23,41 +17,9 @@ class DashBoxBody extends React.Component {
         super(props);
         this.state = {
             isLoaded: false,
+            selected: -1,
             items: [],
-            inputStyle: {},
-            cellStyle: {
-                true: {
-                    cell: {
-                        textDecoration: 'line-through', color: '#b4bfbd'
-                    },
-                    label: {
-                        color: '#c8d2d0', textDecoration: 'line-through'
-                    },
-                    checkBox: {
-                        background: '#18bc9c',
-                        fontSize: '15px',
-
-                    }
-                },
-                false: {
-                    cell: {
-                        textDecoration: 'none', color: '#788084'
-                    },
-                    label: {
-                        color: 'white', textDecoration: 'none'
-                    },
-                    checkBox: {
-                        background: '#eee',
-                        fontSize: 0
-                    }
-                }
-            },
-            selection: [],
-            highestPriority: { key: 1, value: 1, color: '#3498db' }
         }
-        this.toggleSelection = this.toggleSelection.bind(this);
-        this.getPriorityStyle = this.getPriorityStyle.bind(this);
-        // this.setHighestPriority = this.setHighestPriority.bind(this);
     }
 
     async componentDidMount() {
@@ -73,44 +35,68 @@ class DashBoxBody extends React.Component {
             });
 
         const { data: items } = await response.json();
-        this.setState({ items });
+        let formattedItems = [];
+        items.forEach(item => {
+            formattedItems.push(this.getFetchBody(item[this.props.itemType]))
+        })
+        this.setState({ items: formattedItems });
     }
 
-    onUpdate = async (values, checked) => {
-        console.log({ values });
-        const response = await fetch(`${path}/app/task/update`, {
-            body: JSON.stringify({
-                task: {
-                    ...values,
-                    completed: checked ? 1 : 0,
-                    taskID: values.itemID,
-                    pinned: values.pinned ? 1 : 0
-                },
-            }),
+    getFetchBody(values) {
+        switch (this.props.itemType) {
+            case "task":
+                return {
+                    task: {
+                        ...values,
+                        completed: values.completed ? 1 : 0,
+                        taskID: values.itemID,
+                        pinned: values.pinned ? 1 : 0
+                    }
+                }
+            case "event":
+                return {
+                    event: {
+
+                    }
+                }
+            case "doc":
+                return {
+                    doc: {
+
+                    }
+                }
+            default:
+                return "";
+        }
+    }
+
+    validateResponse = (result) => {
+        if (!result.ok) throw Error(result.statusText);
+        return result;
+    }
+
+    handleJsonResponse(response, rowIndex = 0) {
+        const newData = this.getFetchBody(response.data);
+        let newItems = Object.assign([], this.state.items);
+        newItems[rowIndex] = newData;
+        this.setState({ items: newItems });
+    }
+
+    onUpdate = async (values, rowIndex = 0) => {
+        const response = await fetch(`${path}/app/${this.props.itemType}/update`, {
+            body: JSON.stringify(this.getFetchBody(values)),
             credentials: 'include',
             method: 'POST',
-        });
-
-        if (!response.ok) {
-            throw Error('Error status code');
-        }
+        })
+            .then(response => this.validateResponse(response))
+            .then(validResponse => validResponse.json())
+            .then(jsonResponse => this.handleJsonResponse(jsonResponse, rowIndex))
     }
 
-    toggleSelection(isOn, key, values) {
-        let selection = [...this.state.selection];
-        const keyIndex = selection.indexOf(key);
-
-        if (keyIndex >= 0) { // check to see if the key exists
-            // it does exist so we will remove it using destructing
-            selection = [
-                ...selection.slice(0, keyIndex),
-                ...selection.slice(keyIndex + 1)
-            ];
-        } else {
-            selection.push(key); // it does not exist so add it
-        }
-        this.onUpdate(isOn, values);
-        this.setState({ selection }); // update the state
+    handleCheck = (e, values, rowIndex) => {
+        let value = values.task;
+        const newVal = Object.assign({}, { ...value }, { completed: e.target.checked ? 1 : 0 })
+        this.onUpdate(newVal, rowIndex);
     }
 
     isSelected = key => {
@@ -123,31 +109,45 @@ class DashBoxBody extends React.Component {
             "task": [
                 {
                     Header: 'Completed',
-                    accessor: 'completed',
-                    Cell: props => <CustomCheckbox
-                        key={props.name}
-                        {...props}
-                        toggleSelection={this.toggleSelection}
-                        style={this.state.cellStyle[props.original.completed].checkBox}
-                    />
+                    id: 'completed',
+                    className: 'dash-body-completed',
+                    accessor: d => d[this.props.itemType].completed,
+                    Cell: row =>
+                        (
+                            <Checkbox
+                                className="cb"
+                                style={{ background: row.value ? '#18bc9c' : '#eee' }}
+                                checked={row.value}
+                                onChange={e => this.handleCheck(e, row.original, row.index)}>
+                                <Glyphicon
+                                    className="cb-check"
+                                    glyph="ok"
+                                    style={{ color: 'white', fontSize: row.value ? '15px' : '0', transition: 'font-size .5s' }}
+                                />
+                            </Checkbox>
+                        )
                 },
                 {
                     Header: 'Name',
-                    accessor: 'name',
-                    Cell: props => <CustomTableCell
-                        key={props.name}
-                        value={props.value}
-                        {...props}
-                        style={this.state.cellStyle[props.original.completed].cell}
-                    />
+                    id: 'name',
+                    className: 'dash-body-cell',
+                    accessor: d => d[this.props.itemType].name,
+                    getProps: (state, rowInfo) => ({
+                        style: {
+                            color: (rowInfo && rowInfo.row.completed ? '#c8d2d0' : '#788084'),
+                            textDecoration: (rowInfo && rowInfo.row.completed ? 'line-through' : 'none'),
+                            content: rowInfo && rowInfo
+                        }
+                    }),
                 },
                 {
                     Header: 'Priority',
-                    accessor: 'priority',
-                    Cell: props => <Label
-                        key={props.name}
-                        bsStyle={this.getPriorityStyle(props.value, props.index, props.original.completed).class}
-                        style={this.state.cellStyle[props.original.completed].label}
+                    id: 'priority',
+                    className: 'dash-body-priority',
+                    accessor: d => d[this.props.itemType].priority,
+                    Cell: props => <Label className="dash-body-priority"
+                        bsStyle={this.getPriorityStyle(props.value, props.index, props.original[this.props.itemType].completed).class}
+                        style={{ textDecoration: props.original[this.props.itemType].completed ? 'line-through' : 'none' }}
                     >
                         {this.getPriorityStyle(props.value).value}
                     </Label>,
@@ -165,15 +165,7 @@ class DashBoxBody extends React.Component {
         return colsMap[key];
     }
 
-    // setHighestPriority(value, key, isRemoved=false) {
-    //     const current = { key: key, value: this.getPriorityStyle(value).key, color: this.getPriorityStyle(value).color };
-    //     const highest = this.state.highestPriority;
-    //     if (current.value > highest.value) {
-    //         this.setState({ highestPriority: current })
-    //     }
-    //}
-
-    getPriorityStyle(key, index, completed=false) {
+    getPriorityStyle(key, index, completed = false) {
         let classStyle = null;
         if (completed) classStyle = "default";
         let priorityMap = {
@@ -185,17 +177,15 @@ class DashBoxBody extends React.Component {
     }
 
     render() {
-        var data = [];
-        this.state.items.forEach(item => {
-            data.push(item[this.props.itemType])
-        })
         return (
             <div className='dash-body'>
                 <div className='dash-body-type'>{this.props.itemType}</div>
                 {this.state.items.length > 0 ?
                     <ReactTable
+                        // className="-highlight"
                         defaultPageSize={3}
-                        data={data}
+                        data={this.state.items}
+                        resolveData={data => data.map(row => row)}
                         columns={this.getItemTypeCols(this.props.itemType)}
                     />
                     :
@@ -250,7 +240,7 @@ class DashBox extends React.Component {
                     <DashBoxHeader {...this.props} />
                 </Panel.Heading>
                 {//['task', 'event', 'doc']
-                    ['task', 'event'].map(itemType => {
+                    ['task', 'event', 'doc'].map(itemType => {
                         return <Panel.Body key={this.props.category + itemType}>
                             <DashBoxBody key={this.props.category + itemType} {...this.props} itemType={itemType} />
                         </Panel.Body>
