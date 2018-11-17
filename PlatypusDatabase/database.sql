@@ -236,7 +236,7 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `documents` (
   `docID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
-  `description` varchar(250) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
   `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `fileName` varchar(128) NOT NULL,
   `expirationDate` date DEFAULT NULL,
@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `has_tasks` (
 -- Dumping structure for procedure platypus.insertDoc
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
-	IN `pinned` enum('0', '1'),
+	IN `pinned` BINARY(1),
 	IN `notification` DATE,
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
@@ -305,6 +305,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
 
 ,
 	OUT `returnID` INT(11)
+
 
 )
 BEGIN
@@ -338,7 +339,7 @@ DELIMITER ;
 -- Dumping structure for procedure platypus.insertEvent
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
-	IN `pinned` enum('0', '1'),
+	IN `pinned` BINARY(1),
 	IN `notification` DATE,
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
@@ -349,6 +350,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertEvent`(
 	IN `location` VARCHAR(100)
 ,
 	OUT `returnID` INT(11)
+
 
 
 )
@@ -416,7 +418,7 @@ DELIMITER ;
 -- Dumping structure for procedure platypus.insertTask
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
-	IN `pinned` enum('0', '1'),
+	IN `pinned` BINARY(1),
 	IN `notification` DATE,
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
@@ -426,6 +428,7 @@ CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertTask`(
 	IN `priority` enum('Low','Mid','High')
 ,
 	OUT `returnID` INT(11)
+
 
 )
 BEGIN
@@ -546,10 +549,10 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `tasks` (
   `taskID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
-  `description` varchar(250) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
   `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
-  `deadline` date NOT NULL,
-  `priority` enum('Low','Mid','High') NOT NULL,
+  `deadline` date DEFAULT NULL,
+  `priority` enum('Low','Mid','High') NOT NULL DEFAULT 'Low',
   `completed` binary(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`taskID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
@@ -559,7 +562,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
 CREATE TABLE IF NOT EXISTS `userevents` (
   `eventID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
-  `description` varchar(250) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
   `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
   `startDate` date NOT NULL,
   `endDate` date NOT NULL,
