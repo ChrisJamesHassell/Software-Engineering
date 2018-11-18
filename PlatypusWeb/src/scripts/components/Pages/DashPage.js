@@ -5,12 +5,12 @@ import { Glyphicon, Panel } from 'react-bootstrap';
 import NavIcons from '../../../images/icons/NavIcons';
 import { categories } from '../../fetchHelpers';
 
-const DashBoxBody = (props) => (
+export const DashBoxBody = (props) => (
     <div className='dash-body'>BODEH
     </div>
 )
 
-const DashBoxHeader = (props) => {
+export const DashBoxHeader = (props) => {
     return (
         <div className='dash-header' style={{ display: 'inline-flex' }}>
             <div className='dash-header icon'><NavIcons icon={props.category} fill={'#149c82'} /></div>
@@ -20,7 +20,7 @@ const DashBoxHeader = (props) => {
     )
 }
 
-const DashBox = (props) => {
+export const DashBox = (props) => {
     let style = {
         minWidth: '300px',
         flex: '1',
@@ -42,7 +42,7 @@ DashBox.propTypes = {
     footer: PropTypes.any
 }
 
-class Dash extends React.Component {
+export class Dash extends React.Component {
     constructor(props) {
         super(props);
         this.state = {}

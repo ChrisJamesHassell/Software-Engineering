@@ -1,22 +1,48 @@
 import React from 'react';
 import { shallow, mount, render } from 'enzyme';
-// import Login from '../Pages/LoginFortest';
 import LoginForm from '../Forms/LoginForm.js';
 import TextInput from '../Forms/TextInput';
 import {regex} from '../Forms/LoginForm.js';
+import { textInput } from '../dataFixtures/fixtures';
+
+const props = { textInput };
+
 
 // describe what we are testing
-describe('Login Component', () => {
+describe('LoginForm', () => {
+  const loginForm = shallow(<LoginForm  {...props}/>);
  
   // make our assertion and what we expect to happen 
-  it('should render without throwing an error', () => {
-    expect(shallow(<LoginForm />).find('form').exists()).toBe(true)
-  })
+  it('should render a local LoginForm', () => {
+    // console.log(loginForm.debug());
+    expect(loginForm.find('form').exists()).toBe(true)
+  });
 
-  // test('regexWorks', () =>{
-  //   expect.stringMatching( /^(?=.*[a-zA-Z])[A-Za-z\d]{8,32}$/g).not.toMatch( 'alllowercase');
+  // it('should render username stuff', () => {
+  //   expect(loginForm.find('FormGroup').at(0).props().children).toEqual('User Name');
+  // });
+
+
+  it('should say Enter user name', () =>{
+    expect (loginForm.find('TextInput').exists()).toBe(true);
+  });
+})
+
+  // it('should say Enter user name', () =>{
+  //   expect (loginForm.find('TextInput').at(0).props().children).toEqual('userName');
+  // });
+
+//   describe('and updating the username', () => {
+//     beforeEach(() => {
+//         loginForm.find('TextInput').at(0).simulate('change', { target: {value: 'change username'} })
+//     });
+
+//     it('updates the username', () => {
+//         // console.log(stackForm.state());
+//         expect(loginForm.state().title).toEqual('change title');
+//     });
 // });
-});
+// });
 
 
   // it('renders a password input', () => {
@@ -31,4 +57,4 @@ describe('Login Component', () => {
 // describe ('<TextInput />', () => {
 //   it('userName accepts id prop', () => {
 //     const wrapper = shallow(<TextInput )
-//   })
+  

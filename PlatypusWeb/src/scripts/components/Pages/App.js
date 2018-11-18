@@ -34,7 +34,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   />
 );
 
-const App = () => {
+export const App = () => {
   const home = hasCookie ? '/dashboard' : '/login';
   return (
     <Router>

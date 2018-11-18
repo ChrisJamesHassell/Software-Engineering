@@ -1,20 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from '../Pages/App.js';
+import {App} from '../Pages/App.js';
 import {shallow} from 'enzyme';
 
+describe('App', () =>{
+    const app = shallow(<App />);
 
-describe ('<App />', () => {
     it('should render App', () => {
-        const wrapper = shallow(<App />)
-        // console.log(wrapper.debug())
-        // expect(wrapper.find('App').hasClass('container')).toBe(true)
-    })
-    it('matches the snapshot', () =>{
-        const tree = shallow(<App />)
-        expect(tree).toMatchSnapshot()
-    })
-})
+        expect(app.find('div').exists()).toBe(true);
+    });
+});
+
+
+
+// describe ('<App />', () => {
+//     it('should render App', () => {
+//         const wrapper = shallow(<App />)
+//         // console.log(wrapper.debug())
+//         // expect(wrapper.find('App').hasClass('container')).toBe(true)
+//     })
+//     it('matches the snapshot', () =>{
+//         const tree = shallow(<App />)
+//         expect(tree).toMatchSnapshot()
+//     })
+// })
 
 // import Adapter from 'enzyme-adapter-react-16'
 // configure({ adapter: new  Adapter()})
