@@ -225,7 +225,7 @@ class DashBox extends React.Component {
         super(props);
         this.state = {
             style: {
-                minWidth: '300px',
+                minWidth: '400px',
                 flex: '1',
                 margin: '20px'
             },
@@ -240,7 +240,7 @@ class DashBox extends React.Component {
                     <DashBoxHeader {...this.props} />
                 </Panel.Heading>
                 {//['task', 'event', 'doc']
-                    ['task', 'event', 'doc'].map(itemType => {
+                    ['task', 'event'].map(itemType => {
                         return <Panel.Body key={this.props.category + itemType}>
                             <DashBoxBody key={this.props.category + itemType} {...this.props} itemType={itemType} />
                         </Panel.Body>

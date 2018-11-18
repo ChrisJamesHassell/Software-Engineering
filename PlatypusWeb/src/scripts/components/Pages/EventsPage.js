@@ -3,13 +3,14 @@
 import React from 'react'
 // import PropTypes from 'prop-types'
 // import day from 'dayjs'
-// import { Glyphicon, Panel } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 // import Calendar from 'react-calendar';
 // import BaseCalendar from 'tui-calendar';
 // import NavIcons from '../../../images/icons/NavIcons';
 // import { categories } from '../../fetchHelpers';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
+import EventForm from '../Forms/EventForm';
 
 
 // import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
@@ -74,31 +75,51 @@ export class Events extends React.Component {
         super(...args)
 
         this.state = {
-            events: events
+            events: events,
+            modal: '',
+            show: false,
+            data: {},
         }
+        this.addEvent = this.addEvent.bind(this);
+        // this.handleModal = this.handleModal.bind(this);
     }
 
     handleSelect = (props) => {
-        const title = window.prompt('New Event name')
-        console.log(props);
+        console.log('h==handle select:', props);
+        const title = "new event"; //window.prompt('New Event name')
         const { start, end } = props
-        if (title)
-            this.setState({
-                events: [
-                    ...this.state.events,
-                    {
-                        start,
-                        end,
-                        title,
-                    },
-                ],
-            })
+        //if (title)
+        this.setState({ modal: 'createEvent', show: true, data: props });
     }
 
     handleEventSelect = (props) => {
         console.log('handleevent slot:', props);
 
     }
+
+    onHideModal = (modal) => {
+        this.setState({modal: null})
+    }
+
+    handleClose = () => {
+        this.setState({show: false})
+    }
+
+    addEvent = (props) => {
+        console.log("ADDING: ", props);
+        const newEvents =  [
+            ...this.state.events,
+            props
+        ]
+        console.log("NEW EVETNS: ", newEvents);
+        this.setState({
+            events: newEvents,
+        })
+        this.onHideModal();
+        this.handleClose();
+
+    }
+
 
     // eventStyleGetter = (event) => {
     //     console.log('event style getter event: ', event);
@@ -115,25 +136,37 @@ export class Events extends React.Component {
     //         style: style
     //     };
     // }
-    
+
+
+
     render() {
         return (
-            <BigCalendar
-                popup
-                selectable
-                localizer={localizer}
-                events={this.state.events}
-                defaultView={BigCalendar.Views.MONTH}
-                scrollToTime={new Date(1970, 1, 1, 6)}
-                defaultDate={new Date()}
-                onSelectEvent={event => this.handleEventSelect(event)}
-                onSelectSlot={event => this.handleSelect(event)}
+            <div style={{ width: '100%', height: '100%' }}>
+                <EventForm 
+                    visible={this.state.show && this.state.modal === 'createEvent'} 
+                    onHideModal={this.onHideModal} 
+                    handleClose={this.handleClose}
+                    data={this.state.data}
+                    addEvent={this.addEvent}
+                />
+                <BigCalendar
+                    popup
+                    selectable
+                    localizer={localizer}
+                    events={this.state.events}
+                    defaultView={BigCalendar.Views.MONTH}
+                    scrollToTime={new Date(1970, 1, 1, 6)}
+                    defaultDate={new Date()}
+                    onSelectEvent={event => this.handleEventSelect(event)}
+                    onSelectSlot={event => this.handleSelect(event)}
                 // eventPropGetter={event => this.eventStyleGetter(event)}
-            />
+                />
+
+            </div>
+
         )
     }
 }
-
 
 /*const MyCalendar = props => (
     <div style={{height: '100%'}}>
