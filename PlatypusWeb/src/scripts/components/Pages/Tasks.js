@@ -36,27 +36,28 @@ const Task = ({
         className="task"
         onClick={onTaskClick}
         ref={provided.innerRef}
-        style={{ alignItems: 'center', display: 'flex' }}
       >
-        <input
-          checked={completed}
-          onChange={onTaskComplete}
-          style={{ marginLeft: 'calc(1em - 8px)', marginRight: '1em' }}
-          type="checkbox"
-        />
-        <div style={{ flexGrow: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <h4>{name}</h4>
-            <div style={{ display: 'flex' }}>
-              <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
-                <Glyphicon glyph="pencil" />
-              </a>
-              <a href="#remove" onClick={onTaskDeleteClick}>
-                <Glyphicon glyph="remove" />
-              </a>
+        <div style={{ alignItems: 'center', display: 'flex' }}>
+          <input
+            checked={completed}
+            onChange={onTaskComplete}
+            style={{ marginLeft: 'calc(1em - 8px)', marginRight: '1em' }}
+            type="checkbox"
+          />
+          <div style={{ flexGrow: 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <h4>{name}</h4>
+              <div style={{ display: 'flex' }}>
+                <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
+                  <Glyphicon glyph="pencil" />
+                </a>
+                <a href="#remove" onClick={onTaskDeleteClick}>
+                  <Glyphicon glyph="remove" />
+                </a>
+              </div>
             </div>
+            <p>{description}</p>
           </div>
-          <p>{description}</p>
         </div>
       </div>
     )}
@@ -145,7 +146,7 @@ class Tasks extends React.Component {
 
   changeModal = value => this.setState({ activeModal: value });
 
-  onDragEnd = (result) => {
+  onDragEnd = async (result) => {
     const { tasks } = this.props;
     const { destination, draggableId, source } = result;
 
@@ -172,20 +173,15 @@ class Tasks extends React.Component {
 
     if (!task) return;
 
-    this.props.dispatch({
-      type: 'UPDATE_TASK',
-      payload: {
-        ...task,
-        priority: newPriority.value,
-      },
+    await this.onTaskUpdate({
+      ...task,
+      deadline: moment(task.deadline).format('YYYY-MM-DD'),
+      notification: moment(task.notification).format('YYYY-MM-DD'),
+      priority: newPriority.value,
     });
   };
 
   onHideModal = () => this.changeModal(null);
-
-  onTaskClick = task => () => {
-    console.log({ task });
-  };
 
   onTaskComplete = task => () => this.onTaskUpdate({
     ...task,
@@ -292,7 +288,6 @@ class Tasks extends React.Component {
     let modalTask;
 
     if (activeModal && activeModal.includes('-')) {
-      console.log(activeModal, tasks);
       modalTask = Object.values(tasks)
         .reduce((prev, curr) => [...prev, ...curr], [])
         .find(task => task.itemID === Number(activeModal.split('-')[1]));
@@ -373,7 +368,6 @@ class Tasks extends React.Component {
                   tasks={tasks[value].map(task => ({
                     ...task,
                     id: task.itemID,
-                    onTaskClick: this.onTaskClick(task),
                     onTaskComplete: this.onTaskComplete(task),
                     onTaskDeleteClick: this.onTaskDeleteClick(task.itemID),
                     onTaskEditClick: this.onTaskEditClick(task.itemID),
