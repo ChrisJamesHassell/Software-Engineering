@@ -11,8 +11,6 @@ import platypus.api.handlers.UserHandler;
 import platypus.api.handlers.AuthFilter;
 import platypus.api.handlers.CreateHandler;
 import platypus.api.handlers.DocumentHandler;
-import platypus.api.handlers.DocumentApi;
-import platypus.api.handlers.EventApi;
 import platypus.api.services.*;
 import platypus.api.models.*;
 import platypus.api.handlers.EventHandler;
@@ -21,7 +19,6 @@ import spark.Spark;
 
 import java.util.Properties;
 
-import platypus.api.handlers.FileApi;
 
 public class Main {
 	

@@ -16,6 +16,15 @@ public class Item {
 		
 	}
 	
+	public Item(int itemID, ItemType type, String name, String description, Category category) {
+		super();
+		this.itemID = itemID;
+		this.type = type;
+		this.name = name;
+		this.description = description;
+		this.category = category;
+	}
+	
 	public Item(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned) {
 		super();
 		this.itemID = itemID;
