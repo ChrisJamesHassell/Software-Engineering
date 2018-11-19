@@ -1,22 +1,30 @@
-const path = window.location.origin.toLowerCase().includes('platypus') ? '/api' : 'http://localhost:8080/api';
+const path = window.location.origin.toLowerCase().includes('platypus')
+  ? '/api'
+  : 'http://localhost:8080/api';
+
+const categories = ['Appliances', 'Auto', 'Meals', 'Medical', 'Miscellaneous'];
 
 function deleteAllCookies() {
-    var cookies = document.cookie.split(";");
-    for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i];
-        var eqPos = cookie.indexOf("=");
-        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        if(window.location.origin.includes('platypus')) document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=.platypus.null-terminator.com" //.platypus.null-terminator.com
-    }
+  const cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i += 1) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf('=');
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    if (window.location.origin.includes('platypus')) document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=.platypus.null-terminator.com`; // .platypus.null-terminator.com
+  }
+
+  // Now delete all the localStorage data
+  // eslint-disable-next-line
+  for (const item in localStorage) {
+    localStorage.removeItem(item);
+  }
 }
 
-var hasCookie = document.cookie.length > 0;
-var currentPath = window.location.pathname;
+const hasCookie = document.cookie.length > 0;
+
+const currentPath = window.location.pathname;
 
 export {
-    path,
-    currentPath,
-    hasCookie,
-    deleteAllCookies
-}
+  categories, path, currentPath, hasCookie, deleteAllCookies,
+};

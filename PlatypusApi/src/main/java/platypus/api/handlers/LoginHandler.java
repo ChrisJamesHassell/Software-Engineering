@@ -42,7 +42,8 @@ public class LoginHandler implements Route {
 
 		try {
 			dbconn = ds.getConnection();
-			PreparedStatement stmt = dbconn.prepareStatement("SELECT username, userPassword, userID FROM users WHERE username = ?");
+			PreparedStatement stmt = dbconn
+					.prepareStatement("SELECT username, userPassword, userID FROM users WHERE username = ?");
 			stmt.setString(1, u.getUsername());
 			ResultSet rows = stmt.executeQuery();
 			stmt.close();
@@ -62,21 +63,22 @@ public class LoginHandler implements Route {
 					response.cookie("localhost", "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 							60 * 60 * 24 * 7, false, false);
 					// Insert success, return success
-					return new JsonResponse("SUCCESS", CacheUtil.buildLoginEntry(u.getUsername(), u.getUserId(), dbconn), "Login success.");
-				}
-				else {
+					return new JsonResponse("SUCCESS", CacheUtil.buildLoginEntry(u.getUsername(), u.getUserId(), dbconn),
+							"Login success.");
+				} else {
 					final URI uri = new URI(request.headers("Origin"));
-					if("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())){
+					if ("localhost".equals(uri.getHost()) || "platypus.null-terminator.com".equals(uri.getHost())) {
 						response.cookie(uri.getHost(), "/", AuthFilter.TOKEN_COOKIE, authFilter.createSession(u.getUsername()),
 								60 * 60 * 24 * 7, false, false);
 						// Insert success, return success
-						return new JsonResponse("SUCCESS", CacheUtil.buildLoginEntry(u.getUsername(), u.getUserId(), dbconn), "Login success.");
+						return new JsonResponse("SUCCESS", CacheUtil.buildLoginEntry(u.getUsername(), u.getUserId(), dbconn),
+								"Login success.");
 					}
 					return new JsonResponse("ERROR", "", "The request is from an unknown origin");
 				}
 			}
 			return new JsonResponse("FAIL", "", "Login failure: Incorrect Password");
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());

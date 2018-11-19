@@ -1,42 +1,58 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Redirect, withRouter } from "react-router-dom";
-import { Dashboard } from './Dashboard';
+import {
+  BrowserRouter as Router, Route, Redirect, withRouter,
+} from 'react-router-dom';
+// import { connect } from 'react-redux';
+import { AuthLayout } from '../Layouts/AuthLayout';
 import { hasCookie } from '../../fetchHelpers';
 import AppNavbar from '../Navbar/AppNavbar';
 import Login from './Login';
 
-
-const App = (props) => {
-    var home = hasCookie ? "/dashboard" : "/login";
-    return (
-        <Router>
-            <div id="container">
-                <AppNavbar isAuth={hasCookie} />
-                <Route path="/login" render={props => <Login {...props} />} />
-                <PrivateRoute path="/dashboard" component={Dashboard} />
-                <Home home={home} />
-            </div>
-        </Router>
-    );
-}
-
 const Home = withRouter((props) => {
-    var thispath = window.location.pathname;
-    var matches = thispath === props.home;
-    return (
-        hasCookie ? (!matches && ['/', '/login'].includes(thispath) ? (<Redirect to="/dashboard" />) : (<span hidden></span>)) :
-            (!matches && !['/login/login', '/login/signup'].includes(thispath) ? (<Redirect to="/login" />) : (<span hidden></span>))
-    )
-})
+  const thispath = window.location.pathname;
+  const matches = thispath === props.home;
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
-    return (
-        <Route {...rest} render={(props) => (
-            hasCookie === true
-                ? <Component {...props} {...rest}/>
-                : <span></span>
-        )} />
-    )
-}
+  if (hasCookie) {
+    if (!matches && ['/', '/login'].includes(thispath)) {
+      return <Redirect to="/dashboard" />;
+    }
+
+    return <span hidden />;
+  }
+
+  if (!matches && !['/login/login', '/login/signup'].includes(thispath)) {
+    return <Redirect to="/login" />;
+  }
+
+  return <span hidden />;
+});
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props => (hasCookie === true ? <Component {...props} {...rest} /> : <span />)}
+  />
+);
+
+const App = ({store}) => {
+  const home = hasCookie ? '/dashboard' : '/login';
+  return (
+    <Router>
+      <div id="container">
+        <AppNavbar isAuth={hasCookie} />
+        <Route path="/login" render={props => <Login {...props} store={store} />} />
+        <PrivateRoute path="/dashboard" component={AuthLayout} />
+        <Home home={home} />
+      </div>
+    </Router>
+  );
+};
 
 export default App;
+// const mapStateToProps = (state) => {
+//   var obj = {}
+//   Object.entries(state.user).forEach(([key, value]) => {
+//     obj[key] = value;
+//   });
+// }
+// export default connect(mapStateToProps)(App);
