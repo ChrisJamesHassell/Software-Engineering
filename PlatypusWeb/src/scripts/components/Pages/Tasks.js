@@ -1,7 +1,3 @@
-/**
- * TODO:
- * - Fix drag styling
- */
 import moment from 'moment';
 import qs from 'qs';
 import React, { Fragment } from 'react';
