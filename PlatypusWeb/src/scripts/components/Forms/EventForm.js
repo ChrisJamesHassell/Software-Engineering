@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Button, Form, Col, ControlLabel, FormGroup, FormControl, Checkbox, Glyphicon } from 'react-bootstrap';
 import moment from 'moment';
+import {getRandomId} from '../../fetchHelpers';
 
 const categoryOptions = [
     { label: 'Appliances', value: 'APPLIANCES' },
@@ -35,11 +36,7 @@ const defaultVals = {
     }
 }
 
-function getRandomId(events) {
-    let id = Math.floor(Math.random() * 100000) + 20;
-    events.filter(e => e.id === id).length > 0 && getRandomId(events)
-    return id;
-}
+
 
 // ======================================================= //
 //  EVENTFORM
@@ -102,9 +99,9 @@ export default class EventForm extends React.Component {
         let end = this.state.data.endDate || moment(this.props.data.end).format('YYYY-MM-DD')
 
         return (
-            <Modal show={this.props.visible} onHide={this.props.onHideModal} style={{ width: '100%' }}>
+            <Modal show={this.props.visible} onHide={this.props.handleClose} style={{ width: '100%' }}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Event</Modal.Title>
+                    <Modal.Title>{this.props.modal} Event</Modal.Title>
                 </Modal.Header>
                 <Form horizontal style={{ width: '100%', padding: '2em' }}>
                     <FormGroup controlId="name">

@@ -4,6 +4,7 @@ import { MenuItem } from 'react-bootstrap';
 import Tasks from './components/Pages/Tasks';
 import Dash from './components/Pages/DashPage';
 import { Events } from './components/Pages/EventsPage';
+import Document from './components/Pages/DocumentsPage';
 // import * as Icons from '../images/icons/NavIcons';
 // import NavIcons from '../images/icons/NavIcons';
 
@@ -85,7 +86,7 @@ const routes = [
     glyph: 'documents', // <Icons.Events {...iconStyle} />,
     type: 'Actions',
     sidebar: () => <div />,
-    main: () => <b>Documents Page</b>,
+    main: () => <Document />,
   },
   {
     path: '/dashboard/events',

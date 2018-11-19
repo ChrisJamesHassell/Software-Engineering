@@ -257,6 +257,10 @@ button[disabled] {
   justify-content: center;
 }
 
+.rbc-month-view{
+  background: white;
+}
+
 .label {
   padding: .6em;
   border-radius: .4em;

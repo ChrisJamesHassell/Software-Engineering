@@ -10,7 +10,10 @@ import React from 'react'
 // import { categories } from '../../fetchHelpers';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
+import qs from 'qs';
 import EventForm from '../Forms/EventForm';
+import { path } from '../../fetchHelpers';
+import { getRandomId } from '../../fetchHelpers';
 
 
 // import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
@@ -19,41 +22,41 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.less'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 const localizer = BigCalendar.momentLocalizer(moment)
 
-const events = [
-    {
-        id: 0,
-        title: 'Board meeting',
-        start: new Date(2018, 10, 29, 9, 0, 0),
-        end: new Date(2018, 10, 29, 13, 0, 0),
-        // resourceId: 1,
-        isSelf: false,
-    },
-    {
-        id: 1,
-        title: 'MS training',
-        allDay: true,
-        start: new Date(2018, 10, 29, 14, 0, 0),
-        end: new Date(2018, 10, 29, 16, 30, 0),
-        // resourceId: 2,
-        isSelf: false,
-    },
-    {
-        id: 2,
-        title: 'Team lead meeting',
-        start: new Date(2018, 10, 29, 8, 30, 0),
-        end: new Date(2018, 10, 29, 12, 30, 0),
-        // resourceId: 3,
-        isSelf: true,
-    },
-    {
-        id: 11,
-        title: 'Birthday Party',
-        start: new Date(2018, 10, 30, 7, 0, 0),
-        end: new Date(2018, 10, 30, 10, 30, 0),
-        // resourceId: 4,
-        isSelf: true,
-    },
-]
+// const events = [
+//     {
+//         id: 0,
+//         title: 'Board meeting',
+//         start: new Date(2018, 10, 29, 9, 0, 0),
+//         end: new Date(2018, 10, 29, 13, 0, 0),
+//         // resourceId: 1,
+//         isSelf: false,
+//     },
+//     {
+//         id: 1,
+//         title: 'MS training',
+//         allDay: true,
+//         start: new Date(2018, 10, 29, 14, 0, 0),
+//         end: new Date(2018, 10, 29, 16, 30, 0),
+//         // resourceId: 2,
+//         isSelf: false,
+//     },
+//     {
+//         id: 2,
+//         title: 'Team lead meeting',
+//         start: new Date(2018, 10, 29, 8, 30, 0),
+//         end: new Date(2018, 10, 29, 12, 30, 0),
+//         // resourceId: 3,
+//         isSelf: true,
+//     },
+//     {
+//         id: 11,
+//         title: 'Birthday Party',
+//         start: new Date(2018, 10, 30, 7, 0, 0),
+//         end: new Date(2018, 10, 30, 10, 30, 0),
+//         // resourceId: 4,
+//         isSelf: true,
+//     },
+// ]
 
 // let MyOtherNestedComponent = () => <div>NESTED COMPONENT</div>
 // const resourceMap = [
@@ -70,6 +73,25 @@ const events = [
 //     </div>
 // )
 
+
+// REQUEST NEEDS TO LOOK LIKE:
+/*
+{
+	"group":{
+		"groupID": 24
+	},
+	"event":{
+		"category": "APPLIANCES",
+		"description": "sdfsdf",
+		"name": "eventhurr",
+		"notification": "1111-11-11",
+		"startDate":"1111-11-11",
+		"endDate": "1111-11-11",
+		"location":"",
+		"pinned": 1
+	}
+}
+*/
 export class Events extends React.Component {
     constructor(...args) {
         super(...args)
@@ -80,42 +102,73 @@ export class Events extends React.Component {
             show: false,
             data: {},
         }
-        /*
-        CALENDAR REQUIRES:
-        {
-            id: int
-            title: string,
-            start: Date,
-            end: Date,
-            isSelf: bool,
-            // FOR THE API:
-            data: {
-                name: <title>',
-                category: 'APPLIANCES',
-                description: '',
-                notification: '' || Date,
-                startDate: '' || Date,
-                endDate: '' || Date,
-                location: '',
-                pinned: 1
-            }
-        }
-        */
         this.addEvent = this.addEvent.bind(this);
     }
 
+    async componentDidMount() {
+        const response = await fetch(`${path}/app/event?${qs.stringify({
+            category: 'null',
+            groupID: localStorage.getItem('selfGroupId'),
+            pinned: 'null',
+            userID: localStorage.getItem('userId'),
+            weeksAhead: -1,
+        })}`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+        const { data: items } = await response.json();
+        let formatItems = []
+        items.map(item => formatItems.push(item.event))
+        formatItems = this.getFormattedItems(formatItems);
+        console.log("FORMAT ITEMS: ", formatItems);
+        this.setState({events: formatItems})
+        /*
+                    .filter(key => categories.includes(key))
+            .reduce((obj, key) => {
+                obj[key] = this.props[key];
+                return obj;
+            }, {});
+        */
+        // let formattedItems = this.getFormattedItems(items.events);
+        // console.log("FORMATTED ITEMS: ", formattedItems);
+        // this.setState({ events: formattedItems });
+    }
+
+    getFormattedItems = (props) => {
+        let formattedItems = [];
+        props.forEach(item => {
+            const start = Date(item.start);
+            const end = Date(item.end);
+            formattedItems.push({
+                id: item.itemID,
+                start: start,
+                end: end,
+                title: item.name,
+                isSelf: true,
+                data: {
+                    ...item,
+                    startDate: start,
+                    endDate: end,
+                    pinned: item.pinned ? 1 : 0
+                }
+            })
+        });
+        return formattedItems;
+    }
+
     handleSelect = (props) => {
-        // console.log('h==handle select:', props);
-        this.setState({ modal: 'createEvent', show: true, data: props });
+        this.setState({ modal: 'Create', show: true, data: props });
     }
 
     handleEventSelect = (props) => {
+        this.setState({
+            modal: 'Edit',
+            show: true,
+            data: props.data
+        })
         console.log('handleevent slot:', props);
 
-    }
-
-    onHideModal = (modal) => {
-        this.setState({ modal: null })
     }
 
     handleClose = () => {
@@ -123,19 +176,22 @@ export class Events extends React.Component {
     }
 
     addEvent = (props) => {
-        console.log("ADDING: ", props);
         const newEvents = [
             ...this.state.events,
             props
         ]
-        console.log("NEW EVETNS: ", newEvents);
+
         this.setState({
             events: newEvents,
         })
-        this.onHideModal();
+
         this.handleClose();
 
     }
+
+    // onCreate = async (props) => {
+    //     await 
+    // }
 
 
     // eventStyleGetter = (event) => {
@@ -160,8 +216,8 @@ export class Events extends React.Component {
         return (
             <div style={{ width: '100%', height: '100%' }}>
                 <EventForm
-                    visible={this.state.show && this.state.modal === 'createEvent'}
-                    onHideModal={this.onHideModal}
+                    visible={this.state.show}
+                    modal={this.state.modal}
                     handleClose={this.handleClose}
                     data={this.state.data}
                     events={this.state.events}

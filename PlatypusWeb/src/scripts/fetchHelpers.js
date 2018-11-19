@@ -21,10 +21,16 @@ function deleteAllCookies() {
   }
 }
 
+function getRandomId(events) {
+  let id = Math.floor(Math.random() * 100000) + 20;
+  events.filter(e => e.id === id).length > 0 && getRandomId(events)
+  return id;
+}
+
 const hasCookie = document.cookie.length > 0;
 
 const currentPath = window.location.pathname;
 
 export {
-  categories, path, currentPath, hasCookie, deleteAllCookies,
+  categories, path, currentPath, hasCookie, deleteAllCookies, getRandomId
 };
