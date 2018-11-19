@@ -3,7 +3,7 @@
 import React from 'react'
 // import PropTypes from 'prop-types'
 // import day from 'dayjs'
-import { Modal } from 'react-bootstrap';
+// import { Modal } from 'react-bootstrap';
 // import Calendar from 'react-calendar';
 // import BaseCalendar from 'tui-calendar';
 // import NavIcons from '../../../images/icons/NavIcons';
@@ -25,7 +25,7 @@ const events = [
         title: 'Board meeting',
         start: new Date(2018, 10, 29, 9, 0, 0),
         end: new Date(2018, 10, 29, 13, 0, 0),
-        resourceId: 1,
+        // resourceId: 1,
         isSelf: false,
     },
     {
@@ -34,7 +34,7 @@ const events = [
         allDay: true,
         start: new Date(2018, 10, 29, 14, 0, 0),
         end: new Date(2018, 10, 29, 16, 30, 0),
-        resourceId: 2,
+        // resourceId: 2,
         isSelf: false,
     },
     {
@@ -42,7 +42,7 @@ const events = [
         title: 'Team lead meeting',
         start: new Date(2018, 10, 29, 8, 30, 0),
         end: new Date(2018, 10, 29, 12, 30, 0),
-        resourceId: 3,
+        // resourceId: 3,
         isSelf: true,
     },
     {
@@ -50,7 +50,7 @@ const events = [
         title: 'Birthday Party',
         start: new Date(2018, 10, 30, 7, 0, 0),
         end: new Date(2018, 10, 30, 10, 30, 0),
-        resourceId: 4,
+        // resourceId: 4,
         isSelf: true,
     },
 ]
@@ -75,20 +75,37 @@ export class Events extends React.Component {
         super(...args)
 
         this.state = {
-            events: events,
+            events: [],
             modal: '',
             show: false,
             data: {},
         }
+        /*
+        CALENDAR REQUIRES:
+        {
+            id: int
+            title: string,
+            start: Date,
+            end: Date,
+            isSelf: bool,
+            // FOR THE API:
+            data: {
+                name: <title>',
+                category: 'APPLIANCES',
+                description: '',
+                notification: '' || Date,
+                startDate: '' || Date,
+                endDate: '' || Date,
+                location: '',
+                pinned: 1
+            }
+        }
+        */
         this.addEvent = this.addEvent.bind(this);
-        // this.handleModal = this.handleModal.bind(this);
     }
 
     handleSelect = (props) => {
-        console.log('h==handle select:', props);
-        const title = "new event"; //window.prompt('New Event name')
-        const { start, end } = props
-        //if (title)
+        // console.log('h==handle select:', props);
         this.setState({ modal: 'createEvent', show: true, data: props });
     }
 
@@ -98,16 +115,16 @@ export class Events extends React.Component {
     }
 
     onHideModal = (modal) => {
-        this.setState({modal: null})
+        this.setState({ modal: null })
     }
 
     handleClose = () => {
-        this.setState({show: false})
+        this.setState({ show: false })
     }
 
     addEvent = (props) => {
         console.log("ADDING: ", props);
-        const newEvents =  [
+        const newEvents = [
             ...this.state.events,
             props
         ]
@@ -142,11 +159,12 @@ export class Events extends React.Component {
     render() {
         return (
             <div style={{ width: '100%', height: '100%' }}>
-                <EventForm 
-                    visible={this.state.show && this.state.modal === 'createEvent'} 
-                    onHideModal={this.onHideModal} 
+                <EventForm
+                    visible={this.state.show && this.state.modal === 'createEvent'}
+                    onHideModal={this.onHideModal}
                     handleClose={this.handleClose}
                     data={this.state.data}
+                    events={this.state.events}
                     addEvent={this.addEvent}
                 />
                 <BigCalendar

@@ -39,12 +39,17 @@ export default class TaskForm extends React.Component {
   onSelectChange = (field, setFieldValue, defaultValue = null) => option => setFieldValue(field, Array.isArray(option) ? defaultValue : option);
 
   onSubmit = (values, { setSubmitting }) => {
-    this.props.onSubmit({
+    
+    const vals = {
       ...values,
-      category: values.category.value,
+      category: values.category.value || 'APPLIANCES',
+      // deadline: values.deadline.length < 1 ? 'null': values.deadline,
+      // notification: values.notification.length < 1 ? 'null' : values.notification,
       pinned: values.pinned.value ? 1 : 0,
       priority: values.priority.value,
-    });
+    }
+    console.log("TASKVALUES: ", vals);
+    this.props.onSubmit(vals);
     setSubmitting(false);
   };
 
@@ -64,12 +69,12 @@ export default class TaskForm extends React.Component {
               priority: priorityOptions.find(op => op.value === task.priority),
             }
             : {
-              category: categoryOptions[0].value,
+              category: categoryOptions[0].label,
               deadline: '',
               description: '',
               name: '',
               notification: '',
-              pinned: boolOptions.find(op => op.value === false),
+              pinned: boolOptions.find(op => op.value === true),
               priority: priorityOptions.find(op => op.value === 'LOW'),
             }
         }
@@ -107,8 +112,8 @@ export default class TaskForm extends React.Component {
                 onChange={this.onSelectChange('category', setFieldValue)}
                 options={categoryOptions}
                 required
-                placeholder={categoryOptions[0].value}
-                value={values.category}
+                placeholder={categoryOptions[0].label}
+                value={values.category || categoryOptions[0].value}
               />
             </FormGroup>
             <FormGroup>
@@ -117,7 +122,7 @@ export default class TaskForm extends React.Component {
                 name="deadline"
                 onChange={handleChange}
                 type="date"
-                value={values.deadline}
+                value={values.deadline || ''}
               />
             </FormGroup>
             <FormGroup>
@@ -139,7 +144,7 @@ export default class TaskForm extends React.Component {
                 )}
                 options={priorityOptions}
                 placeholder={priorityOptions[2].label}
-                value={values.priority}
+                value={values.priority || priorityOptions[2].value}
               />
             </FormGroup>
             <FormGroup>
@@ -152,7 +157,7 @@ export default class TaskForm extends React.Component {
                 )}
                 options={boolOptions}
                 placeholder="Select Pinned..."
-                value={values.pinned}
+                value={values.pinned || true}
               />
             </FormGroup>
             <Button bsSize="sm" bsStyle="primary" disabled={isSubmitting || !isValid} type="submit">
