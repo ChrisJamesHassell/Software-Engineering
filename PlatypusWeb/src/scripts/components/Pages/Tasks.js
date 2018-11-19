@@ -1,3 +1,7 @@
+/**
+ * TODO:
+ * - Fix drag styling
+ */
 import moment from 'moment';
 import qs from 'qs';
 import React, { Fragment } from 'react';
@@ -145,7 +149,7 @@ class Tasks extends React.Component {
 
   changeModal = value => this.setState({ activeModal: value });
 
-  onDragEnd = (result) => {
+  onDragEnd = async (result) => {
     const { tasks } = this.props;
     const { destination, draggableId, source } = result;
 
@@ -172,20 +176,17 @@ class Tasks extends React.Component {
 
     if (!task) return;
 
-    this.props.dispatch({
-      type: 'UPDATE_TASK',
-      payload: {
-        ...task,
-        priority: newPriority.value,
-      },
+    console.log(task);
+
+    await this.onTaskUpdate({
+      ...task,
+      deadline: moment(task.deadline).format('YYYY-MM-DD'),
+      notification: moment(task.notification).format('YYYY-MM-DD'),
+      priority: newPriority.value,
     });
   };
 
   onHideModal = () => this.changeModal(null);
-
-  onTaskClick = task => () => {
-    console.log({ task });
-  };
 
   onTaskComplete = task => () => this.onTaskUpdate({
     ...task,
@@ -292,7 +293,6 @@ class Tasks extends React.Component {
     let modalTask;
 
     if (activeModal && activeModal.includes('-')) {
-      console.log(activeModal, tasks);
       modalTask = Object.values(tasks)
         .reduce((prev, curr) => [...prev, ...curr], [])
         .find(task => task.itemID === Number(activeModal.split('-')[1]));
@@ -373,7 +373,6 @@ class Tasks extends React.Component {
                   tasks={tasks[value].map(task => ({
                     ...task,
                     id: task.itemID,
-                    onTaskClick: this.onTaskClick(task),
                     onTaskComplete: this.onTaskComplete(task),
                     onTaskDeleteClick: this.onTaskDeleteClick(task.itemID),
                     onTaskEditClick: this.onTaskEditClick(task.itemID),
