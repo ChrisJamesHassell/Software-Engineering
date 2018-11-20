@@ -66,15 +66,15 @@ export default class EventForm extends React.Component {
     }
 
     handleCheck = (e) => {
-        this.setState({ data: { ...this.state.data, pinned: e.checked } });
+        this.setState({ data: { ...this.state.data, pinned: e.checked ? 1 : 0 } });
     }
 
     handleSubmit = () => {
         const startDate = this.state.start || this.props.data.start;
         const endDate = this.state.end || this.props.data.end;
 
-        const start = moment(startDate).add(2, 'hours').format('YYYY-MM-DD hh:mm');
-        const end = moment(endDate).add(2, 'hours').format('YYYY-MM-DD hh:mm');
+        const start = moment(startDate).add(2, 'hours').toDate();
+        const end = moment(endDate).add(2, 'hours').toDate();
 
         const event = Object.assign(
             {},
@@ -89,8 +89,8 @@ export default class EventForm extends React.Component {
                 }
             }
         )
-
-        this.setState({ ...defaultVals }); // Clears the form
+    
+        // this.setState({ ...defaultVals }); // Clears the form
         this.props.addEvent(event);
     }
 
