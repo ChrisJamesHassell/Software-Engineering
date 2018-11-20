@@ -58,7 +58,6 @@ export class Events extends React.Component {
     }
 
     async componentDidMount() {
-        console.log("EVENTS MOUNTED");
         const response = await fetch(`${path}/app/event?${qs.stringify({
             category: 'null',
             groupID: localStorage.getItem('selfGroupId'),
@@ -74,15 +73,11 @@ export class Events extends React.Component {
         let formatItems = []
         items.map(item => formatItems.push(item.event))
         formatItems = this.getFormattedItems(formatItems);
-
-        console.log("FORMAT ITEMS: ", formatItems);
-
         this.setState({ events: formatItems })
 
     }
 
     getFormattedItems = (props) => {
-        console.log("PROPS...: ", props);
         let formattedItems = [];
         props.forEach(item => {
 
@@ -104,18 +99,12 @@ export class Events extends React.Component {
     }
 
     handleSelect = (props) => {
-        console.log("HANDE SELECT PROPS: ", props);
         this.setState({ modal: 'Create', show: true, data: props });
     }
 
     handleEventSelect = (props) => {
-        this.setState({
-            modal: 'Edit',
-            show: true,
-            data: props.data
-        })
+        this.setState({ modal: 'Edit', show: true, data: props })
         console.log('handleevent slot:', props);
-
     }
 
     // === HANDLECLOSE === //
@@ -154,16 +143,6 @@ export class Events extends React.Component {
         const formattedEvent = this.getFormattedItems([event])[0];
         const events = [...this.state.events, formattedEvent];
         this.setState({ events });
-
-        // const res = {
-        //     ...response.data,
-        //     pinned: response.data.pinned ? 1 : 0
-        // }
-        // const formattedEvent = this.getFormattedItems([res])
-        // let newEvents = [...this.state.events, ...formattedEvent];
-
-        // console.log("StATE WILL BE: ", newEvents);
-        // this.setState({events: newEvents});
     }
 
     // eventStyleGetter = (event) => {
@@ -192,6 +171,7 @@ export class Events extends React.Component {
                     modal={this.state.modal}
                     handleClose={this.handleClose}
                     data={this.state.data}
+                    formData={this.state.data.data}
                     events={this.state.events}
                     addEvent={this.addEvent}
                 />

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Button, Form, Col, ControlLabel, FormGroup, FormControl, Checkbox, Glyphicon } from 'react-bootstrap';
 import moment from 'moment';
-import {getRandomId} from '../../fetchHelpers';
+import { getRandomId } from '../../fetchHelpers';
 
 const categoryOptions = [
     { label: 'Appliances', value: 'APPLIANCES' },
@@ -32,7 +32,7 @@ const defaultVals = {
         startDate: '',
         endDate: '',
         location: '',
-        pinned: 0
+        pinned: ''
     }
 }
 
@@ -47,13 +47,8 @@ export default class EventForm extends React.Component {
         this.state = defaultVals;
     }
 
-    componentDidMount = (props) => {
+    componentDidMount = () => {
         this.setState({ id: getRandomId(this.props.events) });
-        
-        // This is to load the existing values for editing an event
-        // Object.keys(defaultVals.data).forEach(key => {
-        //     this.props[key] && this.setState({ data: { ...this.state.data, [key]: this.props[key] } })
-        // });
     }
 
     handleChange = (e) => {
@@ -89,9 +84,17 @@ export default class EventForm extends React.Component {
                 }
             }
         )
-    
-        // this.setState({ ...defaultVals }); // Clears the form
+
+        this.setState({ ...defaultVals }); // Clears the form
         this.props.addEvent(event);
+    }
+
+    getValue = (key) => {
+        const hasFormData = this.props.formData;
+        const value = this.state.data[key].length < 1 && hasFormData ?
+            this.props.formData[key] :
+            this.state.data[key];
+        return value;
     }
 
     render() {
@@ -110,7 +113,7 @@ export default class EventForm extends React.Component {
                             <FormControl
                                 type="text"
                                 placeholder="Name of the event..."
-                                value={this.state.data.name}
+                                value={this.getValue('name')}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -122,7 +125,7 @@ export default class EventForm extends React.Component {
                             <FormControl
                                 componentClass="select"
                                 placeholder="Select a category..."
-                                value={this.state.data.category}
+                                value={this.getValue('category')}
                                 onChange={e => this.handleChange(e.target)}
                             >
                                 {categoryOptions.map((category) => {
@@ -138,7 +141,7 @@ export default class EventForm extends React.Component {
                             <FormControl
                                 type="text"
                                 placeholder=""
-                                value={this.state.data.description}
+                                value={this.getValue('description')}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -150,7 +153,7 @@ export default class EventForm extends React.Component {
                             <FormControl
                                 type="date"
                                 placeholder={Date.now()}
-                                value={this.state.data.notification}
+                                value={this.getValue('notification')}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -184,7 +187,7 @@ export default class EventForm extends React.Component {
                             <FormControl
                                 type="text"
                                 placeholder=""
-                                value={this.state.data.location}
+                                value={this.getValue('location')}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -195,13 +198,13 @@ export default class EventForm extends React.Component {
                         <Col sm={9}>
                             <Checkbox
                                 className="cb"
-                                style={{ background: this.state.data.pinned ? '#18bc9c' : '#eee' }}
-                                checked={this.state.data.pinned}
+                                style={{ background: this.getValue('pinned') ? '#18bc9c' : '#eee' }}
+                                checked={this.getValue('pinned')}
                                 onChange={e => this.handleCheck(e.target)}>
                                 <Glyphicon
                                     className="cb-check"
                                     glyph="ok"
-                                    style={{ color: 'white', fontSize: this.state.data.pinned ? '15px' : '0', transition: 'font-size .5s', top: '-5px' }}
+                                    style={{ color: 'white', fontSize: this.getValue('pinned') ? '15px' : '0', transition: 'font-size .5s', top: '-5px' }}
                                 />
                             </Checkbox>
                         </Col>
