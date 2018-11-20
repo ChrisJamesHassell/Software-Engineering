@@ -57,6 +57,8 @@ export class Events extends React.Component {
         this.addEvent = this.addEvent.bind(this);
     }
 
+    
+
     async componentDidMount() {
         const response = await fetch(`${path}/app/event?${qs.stringify({
             category: 'null',
@@ -80,7 +82,6 @@ export class Events extends React.Component {
     getFormattedItems = (props) => {
         let formattedItems = [];
         props.forEach(item => {
-
             formattedItems.push({
                 id: item.itemID,
                 start: moment(item.start).add(2, 'hours').toDate(),
@@ -88,9 +89,14 @@ export class Events extends React.Component {
                 title: item.name,
                 isSelf: true,
                 data: {
-                    ...item,
-                    startDate: item.start, //start,
-                    endDate: item.end, //end,
+                    category: item.category,
+                    description: item.description,
+                    eventID: item.itemID,
+                    location: item.location,
+                    name: item.name,
+                    notification: moment(item.notification).format('YYYY-MM-DD'),
+                    startDate: item.start,
+                    endDate: item.end,
                     pinned: item.pinned ? 1 : 0
                 }
             })
@@ -98,22 +104,60 @@ export class Events extends React.Component {
         return formattedItems;
     }
 
-    handleSelect = (props) => {
-        this.setState({ modal: 'Create', show: true, data: props });
-    }
-
-    handleEventSelect = (props) => {
-        this.setState({ modal: 'Edit', show: true, data: props })
-        console.log('handleevent slot:', props);
-    }
-
     // === HANDLECLOSE === //
     handleClose = () => {
         this.setState({ show: false })
     }
 
+    // === HANDLESELECT === // For creating a new event
+    handleSelect = (props) => {
+        this.setState({ modal: 'Create', show: true, data: props });
+    }
+
+    // === HANDLEEVENTSELECT === // For editing an existing event
+    handleEventSelect = (props) => {
+        this.setState({ modal: 'Edit', show: true, data: props })
+        // this.editEvent(props.data);
+    }
+
+    handleDelete = (props, modal) => {
+
+    }
+
+    // === HANDLESUBMISSION === //
+    handleSubmission = (props, modal) => {
+        if (modal === 'Create') this.addEvent(props);
+        else this.editEvent(props, modal === 'Edit');
+    }
+
+    // === EDITEVENT === //
+    editEvent = async (props, isEdit) => {
+        let request = { event: { ...props } }
+        console.log("REQUEST: ", request);
+        const response = await fetch(`${path}/app/event/update`, {
+            body: JSON.stringify(request),
+            credentials: 'include',
+            method: 'POST',
+        })
+            .then(response => this.validateResponse(response))
+            .then(validResponse => validResponse.json())
+            .then(jsonResponse => this.handleJsonResponse(jsonResponse, isEdit))
+
+        this.handleClose();
+    }
+
+    // === HANDLEEDIT === //
+    handleEdit = (event) => {
+        let editedIndex = null;
+        this.state.events.forEach((item, index) => { if (item.id === event.id) editedIndex = index; })
+        let events = this.state.events;
+        events[editedIndex] = event;
+        return events;
+    }
+
     // === ADDEVENT === //
     addEvent = async (props) => {
+        console.log("ADD EVENT (PROPS): ", props);
         let request = {
             group: { groupID: localStorage.getItem('selfGroupId') },
             event: { ...props.data, pinned: props.data.pinned ? 1 : 0 },
@@ -138,10 +182,15 @@ export class Events extends React.Component {
     }
 
     // === HANDLEJSONRESPONSE === //
-    handleJsonResponse(response) {
+    handleJsonResponse(response, isEdit = false) {
         const { data: event } = response;
-        const formattedEvent = this.getFormattedItems([event])[0];
-        const events = [...this.state.events, formattedEvent];
+        console.log("HAND JSON(RESPONSE): ", response);
+        console.log("HANDLE RES(EVENT): ", event);
+        let formattedEvent = this.getFormattedItems([event])[0];
+        // check to see if the event already exists and we're just editing it, or adding a new one...
+        let events = [];
+        if (isEdit) events = this.handleEdit(formattedEvent);
+        else events = [...this.state.events, formattedEvent];
         this.setState({ events });
     }
 
@@ -173,7 +222,8 @@ export class Events extends React.Component {
                     data={this.state.data}
                     formData={this.state.data.data}
                     events={this.state.events}
-                    addEvent={this.addEvent}
+                    // addEvent={this.addEvent}
+                    handleSubmission={this.handleSubmission}
                 />
                 <BigCalendar
                     popup

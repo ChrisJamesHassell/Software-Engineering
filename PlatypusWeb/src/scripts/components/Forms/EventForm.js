@@ -54,10 +54,14 @@ export default class EventForm extends React.Component {
     handleChange = (e) => {
         let { id, value } = e;
         let stateIndex = fieldMap[id];
-        if (['name', 'startDate', 'endDate'].includes(id)) {
-            this.setState({ [stateIndex]: value })
+        if (this.props.formData) {
+            this.setState({ formData: this.props.formData })
+            this.setState({ formData: { ...this.props.formData, [id]: value } })
         }
-        this.setState({ data: { ...this.state.data, [id]: value } })
+        if (['name', 'startDate', 'endDate'].includes(id)) {
+            this.setState({ [stateIndex]: value });
+        }
+        this.setState({ data: { ...this.state.data, [id]: value } });
     }
 
     handleCheck = (e) => {
@@ -71,22 +75,36 @@ export default class EventForm extends React.Component {
         const start = moment(startDate).add(2, 'hours').toDate();
         const end = moment(endDate).add(2, 'hours').toDate();
 
-        const event = Object.assign(
-            {},
-            { ...this.state },
-            { start },
-            { end },
-            {
-                data: {
-                    ...this.state.data,
-                    startDate: moment(start).format('YYYY-MM-DD'),
-                    endDate: moment(end).format('YYYY-MM-DD')
+        console.log("HANDLE SUBMIT: (START): ", start);
+        console.log("HANDLE SUBMIT(END): ", end);
+        let event = {};
+        if (this.props.modal === 'Create') {
+            event = Object.assign(
+                {},
+                { ...this.state },
+                { start },
+                { end },
+                {
+                    data: {
+                        ...this.state.data,
+                        startDate: moment(start).format('YYYY-MM-DD'),
+                        endDate: moment(end).format('YYYY-MM-DD')
+                    }
                 }
-            }
-        )
+            )
+        }
+        else {
+            event = {
+                ...this.state.formData,
+                startDate: moment(this.state.formData.startDate).format('YYYY-MM-DD'),
+                endDate: moment(this.state.formData.endDate).format('YYYY-MM-DD')
+            };
+        }
 
+        console.log("HANDLE SUBMIT(EVENT): ", event);
         this.setState({ ...defaultVals }); // Clears the form
-        this.props.addEvent(event);
+        this.props.handleSubmission(event, this.props.modal);
+        // this.props.addEvent(event);
     }
 
     getValue = (key) => {
@@ -103,7 +121,7 @@ export default class EventForm extends React.Component {
 
         return (
             <Modal show={this.props.visible} onHide={this.props.handleClose} style={{ width: '100%' }}>
-                <Modal.Header closeButton>
+                <Modal.Header style={{ background: this.props.modal === 'Edit' ? '#f5c900' : '#18bc9c', color: 'white' }} closeButton>
                     <Modal.Title>{this.props.modal} Event</Modal.Title>
                 </Modal.Header>
                 <Form horizontal style={{ width: '100%', padding: '2em' }}>
@@ -210,7 +228,12 @@ export default class EventForm extends React.Component {
                         </Col>
                     </FormGroup>
                 </Form>
-                <Button onClick={this.handleSubmit}>Submit</Button><Button onClick={this.props.handleClose}>Close</Button>
+                <Modal.Footer>
+                    {/* <Button onClick */}
+                    <Button onClick={this.handleSubmit}><b>SUBMIT</b></Button>
+                    <Button onClick={this.props.handleClose}><b>CLOSE</b></Button>
+                </Modal.Footer>
+
             </Modal>
         )
     }
