@@ -137,8 +137,8 @@ public class EventHandler {
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
 			// Still necessary to build the CacheEntry response.
-			JsonObject user = jsonO.get("user").getAsJsonObject();
-			JsonObject group = jsonO.get("group").getAsJsonObject();
+//			JsonObject user = jsonO.get("user").getAsJsonObject();
+//			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
 			conn = ds.getConnection();

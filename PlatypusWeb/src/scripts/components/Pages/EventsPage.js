@@ -53,55 +53,58 @@ export class Events extends React.Component {
             modal: '',
             show: false,
             data: {},
+            currentId: null,
+            currentStart: null,
+            currentEnd: null
         }
         this.addEvent = this.addEvent.bind(this);
     }
 
-    
+    fetchRequest = async (url, method, body, isEdit = false) => {
+        let options = {
+            method: method,
+            credentials: 'include'
+        }
 
-    async componentDidMount() {
-        const response = await fetch(`${path}/app/event?${qs.stringify({
+        if (body) options['body'] = JSON.stringify(body);
+
+        await fetch(url, options)
+            .then(response => this.validateResponse(response))
+            .then(validResponse => validResponse.json())
+            .then(jsonResponse => this.handleJsonResponse(jsonResponse, isEdit))
+    }
+
+    componentDidMount() {
+        const url = `${path}/app/event?${qs.stringify({
             category: 'null',
             groupID: localStorage.getItem('selfGroupId'),
             pinned: 'null',
             userID: localStorage.getItem('userId'),
             weeksAhead: -1,
-        })}`, {
-                method: 'GET',
-                credentials: 'include',
-            });
+        })}`;
 
-        const { data: items } = await response.json();
-        let formatItems = []
-        items.map(item => formatItems.push(item.event))
-        formatItems = this.getFormattedItems(formatItems);
-        this.setState({ events: formatItems })
-
+        this.fetchRequest(url, 'GET', null)
     }
 
-    getFormattedItems = (props) => {
-        let formattedItems = [];
-        props.forEach(item => {
-            formattedItems.push({
-                id: item.itemID,
-                start: moment(item.start).add(2, 'hours').toDate(),
-                end: moment(item.end).add(2, 'hours').toDate(),
-                title: item.name,
-                isSelf: true,
-                data: {
-                    category: item.category,
-                    description: item.description,
-                    eventID: item.itemID,
-                    location: item.location,
-                    name: item.name,
-                    notification: moment(item.notification).format('YYYY-MM-DD'),
-                    startDate: item.start,
-                    endDate: item.end,
-                    pinned: item.pinned ? 1 : 0
-                }
-            })
-        });
-        return formattedItems;
+    getFormattedItem = (item) => {
+        return {
+            id: item.itemID,
+            start: moment(item.start).add(2, 'hours').toDate(),
+            end: moment(item.end).add(2, 'hours').toDate(),
+            title: item.name,
+            isSelf: true,
+            data: {
+                category: item.category,
+                description: item.description,
+                eventID: item.itemID,
+                location: item.location,
+                name: item.name,
+                notification: moment(item.notification).format('YYYY-MM-DD'),
+                startDate: item.start,
+                endDate: item.end,
+                pinned: item.pinned ? 1 : 0
+            }
+        }
     }
 
     // === HANDLECLOSE === //
@@ -111,17 +114,12 @@ export class Events extends React.Component {
 
     // === HANDLESELECT === // For creating a new event
     handleSelect = (props) => {
-        this.setState({ modal: 'Create', show: true, data: props });
+        this.setState({ modal: 'Create', show: true, data: props, currentStart: props.start, currentEnd: props.end });
     }
 
     // === HANDLEEVENTSELECT === // For editing an existing event
     handleEventSelect = (props) => {
         this.setState({ modal: 'Edit', show: true, data: props })
-        // this.editEvent(props.data);
-    }
-
-    handleDelete = (props, modal) => {
-
     }
 
     // === HANDLESUBMISSION === //
@@ -130,49 +128,51 @@ export class Events extends React.Component {
         else this.editEvent(props, modal === 'Edit');
     }
 
-    // === EDITEVENT === //
-    editEvent = async (props, isEdit) => {
-        let request = { event: { ...props } }
-        console.log("REQUEST: ", request);
-        const response = await fetch(`${path}/app/event/update`, {
-            body: JSON.stringify(request),
-            credentials: 'include',
-            method: 'POST',
-        })
-            .then(response => this.validateResponse(response))
-            .then(validResponse => validResponse.json())
-            .then(jsonResponse => this.handleJsonResponse(jsonResponse, isEdit))
-
+    // === HANDLEDELETE === //
+    deleteEvent = (props, modal) => {
+        this.setState({ currentId: props.event.eventID });
+        const url = `${path}/app/event/delete`;
+        this.fetchRequest(url, 'POST', props, true);
         this.handleClose();
     }
 
-    // === HANDLEEDIT === //
-    handleEdit = (event) => {
-        let editedIndex = null;
-        this.state.events.forEach((item, index) => { if (item.id === event.id) editedIndex = index; })
-        let events = this.state.events;
-        events[editedIndex] = event;
-        return events;
-    }
-
     // === ADDEVENT === //
-    addEvent = async (props) => {
-        console.log("ADD EVENT (PROPS): ", props);
-        let request = {
+    addEvent = (props) => {
+        const url = `${path}/app/event/add`;
+        const request = {
             group: { groupID: localStorage.getItem('selfGroupId') },
             event: { ...props.data, pinned: props.data.pinned ? 1 : 0 },
         }
 
-        const response = await fetch(`${path}/app/event/add`, {
-            body: JSON.stringify(request),
-            credentials: 'include',
-            method: 'POST',
-        })
-            .then(response => this.validateResponse(response))
-            .then(validResponse => validResponse.json())
-            .then(jsonResponse => this.handleJsonResponse(jsonResponse))
-
+        this.fetchRequest(url, 'POST', request);
         this.handleClose();
+    }
+
+    // === EDITEVENT === //
+    editEvent = async (props, isEdit) => {
+        const url = `${path}/app/event/update`;
+        const request = { event: { ...props } }
+
+        this.fetchRequest(url, 'POST', request, isEdit);
+        this.handleClose();
+    }
+
+    // === HANDLEEDIT === //
+    handleEdit = (event, isDelete = false) => {
+        let editedIndex = null;
+        let events = this.state.events;
+
+        if (isDelete) { // For DELETION
+            editedIndex = event;
+            events = events.filter(item => item.id !== editedIndex);
+        }
+
+        else { // For MODIFY
+            this.state.events.forEach((item, index) => { if (item.id === event.id) editedIndex = index; });
+            events[editedIndex] = event;
+        }
+
+        return events;
     }
 
     // === VALIDATERESPONSE === //
@@ -183,34 +183,54 @@ export class Events extends React.Component {
 
     // === HANDLEJSONRESPONSE === //
     handleJsonResponse(response, isEdit = false) {
-        const { data: event } = response;
-        console.log("HAND JSON(RESPONSE): ", response);
-        console.log("HANDLE RES(EVENT): ", event);
-        let formattedEvent = this.getFormattedItems([event])[0];
-        // check to see if the event already exists and we're just editing it, or adding a new one...
+        let { data: event } = response;
         let events = [];
-        if (isEdit) events = this.handleEdit(formattedEvent);
-        else events = [...this.state.events, formattedEvent];
+
+        /* TODO: Eventually, we need to allow TIME to be saved in the database 
+            so that the "weekly" and "daily" views show the correct span and PERSIST it
+        */
+        if (event.length > 0) { // Then it's an initial GET request which will return multiple events
+            event.forEach(item => {
+                events.push(this.getFormattedItem(item.event));
+            })
+        }
+
+        else {
+            if (this.state.currentStart) event = { ...event, start: this.state.currentStart, end: this.state.currentEnd };
+            const formattedEvent = this.getFormattedItem(event);
+            this.setState({ currentStart: null, currentEnd: null });
+            if (isEdit) {
+                if (response.message.includes('delete')) events = this.handleEdit(this.state.currentId, true);
+                else events = this.handleEdit(formattedEvent);
+            }
+            else events = [...this.state.events, formattedEvent]; // Adding an event
+        }
         this.setState({ events });
     }
 
-    // eventStyleGetter = (event) => {
-    //     console.log('event style getter event: ', event);
-    //     var backgroundColor = event.isSelf ? 'pink' : 'green';
-    //     var style = {
-    //         backgroundColor: backgroundColor,
-    //         borderRadius: '0px',
-    //         opacity: 0.8,
-    //         color: 'black',
-    //         border: '0px',
-    //         display: 'block'
-    //     };
-    //     return {
-    //         style: style
-    //     };
-    // }
+    eventStyleGetter = (event) => {
+        const category = event.data.category;
+        const bgColor = {
+            'APPLIANCES': '#229ac7',
+            'AUTO': '#18bc9c',
+            'MEALS': '#e8c422',
+            'MEDICAL': '#f8666b',
+            'MISCELLANEOUS': '#a28ad7'
+        }
 
-
+        var style = {
+            backgroundColor: bgColor[category],
+            borderRadius: '0px',
+            opacity: 0.8,
+            color: 'white',
+            border: '0px',
+            display: 'block',
+            fontWeight: 600
+        };
+        return {
+            style: style
+        };
+    }
 
     render() {
         return (
@@ -222,7 +242,7 @@ export class Events extends React.Component {
                     data={this.state.data}
                     formData={this.state.data.data}
                     events={this.state.events}
-                    // addEvent={this.addEvent}
+                    deleteEvent={this.deleteEvent}
                     handleSubmission={this.handleSubmission}
                 />
                 <BigCalendar
@@ -235,7 +255,7 @@ export class Events extends React.Component {
                     defaultDate={new Date()}
                     onSelectEvent={event => this.handleEventSelect(event)}
                     onSelectSlot={event => this.handleSelect(event)}
-                // eventPropGetter={event => this.eventStyleGetter(event)}
+                    eventPropGetter={event => this.eventStyleGetter(event)}
                 />
 
             </div>

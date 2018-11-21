@@ -26,7 +26,7 @@ const defaultVals = {
     isSelf: true,
     data: {
         name: '',
-        category: 'APPLIANCES',
+        category: '',
         description: '',
         notification: '',
         startDate: '',
@@ -68,15 +68,20 @@ export default class EventForm extends React.Component {
         this.setState({ data: { ...this.state.data, pinned: e.checked ? 1 : 0 } });
     }
 
+    handleDelete = () => {
+        const request = { event: { eventID: this.props.formData.eventID } };
+        this.props.deleteEvent(request);
+    }
+
     handleSubmit = () => {
         const startDate = this.state.start || this.props.data.start;
         const endDate = this.state.end || this.props.data.end;
+        const startHour = moment(startDate).hour();
+        const endHour = moment(endDate).hour();
 
-        const start = moment(startDate).add(2, 'hours').toDate();
-        const end = moment(endDate).add(2, 'hours').toDate();
+        const start = startHour === 0 ? moment(startDate).add(2, 'hours').toDate() : moment(startDate).toDate();
+        const end = endHour === 0 ? moment(endDate).add(2, 'hours').toDate(): moment(endDate).toDate();
 
-        console.log("HANDLE SUBMIT: (START): ", start);
-        console.log("HANDLE SUBMIT(END): ", end);
         let event = {};
         if (this.props.modal === 'Create') {
             event = Object.assign(
@@ -101,10 +106,8 @@ export default class EventForm extends React.Component {
             };
         }
 
-        console.log("HANDLE SUBMIT(EVENT): ", event);
         this.setState({ ...defaultVals }); // Clears the form
         this.props.handleSubmission(event, this.props.modal);
-        // this.props.addEvent(event);
     }
 
     getValue = (key) => {
@@ -229,7 +232,7 @@ export default class EventForm extends React.Component {
                     </FormGroup>
                 </Form>
                 <Modal.Footer>
-                    {/* <Button onClick */}
+                    {this.props.modal === 'Edit' && <Button bsStyle="danger" onClick={this.handleDelete}><b>DELETE</b></Button>}
                     <Button onClick={this.handleSubmit}><b>SUBMIT</b></Button>
                     <Button onClick={this.props.handleClose}><b>CLOSE</b></Button>
                 </Modal.Footer>
