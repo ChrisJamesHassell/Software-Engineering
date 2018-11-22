@@ -4,8 +4,6 @@ import moment from 'moment';
 import qs from 'qs';
 import EventForm from '../Forms/EventForm';
 import { path, categoryColor } from '../../fetchHelpers';
-import { getRandomId } from '../../fetchHelpers';
-
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.less'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 const localizer = BigCalendar.momentLocalizer(moment)

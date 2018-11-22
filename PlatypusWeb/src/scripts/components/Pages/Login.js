@@ -102,7 +102,6 @@ class Login extends React.Component {
       this.setState({ redirect: true });
       const {
         data: { documents, events, tasks },
-        status,
       } = response;
 
       this.props.dispatch({
