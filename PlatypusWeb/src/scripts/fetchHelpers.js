@@ -27,10 +27,18 @@ function getRandomId(events) {
   return id;
 }
 
+const categoryColor = {
+  'APPLIANCES': '#229ac7',
+  'AUTO': '#18bc9c',
+  'MEALS': '#e8c422',
+  'MEDICAL': '#f8666b',
+  'MISCELLANEOUS': '#a28ad7'
+}
+
 const hasCookie = document.cookie.length > 0;
 
 const currentPath = window.location.pathname;
 
 export {
-  categories, path, currentPath, hasCookie, deleteAllCookies, getRandomId
+  categories, path, currentPath, hasCookie, deleteAllCookies, getRandomId, categoryColor
 };

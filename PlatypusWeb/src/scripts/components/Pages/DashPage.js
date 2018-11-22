@@ -7,7 +7,14 @@ import fetch from 'cross-fetch';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css'
 import NavIcons from '../../../images/icons/NavIcons';
-import { categories, path } from '../../fetchHelpers';
+import { categories, path, categoryColor } from '../../fetchHelpers';
+import moment from 'moment';
+
+const filterProps = {
+    task: 'deadline',
+    event: 'endDate',
+    // TODO: ADD DOCS
+}
 
 // ================================================================== //
 //  DASHBODY
@@ -19,44 +26,76 @@ class DashBoxBody extends React.Component {
             isLoaded: false,
             selected: -1,
             items: [],
+            rowIndex: 0,
+            method: '',
+            itemTypeBg: '#b4bfbd',
+            overdue: [],
         }
+
+        this.handleStyleChanges = this.handleStyleChanges.bind(this);
     }
 
-    async componentDidMount() {
-        const response = await fetch(`${path}/app/${this.props.itemType}?${qs.stringify({
+    componentDidMount() {
+        const url = `${path}/app/${this.props.itemType}?${qs.stringify({
             category: this.props.category.toUpperCase(),
             groupID: localStorage.getItem('selfGroupId'),
             pinned: 'null',
             userID: localStorage.getItem('userId'),
-            weeksAhead: -1,
-        })}`, {
-                method: 'GET',
-                credentials: 'include',
-            });
-
-        const { data: items } = await response.json();
-        let formattedItems = [];
-        items.forEach(item => {
-            formattedItems.push(this.getFetchBody(item[this.props.itemType]))
-        })
-        this.setState({ items: formattedItems });
+            weeksAhead: 2,
+        })}`;
+        this.setState({ method: 'GET' });
+        this.fetchRequest(url, 'GET', null);
     }
 
-    getFetchBody(values) {
+    fetchRequest = async (url, method, body, isEdit = false) => {
+        this.setState({ isLoaded: false });
+        let options = {
+            method: method,
+            credentials: 'include'
+        }
+        if (body) options['body'] = JSON.stringify(body);
+
+        await fetch(url, options)
+            .then(response => this.validateResponse(response))
+            .then(validResponse => validResponse.json())
+            .then(jsonResponse => this.handleJsonResponse(jsonResponse, isEdit))
+    }
+
+    // === VALIDATERESPONSE === //
+    validateResponse = (result) => {
+        this.setState({ isLoaded: true });
+        if (!result.ok) throw Error(result.statusText);
+        return result;
+    }
+
+    getFormattedItem(values) {
         switch (this.props.itemType) {
             case "task":
                 return {
                     task: {
-                        ...values,
+                        category: values.category,
                         completed: values.completed ? 1 : 0,
-                        taskID: values.itemID,
+                        deadline: moment(values.deadline).format('YYYY-MM-DD'),
+                        description: values.description,
+                        taskID: values.taskID || values.itemID,
+                        name: values.name,
+                        notification: moment(values.notification).format('YYYY-MM-DD'),
+                        priority: values.priority,
                         pinned: values.pinned ? 1 : 0
                     }
                 }
             case "event":
                 return {
                     event: {
-
+                        startDate: moment(values.start).format('YYYY-MM-DD'),
+                        endDate: moment(values.end).format('YYYY-MM-DD'),
+                        location: values.location,
+                        eventID: values.eventID || values.itemID,
+                        name: values.name,
+                        description: values.description,
+                        category: values.category,
+                        notification: moment(values.notification).format('YYYY-MM-DD'),
+                        pinned: values.pinned ? 1 : 0
                     }
                 }
             case "doc":
@@ -70,38 +109,88 @@ class DashBoxBody extends React.Component {
         }
     }
 
-    validateResponse = (result) => {
-        if (!result.ok) throw Error(result.statusText);
-        return result;
-    }
+    // === FILTERRESPONSEITEMS === //
+    filterResponseItems = (items) => {
 
-    handleJsonResponse(response, rowIndex = 0) {
-        const newData = this.getFetchBody(response.data);
-        let newItems = Object.assign([], this.state.items);
-        newItems[rowIndex] = newData;
-        this.setState({ items: newItems });
-    }
+        const key = filterProps[this.props.itemType];
 
-    onUpdate = async (values, rowIndex = 0) => {
-        const response = await fetch(`${path}/app/${this.props.itemType}/update`, {
-            body: JSON.stringify(this.getFetchBody(values)),
-            credentials: 'include',
-            method: 'POST',
+        return items.filter(item => {
+            const overdue = Math.floor((moment.duration(moment().diff(item[key]))).asDays()) || 0;
+            this.handleOverdueState(item, key);
+            if (item.pinned || overdue < 1) return item;
         })
-            .then(response => this.validateResponse(response))
-            .then(validResponse => validResponse.json())
-            .then(jsonResponse => this.handleJsonResponse(jsonResponse, rowIndex))
     }
 
-    handleCheck = (e, values, rowIndex) => {
-        let value = values.task;
-        const newVal = Object.assign({}, { ...value }, { completed: e.target.checked ? 1 : 0 })
+    // === HANDLEOVERDUESTATE === //
+    handleOverdueState = (item, dateKey) => {
+        const idKey = this.props.itemType + 'ID'; //eventID, taskID
+        console.log("DATEKEY: ", dateKey);
+        console.log("DATE(?): ", item[dateKey]);
+        const overdue = Math.floor((moment.duration(moment().diff(item[dateKey]))).asDays()) || 0;
+        const overdues = this.state.overdue.filter(od => od[idKey] !== item[idKey]);
+        console.log("OVERDUE: ", overdue);
+        let newOverdues = [];
+        if (overdue > 0 && item.pinned && !item.completed) newOverdues = [...overdues, item];
+        else newOverdues = this.state.overdue.filter(od => od[idKey] !== item[idKey]);
+
+        this.setState({ overdue: newOverdues });
+        this.setState({ itemTypeBg: newOverdues.length > 0 ? '#e74c3c' : '#b4bfbd' })
+    }
+
+    // === HANDLEJSONRESPONSE === //
+    handleJsonResponse(response, isEdit = false) {
+        let { data: item } = response;
+        let items = Object.assign([], this.state.items);
+
+        if (this.state.method === 'GET') {
+            this.setState({ method: '' });
+            if (item.length > 0) { // make sure -something- was returned, so we don't do work unless needed
+                item.forEach(i => {
+                    items.push(this.getFormattedItem(i[this.props.itemType])[this.props.itemType]);
+                    items = this.filterResponseItems(items);
+                })
+            }
+            else items = [];
+        }
+
+        else { // Otherwise it's an EDIT or a DELETE
+            this.setState({ method: '' });
+            const formattedItem = this.getFormattedItem(item)[this.props.itemType];
+            // console.log("FORMATTED ITEM: ", formattedItem)
+            if (isEdit) {
+                // if (response.message.includes('delete')) events = this.handleEdit(this.state.currentId, true);
+                // else events = this.handleEdit(formattedItem);
+                items[this.state.rowIndex] = formattedItem;
+            }
+            else items = [...this.state.items, formattedItem]; // Adding an event
+        }
+
+        this.setState({ items });
+    }
+
+    onUpdate = async (values, rowIndex = 0) => { // url, method, body, isEdit?
+        const url = `${path}/app/${this.props.itemType}/update`;
+        const newBody = Object.assign({}, { ...this.state.items[rowIndex] }, values);
+        const body = this.getFormattedItem(newBody);
+
+        this.setState({ method: 'POST' });
+        this.fetchRequest(url, 'POST', body, true);
+    }
+
+    handleCheck = (e, values, rowIndex) => { // Assume only tasks will be checked
+        this.setState({ rowIndex: rowIndex });
+        const newVal = Object.assign({}, { ...values }, { completed: e.checked ? 1 : 0 })
+        this.handleOverdueState(newVal, filterProps[this.props.itemType]); // Now update all the "overdue" items      
         this.onUpdate(newVal, rowIndex);
     }
 
-    isSelected = key => {
-        return this.state.selection.includes(key);
-    };
+    // isSelected = key => {
+    //     return this.state.selection.includes(key);
+    // };
+
+    handleStyleChanges = color => {
+        this.setState({ itemTypeBg: color });
+    }
 
     getItemTypeCols(key) {
         // Universial columns for all itemTypes
@@ -111,14 +200,14 @@ class DashBoxBody extends React.Component {
                     Header: 'Completed',
                     id: 'completed',
                     className: 'dash-body-completed',
-                    accessor: d => d[this.props.itemType].completed,
+                    accessor: d => d.completed, //d[this.props.itemType].completed,
                     Cell: row =>
                         (
                             <Checkbox
                                 className="cb"
                                 style={{ background: row.value ? '#18bc9c' : '#eee' }}
                                 checked={row.value}
-                                onChange={e => this.handleCheck(e, row.original, row.index)}>
+                                onChange={e => this.handleCheck(e.target, row.original, row.index)}>
                                 <Glyphicon
                                     className="cb-check"
                                     glyph="ok"
@@ -131,7 +220,7 @@ class DashBoxBody extends React.Component {
                     Header: 'Name',
                     id: 'name',
                     className: 'dash-body-cell',
-                    accessor: d => d[this.props.itemType].name,
+                    accessor: d => d.name,
                     getProps: (state, rowInfo) => ({
                         style: {
                             color: (rowInfo && rowInfo.row.completed ? '#c8d2d0' : '#788084'),
@@ -141,13 +230,32 @@ class DashBoxBody extends React.Component {
                     }),
                 },
                 {
+                    Header: 'Deadline',
+                    id: 'deadline',
+                    className: 'dash-body-cell',
+                    accessor: d => d.deadline,
+                    getProps: (state, rowInfo) => ({
+                        style: {
+                            color: (rowInfo && rowInfo.row.completed ? '#c8d2d0' : '#788084'),
+                            textDecoration: (rowInfo && rowInfo.row.completed ? 'line-through' : 'none'),
+                            content: rowInfo && rowInfo
+                        }
+                    }),
+                    Cell: props => {
+                        const overdue = Math.floor((moment.duration(moment().diff(props.value))).asDays());
+                        return <div>{moment(props.value).format('MMM DD, YYYY')}
+                            {overdue > 0 && <div style={{ color: props.original.completed ? '#c8d2d0' : '#e74c3c', fontSize: '.8em' }}>{overdue} day overdue</div>}
+                        </div>
+                    }
+                },
+                {
                     Header: 'Priority',
                     id: 'priority',
                     className: 'dash-body-priority',
-                    accessor: d => d[this.props.itemType].priority,
+                    accessor: d => d.priority, // d[this.props.itemType].priority,
                     Cell: props => <Label className="dash-body-priority"
-                        bsStyle={this.getPriorityStyle(props.value, props.index, props.original[this.props.itemType].completed).class}
-                        style={{ textDecoration: props.original[this.props.itemType].completed ? 'line-through' : 'none' }}
+                        bsStyle={this.getPriorityStyle(props.value, props.index, props.original.completed, props).class}
+                        style={{ textDecoration: props.original.completed ? 'line-through' : 'none' }}
                     >
                         {this.getPriorityStyle(props.value).value}
                     </Label>,
@@ -159,13 +267,36 @@ class DashBoxBody extends React.Component {
                     }
                 },
             ],
-            "event": [],
+            "event": [
+                {
+                    Header: 'Name',
+                    id: 'name',
+                    accessor: d => d.name,
+                },
+                {
+                    Header: 'Start Date',
+                    id: 'startDate',
+                    accessor: d => d.startDate,
+                    Cell: props => <div>{moment(props.value).format('MMM DD, YYYY')}</div>
+                },
+                {
+                    Header: 'End Date',
+                    id: 'endDate',
+                    accessor: d => d.endDate,
+                    Cell: props => {
+                        const overdue = Math.floor((moment.duration(moment().diff(props.value))).asDays());
+                        return <div>{moment(props.value).format('MMM DD, YYYY')}
+                            {overdue > 0 && <div style={{ color: props.original.completed ? '#c8d2d0' : '#e74c3c', fontSize: '.8em' }}>{overdue} day overdue</div>}
+                        </div>
+                    }
+                }
+            ],
             "doc": []
         }
         return colsMap[key];
     }
 
-    getPriorityStyle(key, index, completed = false) {
+    getPriorityStyle(key, index, completed = false, props) {
         let classStyle = null;
         if (completed) classStyle = "default";
         let priorityMap = {
@@ -179,7 +310,10 @@ class DashBoxBody extends React.Component {
     render() {
         return (
             <div className='dash-body'>
-                <div className='dash-body-type'>{this.props.itemType}</div>
+                <div className='dash-body-type' style={{ color: this.state.itemTypeBg }}>
+                    <NavIcons icon={this.props.itemType + 's'} fill={this.state.itemTypeBg}/>
+                    {this.props.itemType + 's'}
+                </div>
                 {this.state.items.length > 0 ?
                     <ReactTable
                         // className="-highlight"
@@ -209,9 +343,10 @@ const DashBoxHeader = (props) => {
                     icon={props.category}
                     width={40}
                     height={40}
-                    spanStyle={{ background: '#b4bfbd', borderRadius: '50%', position: 'absolute', paddingBottom: '11px', paddingRight: '17px' }} />
+                    // spanStyle={{ background: '#b4bfbd', borderRadius: '50%', position: 'absolute', paddingBottom: '11px', paddingRight: '17px' }} />
+                    spanStyle={{ background: categoryColor[props.category.toUpperCase()], borderRadius: '50%', position: 'absolute', paddingBottom: '11px', paddingRight: '17px' }} />
             </div>
-            <div className='dash-header category'>{props.category}</div>
+            <div className='dash-header category' style={{color: 'white'}}>{props.category}</div>
             <div className='dash-header options'>{/* <Glyphicon glyph="cog" style={{ color: '#8c9198', fontSize: '1.5em' }} /> */}</div>
         </div>
     )
@@ -227,7 +362,8 @@ class DashBox extends React.Component {
             style: {
                 minWidth: '400px',
                 flex: '1',
-                margin: '20px'
+                margin: '20px',
+                // background: categoryColor[this.props.category.toUpperCase()]
             },
             items: [],
         }
@@ -236,7 +372,7 @@ class DashBox extends React.Component {
     render() {
         return (
             <Panel style={this.state.style}>
-                <Panel.Heading>
+                <Panel.Heading style={{background: categoryColor[this.props.category.toUpperCase()]}}>
                     <DashBoxHeader {...this.props} />
                 </Panel.Heading>
                 {//['task', 'event', 'doc']

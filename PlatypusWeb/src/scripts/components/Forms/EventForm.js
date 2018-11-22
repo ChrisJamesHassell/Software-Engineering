@@ -4,6 +4,7 @@ import moment from 'moment';
 import { getRandomId } from '../../fetchHelpers';
 
 const categoryOptions = [
+    { label: 'Pick a category...', value: '' },
     { label: 'Appliances', value: 'APPLIANCES' },
     { label: 'Auto', value: 'AUTO' },
     { label: 'Meals', value: 'MEALS' },
@@ -65,6 +66,7 @@ export default class EventForm extends React.Component {
     }
 
     handleCheck = (e) => {
+        this.setState({ formData: { ...this.props.formData, pinned: e.checked ? 1 : 0 } });
         this.setState({ data: { ...this.state.data, pinned: e.checked ? 1 : 0 } });
     }
 
@@ -80,7 +82,7 @@ export default class EventForm extends React.Component {
         const endHour = moment(endDate).hour();
 
         const start = startHour === 0 ? moment(startDate).add(2, 'hours').toDate() : moment(startDate).toDate();
-        const end = endHour === 0 ? moment(endDate).add(2, 'hours').toDate(): moment(endDate).toDate();
+        const end = endHour === 0 ? moment(endDate).add(2, 'hours').toDate() : moment(endDate).toDate();
 
         let event = {};
         if (this.props.modal === 'Create') {
@@ -232,9 +234,9 @@ export default class EventForm extends React.Component {
                     </FormGroup>
                 </Form>
                 <Modal.Footer>
-                    {this.props.modal === 'Edit' && <Button bsStyle="danger" onClick={this.handleDelete}><b>DELETE</b></Button>}
                     <Button onClick={this.handleSubmit}><b>SUBMIT</b></Button>
                     <Button onClick={this.props.handleClose}><b>CLOSE</b></Button>
+                    {this.props.modal === 'Edit' && <Button bsStyle="danger" onClick={this.handleDelete}><b>DELETE</b></Button>}
                 </Modal.Footer>
 
             </Modal>

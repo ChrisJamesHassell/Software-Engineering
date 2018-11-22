@@ -207,21 +207,22 @@ button:disabled, button[disabled] {
 
 .dash-body-type {
   font-family: 'Raleway', sans-serif;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1.5em;
   /* border-bottom: 2px dashed #18bc9c; */
   margin: 1em 0 1em 0;
-  background: #b4bfbd;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding-left: 1em;
+  /* background: #b4bfbd; */
+  color:  #b4bfbd;
+  /* text-transform: uppercase; */
+  letter-spacing: .5px;
+  /* padding-left: 1em; */
 }
 
 .dash-body-complete {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: white;
 }
 
 .dash-body-complete-glyph {
@@ -235,6 +236,7 @@ button:disabled, button[disabled] {
 
 .ReactTable {
   border: 0;
+  background: white;
 }
 
 .ReactTable .rt-thead.-header {
