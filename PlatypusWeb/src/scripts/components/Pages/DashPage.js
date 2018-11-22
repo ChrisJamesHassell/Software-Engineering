@@ -31,8 +31,6 @@ class DashBoxBody extends React.Component {
             itemTypeBg: '#b4bfbd',
             overdue: [],
         }
-
-        this.handleStyleChanges = this.handleStyleChanges.bind(this);
     }
 
     componentDidMount() {
@@ -47,6 +45,7 @@ class DashBoxBody extends React.Component {
         this.fetchRequest(url, 'GET', null);
     }
 
+    // === FETCHREQUEST === //
     fetchRequest = async (url, method, body, isEdit = false) => {
         this.setState({ isLoaded: false });
         let options = {
@@ -68,6 +67,7 @@ class DashBoxBody extends React.Component {
         return result;
     }
 
+    // === GETFORMATTEDITEMS === //
     getFormattedItem(values) {
         switch (this.props.itemType) {
             case "task":
@@ -111,9 +111,7 @@ class DashBoxBody extends React.Component {
 
     // === FILTERRESPONSEITEMS === //
     filterResponseItems = (items) => {
-
         const key = filterProps[this.props.itemType];
-
         return items.filter(item => {
             const overdue = Math.floor((moment.duration(moment().diff(item[key]))).asDays()) || 0;
             this.handleOverdueState(item, key);
@@ -124,11 +122,8 @@ class DashBoxBody extends React.Component {
     // === HANDLEOVERDUESTATE === //
     handleOverdueState = (item, dateKey) => {
         const idKey = this.props.itemType + 'ID'; //eventID, taskID
-        console.log("DATEKEY: ", dateKey);
-        console.log("DATE(?): ", item[dateKey]);
         const overdue = Math.floor((moment.duration(moment().diff(item[dateKey]))).asDays()) || 0;
         const overdues = this.state.overdue.filter(od => od[idKey] !== item[idKey]);
-        console.log("OVERDUE: ", overdue);
         let newOverdues = [];
         if (overdue > 0 && item.pinned && !item.completed) newOverdues = [...overdues, item];
         else newOverdues = this.state.overdue.filter(od => od[idKey] !== item[idKey]);
@@ -168,6 +163,7 @@ class DashBoxBody extends React.Component {
         this.setState({ items });
     }
 
+    // === ONUPDATE === //
     onUpdate = async (values, rowIndex = 0) => { // url, method, body, isEdit?
         const url = `${path}/app/${this.props.itemType}/update`;
         const newBody = Object.assign({}, { ...this.state.items[rowIndex] }, values);
@@ -177,6 +173,7 @@ class DashBoxBody extends React.Component {
         this.fetchRequest(url, 'POST', body, true);
     }
 
+    // === HANDLECHECK === //
     handleCheck = (e, values, rowIndex) => { // Assume only tasks will be checked
         this.setState({ rowIndex: rowIndex });
         const newVal = Object.assign({}, { ...values }, { completed: e.checked ? 1 : 0 })
@@ -188,10 +185,7 @@ class DashBoxBody extends React.Component {
     //     return this.state.selection.includes(key);
     // };
 
-    handleStyleChanges = color => {
-        this.setState({ itemTypeBg: color });
-    }
-
+    // === GETITEMTYPECOLS === //
     getItemTypeCols(key) {
         // Universial columns for all itemTypes
         const colsMap = {
@@ -296,6 +290,7 @@ class DashBoxBody extends React.Component {
         return colsMap[key];
     }
 
+    // === GETPRIORITYSTYLE === //
     getPriorityStyle(key, index, completed = false, props) {
         let classStyle = null;
         if (completed) classStyle = "default";
@@ -343,7 +338,6 @@ const DashBoxHeader = (props) => {
                     icon={props.category}
                     width={40}
                     height={40}
-                    // spanStyle={{ background: '#b4bfbd', borderRadius: '50%', position: 'absolute', paddingBottom: '11px', paddingRight: '17px' }} />
                     spanStyle={{ background: categoryColor[props.category.toUpperCase()], borderRadius: '50%', position: 'absolute', paddingBottom: '11px', paddingRight: '17px' }} />
             </div>
             <div className='dash-header category' style={{color: 'white'}}>{props.category}</div>
