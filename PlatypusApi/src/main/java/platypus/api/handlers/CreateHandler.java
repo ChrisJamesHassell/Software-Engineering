@@ -124,7 +124,7 @@ public class CreateHandler implements Route {
 				if (errorMap.get(key) > -1)
 					error = "ERROR: User with " + key + " already exists.";
 			}
-
+			
 			return new JsonResponse("ERROR", "", error);
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());

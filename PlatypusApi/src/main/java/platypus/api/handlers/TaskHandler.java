@@ -5,13 +5,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.sql.Types;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
+import platypus.api.models.Category;
 import platypus.api.models.Category;
 import platypus.api.models.ItemType;
 import platypus.api.models.Priority;
@@ -20,6 +28,8 @@ import spark.Request;
 import util.ItemFilter;
 
 public class TaskHandler {
+
+	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MMM d, yyyy");
 
 	public static JsonResponse addTask(HikariDataSource ds, Request req) throws SQLException {
 
@@ -76,16 +86,17 @@ public class TaskHandler {
 			JsonObject task = jsonO.get("task").getAsJsonObject();
 
 			conn = ds.getConnection();
-
+			conn.setAutoCommit(false);
 			// Prepare the call from request body
 			stmt = conn.prepareStatement(
 					"UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
 			stmt.setString(1, task.get("name").getAsString());
 			stmt.setString(2, task.get("description").getAsString());
 			stmt.setString(3, task.get("category").getAsString());
-			stmt.setString(4, task.get("deadline").getAsString());
+			// stmt.setString(4, task.get("deadline").getAsString());
+			stmt.setDate(4, parseDate(task.get("deadline").getAsString()));
 			stmt.setString(5, task.get("priority").getAsString());
-			stmt.setString(6, task.get("completed").getAsString());
+			stmt.setInt(6, task.get("completed").getAsInt());
 			stmt.setInt(7, task.get("taskID").getAsInt());
 
 			int ret = stmt.executeUpdate();
@@ -95,13 +106,13 @@ public class TaskHandler {
 			if (ret == 1) {
 				// Given a successful update, update the relational table too.
 				stmt = conn.prepareStatement("UPDATE has_tasks SET pinned = ?, notification = ? WHERE taskID = ?");
-				stmt.setString(1, task.get("pinned").getAsString());
-				stmt.setString(2, task.get("notification").getAsString());
+				stmt.setInt(1, task.get("pinned").getAsInt());
+				stmt.setDate(2, parseDate(task.get("notification").getAsString()));
 				stmt.setInt(3, task.get("taskID").getAsInt());
 
 				ret = stmt.executeUpdate();
 				stmt.close();
-
+				conn.commit();
 				if (ret == 1) {
 					return new JsonResponse("SUCCESS", getReturnedTask(task.get("taskID").getAsInt(), conn),
 							"Successfully edited task");
@@ -112,8 +123,9 @@ public class TaskHandler {
 				// The tasktID does not exist.
 				return new JsonResponse("FAIL", "", "The task does not exist");
 			}
-
 		} catch (SQLException sqlE) {
+			sqlE.printStackTrace();
+			conn.rollback();
 			return new JsonResponse("ERROR", "", "SQLError in Edit Task");
 		} finally {
 			conn.close();
@@ -204,4 +216,7 @@ public class TaskHandler {
 
 	}
 
+	private static java.sql.Date parseDate(String s){
+		return Date.valueOf(LocalDate.parse(s, DATE_FORMAT));
+	}
 }

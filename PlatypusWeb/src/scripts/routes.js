@@ -1,13 +1,22 @@
 import React from 'react';
 // import { Glyphicon } from 'react-bootstrap';
+import { MenuItem } from 'react-bootstrap';
 import Tasks from './components/Pages/Tasks';
 import Dash from './components/Pages/DashPage';
 import { Events } from './components/Pages/EventsPage';
+import Document from './components/Pages/DocumentsPage';
 // import * as Icons from '../images/icons/NavIcons';
 // import NavIcons from '../images/icons/NavIcons';
 
 // const iconStyle = { width: 20, height: 20 };
 const routes = [
+  {
+    path: "",
+    name: 'Navigation',
+    type: 'divider',
+    glyph: "",
+    sidebar: () => <div><MenuItem divider /><div className='left-nav-divider'>Navigation</div></div>
+  },
   {
     path: '/dashboard',
     name: 'Dash',
@@ -16,6 +25,13 @@ const routes = [
     type: 'home',
     sidebar: () => <div />,
     main: () => <Dash />,
+  },
+  {
+    path: "",
+    name: 'Categories',
+    type: 'divider',
+    glyph: "",
+    sidebar: () => <div><MenuItem divider /><div className='left-nav-divider'>Categories</div></div>
   },
   {
     path: '/dashboard/appliances',
@@ -31,7 +47,7 @@ const routes = [
     glyph: 'auto', // <Icons.Auto {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Home and Appliances Page</b>,
+    main: () => <b>Auto Page</b>,
   },
   {
     path: '/dashboard/meals',
@@ -50,12 +66,27 @@ const routes = [
     main: () => <b>Medical Page</b>,
   },
   {
+    path: '/dashboard/miscellaneous',
+    name: 'Miscellaneous',
+    glyph: 'miscellaneous', // <Icons.Meals {...iconStyle} />,
+    type: 'Category',
+    sidebar: () => <div />,
+    main: () => <b>Miscellaneous</b>,
+  },
+  {
+    path: "",
+    name: 'Actions',
+    type: 'divider',
+    glyph: "",
+    sidebar: () => <div><MenuItem divider /><div className='left-nav-divider'>Actions</div></div>
+  },
+  {
     path: '/dashboard/documents',
     name: 'Documents',
     glyph: 'documents', // <Icons.Events {...iconStyle} />,
     type: 'Actions',
     sidebar: () => <div />,
-    main: () => <b>Documents Page</b>,
+    main: () => <Document />,
   },
   {
     path: '/dashboard/events',

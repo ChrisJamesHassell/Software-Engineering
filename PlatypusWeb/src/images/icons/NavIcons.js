@@ -9,13 +9,16 @@ const NavIcons = props => {
         "events": Events,
         "meals": Meals,
         "medical": Medical,
+        "miscellaneous": Miscellaneous,
         "tasks": Tasks,
-        "documents": Documents
+        "documents": Documents,
+        "": ""
     }
     var style = {
         width: props.width || 20,
         height: props.height || 20,
-        style: props.fill || "white"
+        style: props.fill || "white",
+        spanStyle: props.spanStyle || {}
     }
 
     const Icon = iconMap[icon];
@@ -25,7 +28,7 @@ const NavIcons = props => {
 
 const Appliances = props => {
     return (
-        <span className="nav-icons">
+        <span className="nav-icons" style={props.spanStyle}>
             <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36.69238 40" height={props.height} width={props.width}>
                 <title>
                     appliances
@@ -44,7 +47,7 @@ const Appliances = props => {
 
 const Auto = props => {
     return (
-        <span className="nav-icons">
+        <span className="nav-icons" style={props.spanStyle}>
             <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 31.345" height={props.height} width={props.width}>
                 <title>
                     auto
@@ -61,7 +64,7 @@ const Auto = props => {
 
 const Dashboard = props => {
     return (
-        <span className="nav-icons">
+        <span className="nav-icons" style={props.spanStyle}>
             <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 28.25582" height={props.height} width={props.width}>
                 <title>
                     dashboard
@@ -79,7 +82,7 @@ const Dashboard = props => {
 
 const Documents = props => {
     return (
-        <span className="nav-icons">
+        <span className="nav-icons" style={props.spanStyle}>
             <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1935.55615 2334.04655" height={props.height} width={props.width}>
                 <title>
                     documents
@@ -96,7 +99,7 @@ const Documents = props => {
 
 const Events = props => {
     return (
-        <span className="nav-icons">
+        <span className="nav-icons" style={props.spanStyle}>
             <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 39.2942" height={props.height} width={props.width}>
                 <title>
                     events
@@ -125,7 +128,7 @@ const Events = props => {
 
 const Meals = props => {
     return (
-        <span className="nav-icons">
+        <span className="nav-icons" style={props.spanStyle}>
             <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.99948 39.81985" height={props.height} width={props.width}>
                 <title>
                     meals
@@ -144,7 +147,7 @@ const Meals = props => {
 
 const Medical = props => {
     return (
-        <span className="nav-icons">
+        <span className="nav-icons" style={props.spanStyle}>
             <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.99999 34.83899" height={props.height} width={props.width}>
                 <title>
                     medical
@@ -159,9 +162,34 @@ const Medical = props => {
     )
 }
 
+const Miscellaneous = props => {
+    return (
+        <span className="nav-icons" style={props.spanStyle}>
+            <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" height={props.height} width={props.width}>
+                <title>
+                    miscellaneous
+	            </title>
+                <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_1-2" data-name="Layer 1">
+                        <path className="nav-icons" fill={props.style} d="M2.12159,0H7.88323a2.12159,2.12159,0,0,1,2.12159,2.12159V7.88323a2.12159,2.12159,0,0,1-2.12159,2.12159h-5.762A2.12119,2.12119,0,0,1,0,7.88363v-5.762A2.12159,2.12159,0,0,1,2.12159,0Z" />
+                        <rect className="nav-icons" fill={props.style} x="14.99739" width="10.00522" height="10.00482" rx="2.12159" />
+                        <path className="nav-icons" fill={props.style} d="M32.11677,0h5.762A2.12119,2.12119,0,0,1,40,2.12119v5.762a2.12159,2.12159,0,0,1-2.12159,2.12159H32.11677a2.12159,2.12159,0,0,1-2.12159-2.12159V2.12159A2.12159,2.12159,0,0,1,32.11677,0Z" />
+                        <path className="nav-icons" fill={props.style} d="M2.12159,14.99759H7.88323a2.12159,2.12159,0,0,1,2.12159,2.12159v5.76164a2.12159,2.12159,0,0,1-2.12159,2.12159h-5.762A2.12119,2.12119,0,0,1,0,22.88122v-5.762A2.12159,2.12159,0,0,1,2.12159,14.99759Z" />
+                        <rect className="nav-icons" fill={props.style} x="14.99739" y="14.99759" width="10.00522" height="10.00482" rx="2.12159" />
+                        <path className="nav-icons" fill={props.style} d="M32.11677,14.99759h5.762A2.12119,2.12119,0,0,1,40,17.11878v5.762a2.12159,2.12159,0,0,1-2.12159,2.12159H32.11677a2.12159,2.12159,0,0,1-2.12159-2.12159V17.11918A2.12159,2.12159,0,0,1,32.11677,14.99759Z" />
+                        <path className="nav-icons" fill={props.style} d="M2.12159,29.99518H7.88323a2.12159,2.12159,0,0,1,2.12159,2.12159v5.76164A2.12159,2.12159,0,0,1,7.88323,40h-5.762A2.12119,2.12119,0,0,1,0,37.87881v-5.762A2.12159,2.12159,0,0,1,2.12159,29.99518Z" />
+                        <rect className="nav-icons" fill={props.style} x="14.99739" y="29.99518" width="10.00522" height="10.00482" rx="2.12159" />
+                        <path className="nav-icons" fill={props.style} d="M32.11677,29.99518h5.762A2.12119,2.12119,0,0,1,40,32.11637v5.762A2.12159,2.12159,0,0,1,37.87841,40H32.11677a2.12159,2.12159,0,0,1-2.12159-2.12159V32.11677A2.12159,2.12159,0,0,1,32.11677,29.99518Z" />
+                    </g>
+                </g>
+            </svg>
+        </span>
+    )
+}
+
 const Tasks = props => {
     return (
-        <span className="nav-icons">
+        <span className="nav-icons" style={props.spanStyle}>
             <svg className="nav-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.99999 40.00001" height={props.height} width={props.width}>
                 <title>
                     tasks

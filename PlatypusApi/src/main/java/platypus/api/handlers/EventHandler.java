@@ -1,5 +1,4 @@
 package platypus.api.handlers;
-
 import spark.Request;
 import util.ItemFilter;
 
@@ -8,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+
 import java.sql.Types;
 
 import com.google.gson.Gson;
@@ -33,7 +34,7 @@ public class EventHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-			JsonObject user = jsonO.get("user").getAsJsonObject();
+//			JsonObject user = jsonO.get("user").getAsJsonObject();
 			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
@@ -42,7 +43,7 @@ public class EventHandler {
 
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertEvent(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
-			stmt.setString(1, event.get("pinned").getAsString());
+			stmt.setInt(1, event.get("pinned").getAsInt());
 			stmt.setString(2, event.get("notification").getAsString());
 			stmt.setInt(3, group.get("groupID").getAsInt());
 			stmt.setString(4, event.get("name").getAsString());
@@ -136,8 +137,8 @@ public class EventHandler {
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
 			// Still necessary to build the CacheEntry response.
-			JsonObject user = jsonO.get("user").getAsJsonObject();
-			JsonObject group = jsonO.get("group").getAsJsonObject();
+//			JsonObject user = jsonO.get("user").getAsJsonObject();
+//			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
 			conn = ds.getConnection();
@@ -206,7 +207,5 @@ public class EventHandler {
 		return e;
 
 	}
-
-}
 
 }

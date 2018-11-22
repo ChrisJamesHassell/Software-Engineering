@@ -6,24 +6,15 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import platypus.api.models.CacheEntry;
 import platypus.api.models.Category;
@@ -37,7 +28,7 @@ import platypus.api.models.LoginEntry;
 import platypus.api.models.Priority;
 import platypus.api.models.Task;
 import platypus.api.models.TaskWrapper;
-import spark.Request;
+
 
 public class CacheUtil {
 

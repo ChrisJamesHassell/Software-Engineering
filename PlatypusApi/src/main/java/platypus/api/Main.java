@@ -18,6 +18,7 @@ import spark.Spark;
 
 import java.util.Properties;
 
+
 public class Main {
 
 	public final static boolean IS_PRODUCTION = false;
@@ -45,14 +46,9 @@ public class Main {
 			});
 			Spark.before("/app/*", authFilter);
 			Spark.path("/app", () -> {
-				Spark.get("/test", (req, res) -> {
-					return "hi " + req.attribute(AuthFilter.USERNAME);
-				});
-
+				
 				Spark.path("/task", () -> {
-
 					Spark.get("", (req, res) -> TaskHandler.get(ds, req), gson::toJson);
-
 					Spark.post("/add", (req, res) -> TaskHandler.addTask(ds, req), gson::toJson);
 					Spark.post("/update", (req, res) -> TaskHandler.editTask(ds, req), gson::toJson);
 					Spark.post("/delete", (req, res) -> TaskHandler.removeTask(ds, req), gson::toJson);

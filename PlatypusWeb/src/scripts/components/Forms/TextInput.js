@@ -40,3 +40,25 @@ export default class TextInput extends React.Component {
     );
   }
 }
+
+// export class ItemInput extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {};
+//   }
+//   render() {
+//     return (
+//       <FormGroup controlId="name">
+//         <Col componentClass={ControlLabel} sm={3}>Name</Col>
+//         <Col sm={9}>
+//           <FormControl
+//             type="text"
+//             placeholder="Name of the event..."
+//             value={this.getValue('name')}
+//             onChange={e => this.handleChange(e.target)}
+//           />
+//         </Col>
+//       </FormGroup>
+//     )
+//   }
+// }
