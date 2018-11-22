@@ -93,7 +93,8 @@ public class DocumentHandler {
 	           	
 	           	
 	           	
-				//Prepare the call from request body
+				//Prepare the call from request body, don't have the proper docID until after the call
+	           	//so we can not set the fileName properly, just update after insertion as quick workaround.
 				stmt = conn.prepareCall("{call insertDoc(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 				stmt.setString(1, req.queryParams("pinned").toString());
 				stmt.setString(2, req.queryParams("notification").toString());
@@ -129,7 +130,7 @@ public class DocumentHandler {
 			 uploadedFile = null;	
 
 			// Need to return CacheEntry for this user + the document stuff
-			return new JsonResponse("SUCCESS", "", "Successfully inserted document.");
+			return new JsonResponse("SUCCESS", getReturnedDocument(docID, conn), "Successfully inserted document.");
 		} catch (SQLException sqlE) {
 			sqlE.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLError in Add document");
@@ -217,15 +218,17 @@ public class DocumentHandler {
 			stmt.setInt(1, Integer.parseInt(req.queryParams("documentID")));
 			int ret = stmt.executeUpdate();
 			
-        	String PATH = File.separator + "platypus" + File.separator + "users";
-        	String directoryName = PATH + File.separator + req.queryParams("userID").toString() + File.separator;
-			String fName = req.queryParams("fileName"); 
-			String fullPath = directoryName.concat(fName);
+			// fileName is stored in the database as the entire thing, so it only makes sense front-end will store the entire filepath yes??
 			
-			System.out.println(fullPath);
-		
+        //	String PATH = File.separator + "platypus" + File.separator + "users";
+        	//String directoryName = PATH + File.separator + req.queryParams("userID").toString() + File.separator;
+			String fName = req.queryParams("fileName"); 
+			//String fullPath = directoryName.concat(fName);
+			
+			System.out.println(fName);
+			
 	    	try{
-	    		File file = new File(fullPath);
+	    		File file = new File(fName);
 	        	System.out.println(file.getName());
 	    		if(file.delete()){
 	    			System.out.println(file.getName() + " is deleted!");
