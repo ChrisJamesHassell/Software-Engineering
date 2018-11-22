@@ -237,8 +237,9 @@ class DashBoxBody extends React.Component {
                     }),
                     Cell: props => {
                         const overdue = Math.floor((moment.duration(moment().diff(props.value))).asDays());
+                        const multiple = overdue > 1 ? 's' : '';
                         return <div>{moment(props.value).format('MMM DD, YYYY')}
-                            {overdue > 0 && <div style={{ color: props.original.completed ? '#c8d2d0' : '#e74c3c', fontSize: '.8em' }}>{overdue} day overdue</div>}
+                            {overdue > 0 && <div style={{ color: props.original.completed ? '#c8d2d0' : '#e74c3c', fontSize: '.8em' }}>{overdue} day{multiple} overdue</div>}
                         </div>
                     }
                 },
@@ -279,8 +280,9 @@ class DashBoxBody extends React.Component {
                     accessor: d => d.endDate,
                     Cell: props => {
                         const overdue = Math.floor((moment.duration(moment().diff(props.value))).asDays());
+                        const multiple = overdue > 1 ? 's' : '';
                         return <div>{moment(props.value).format('MMM DD, YYYY')}
-                            {overdue > 0 && <div style={{ color: props.original.completed ? '#c8d2d0' : '#e74c3c', fontSize: '.8em' }}>{overdue} day overdue</div>}
+                            {overdue > 0 && <div style={{ color: props.original.completed ? '#c8d2d0' : '#e74c3c', fontSize: '.8em' }}>{overdue} day{multiple} overdue</div>}
                         </div>
                     }
                 }
