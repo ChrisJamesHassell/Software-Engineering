@@ -1,5 +1,6 @@
 package platypus.api.handlers;
 import spark.Request;
+import util.DateParser;
 import util.ItemFilter;
 
 import java.sql.CallableStatement;
@@ -34,7 +35,6 @@ public class EventHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-			JsonObject user = jsonO.get("user").getAsJsonObject();
 			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
@@ -43,14 +43,14 @@ public class EventHandler {
 
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertEvent(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
-			stmt.setString(1, event.get("pinned").getAsString());
-			stmt.setString(2, event.get("notification").getAsString());
+			stmt.setInt(1, event.get("pinned").getAsInt());
+			stmt.setDate(2, event.get("notification").isJsonNull() ? null : DateParser.parseDate(event.get("notification").getAsString()));
 			stmt.setInt(3, group.get("groupID").getAsInt());
 			stmt.setString(4, event.get("name").getAsString());
 			stmt.setString(5, event.get("description").getAsString());
 			stmt.setString(6, event.get("category").getAsString());
-			stmt.setString(7, event.get("startDate").getAsString());
-			stmt.setString(8, event.get("endDate").getAsString());
+			stmt.setDate(7, event.get("startDate").isJsonNull() ? null : DateParser.parseDate(event.get("startDate").getAsString()));
+			stmt.setDate(8, event.get("endDate").isJsonNull() ? null : DateParser.parseDate(event.get("endDate").getAsString()));
 			stmt.setString(9, event.get("location").getAsString());
 			stmt.registerOutParameter(10, Types.INTEGER);
 
@@ -88,8 +88,8 @@ public class EventHandler {
 			stmt.setString(1, event.get("name").getAsString());
 			stmt.setString(2, event.get("description").getAsString());
 			stmt.setString(3, event.get("category").getAsString());
-			stmt.setString(4, event.get("startDate").getAsString());
-			stmt.setString(5, event.get("endDate").getAsString());
+			stmt.setDate(4, event.get("startDate").isJsonNull() ? null : DateParser.parseDate(event.get("startDate").getAsString()));
+			stmt.setDate(5, event.get("endDate").isJsonNull() ? null : DateParser.parseDate(event.get("endDate").getAsString()));
 			stmt.setString(6, event.get("location").getAsString());
 			stmt.setInt(7, event.get("eventID").getAsInt());
 
@@ -100,8 +100,8 @@ public class EventHandler {
 			if (ret == 1) {
 				// Given a successful update, update the relational table too.
 				stmt = conn.prepareStatement("UPDATE has_events SET pinned = ?, notification = ? WHERE eventID = ?");
-				stmt.setString(1, event.get("pinned").getAsString());
-				stmt.setString(2, event.get("notification").getAsString());
+				stmt.setInt(1, event.get("pinned").getAsInt());
+				stmt.setDate(2, event.get("notification").isJsonNull() ? null : DateParser.parseDate(event.get("notification").getAsString()));
 				stmt.setInt(3, event.get("eventID").getAsInt());
 				
 				ret = stmt.executeUpdate();
@@ -136,9 +136,6 @@ public class EventHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-			// Still necessary to build the CacheEntry response.
-			JsonObject user = jsonO.get("user").getAsJsonObject();
-			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
 			conn = ds.getConnection();

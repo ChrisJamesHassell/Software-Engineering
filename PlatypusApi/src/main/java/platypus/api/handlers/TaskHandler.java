@@ -24,11 +24,10 @@ import platypus.api.models.ItemType;
 import platypus.api.models.Priority;
 import platypus.api.models.Task;
 import spark.Request;
+import util.DateParser;
 import util.ItemFilter;
 
-public class TaskHandler {
-
-	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MMM d, yyyy");
+public class TaskHandler {	
 
 	public static JsonResponse addTask(HikariDataSource ds, Request req) throws SQLException {
 
@@ -40,7 +39,6 @@ public class TaskHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-			JsonObject user = jsonO.get("user").getAsJsonObject();
 			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject task = jsonO.get("task").getAsJsonObject();
 
@@ -48,13 +46,13 @@ public class TaskHandler {
 
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertTask(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
-			stmt.setString(1, task.get("pinned").getAsString());
-			stmt.setString(2, task.get("notification").getAsString());
+			stmt.setInt(1, task.get("pinned").getAsInt());
+			stmt.setDate(2, task.get("notification").isJsonNull() ? null : DateParser.parseDate(task.get("notification").getAsString()));
 			stmt.setInt(3, group.get("groupID").getAsInt());
 			stmt.setString(4, task.get("name").getAsString());
 			stmt.setString(5, task.get("description").getAsString());
 			stmt.setString(6, task.get("category").getAsString());
-			stmt.setString(7, task.get("deadline").getAsString());
+			stmt.setDate(7, task.get("deadline").isJsonNull() ? null : DateParser.parseDate(task.get("deadline").getAsString()));
 			stmt.setString(8, task.get("priority").getAsString());
 			stmt.registerOutParameter(9, Types.INTEGER);
 
@@ -92,8 +90,7 @@ public class TaskHandler {
 			stmt.setString(1, task.get("name").getAsString());
 			stmt.setString(2, task.get("description").getAsString());
 			stmt.setString(3, task.get("category").getAsString());
-			// stmt.setString(4, task.get("deadline").getAsString());
-			stmt.setDate(4, parseDate(task.get("deadline").getAsString()));
+			stmt.setDate(4, task.get("deadline").isJsonNull() ? null : DateParser.parseDate(task.get("deadline").getAsString()));
 			stmt.setString(5, task.get("priority").getAsString());
 			stmt.setInt(6, task.get("completed").getAsInt());
 			stmt.setInt(7, task.get("taskID").getAsInt());
@@ -106,7 +103,7 @@ public class TaskHandler {
 				// Given a successful update, update the relational table too.
 				stmt = conn.prepareStatement("UPDATE has_tasks SET pinned = ?, notification = ? WHERE taskID = ?");
 				stmt.setInt(1, task.get("pinned").getAsInt());
-				stmt.setDate(2, parseDate(task.get("notification").getAsString()));
+				stmt.setDate(2, task.get("notification").isJsonNull() ? null : DateParser.parseDate(task.get("notification").getAsString()));
 				stmt.setInt(3, task.get("taskID").getAsInt());
 
 				ret = stmt.executeUpdate();
@@ -144,8 +141,6 @@ public class TaskHandler {
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
 			// Still necessary to build the CacheEntry response.
-			JsonObject user = jsonO.get("user").getAsJsonObject();
-			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject task = jsonO.get("task").getAsJsonObject();
 
 			conn = ds.getConnection();
@@ -214,8 +209,5 @@ public class TaskHandler {
 		return t;
 
 	}
-
-	private static java.sql.Date parseDate(String s){
-		return Date.valueOf(LocalDate.parse(s, DATE_FORMAT));
-	}
+	
 }
