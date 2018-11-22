@@ -81,10 +81,10 @@ public class EventHandler {
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
 			conn = ds.getConnection();
+			conn.setAutoCommit(false);
 
 			// Prepare the call from request body
-			stmt = conn.prepareStatement(
-					"UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
+			stmt = conn.prepareStatement("UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
 			stmt.setString(1, event.get("name").getAsString());
 			stmt.setString(2, event.get("description").getAsString());
 			stmt.setString(3, event.get("category").getAsString());
@@ -106,6 +106,7 @@ public class EventHandler {
 				
 				ret = stmt.executeUpdate();
 				stmt.close();
+				conn.commit();
 				
 				if (ret == 1) {
 					return new JsonResponse("SUCCESS", getReturnedEvent(event.get("eventID").getAsInt(), conn), "Successfully edited event");	
@@ -124,9 +125,7 @@ public class EventHandler {
 		}
 	}
 
-	// Successfully removes the event from all appropriate tables.
-	// TODO: -Build the response correctly.
-	// -Test more extensively.
+	// Removes the event from all appropriate tables.
 	public static JsonResponse removeEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
@@ -147,7 +146,6 @@ public class EventHandler {
 			stmt.close();
 
 			if (ret != 0) {
-				// TODO: Need to return CacheEntry for this user + the EventInfo
 				return new JsonResponse("SUCCESS", "", "Successfully deleted event.");
 			} else {
 				// There is no event with that eventID

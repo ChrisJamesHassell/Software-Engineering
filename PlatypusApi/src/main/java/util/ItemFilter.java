@@ -5,18 +5,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.google.gson.JsonObject;
 
 import platypus.api.models.Category;
 import platypus.api.models.Document;
@@ -32,11 +26,11 @@ import spark.Request;
 public class ItemFilter {
 
 	public static TaskWrapper[] getTasks(Connection conn, Request r) throws SQLException {
-
+				
 		int userId = Integer.parseInt(r.queryParams("userID"));
-		Category category = r.queryParams("category") == null ? null : Category.valueOf(r.queryParams("category"));
+		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
 		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
-		Boolean pinned = r.queryParams("pinned") == null ? null : Boolean.parseBoolean(r.queryParams("pinned"));
+		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
 
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.TASK, conn, userId);
@@ -61,7 +55,7 @@ public class ItemFilter {
 
 		Stream<TaskWrapper> stream = tasks.stream().filter(t -> {
 			if ((category == null || t.getTask().getCategory().equals(category))
-					&& ((weeksAhead == -1 || (t.getTask().getDeadline() != null && dateWithin(weeksAhead, t.getTask().getDeadline()))))
+					&& ((weeksAhead == -1 || t.getTask().getDeadline() == null || dateWithin(weeksAhead, t.getTask().getDeadline())))
 					&& (pinned == null || t.getTask().isPinned() == pinned)) {
 				return true;
 			}
@@ -74,9 +68,9 @@ public class ItemFilter {
 	public static EventWrapper[] getEvents(Connection conn, Request r) throws SQLException {
 
 		int userId = Integer.parseInt(r.queryParams("userID"));
-		Category category = r.queryParams("category") == null ? null : Category.valueOf(r.queryParams("category"));
+		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
 		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
-		Boolean pinned = r.queryParams("pinned") == null ? null : Boolean.parseBoolean(r.queryParams("pinned"));
+		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
 
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.EVENT, conn, userId);
@@ -114,9 +108,9 @@ public class ItemFilter {
 	public static DocumentWrapper[] getDocuments(Connection conn, Request r) throws SQLException {
 
 		int userId = Integer.parseInt(r.queryParams("userID"));
-		Category category = r.queryParams("category") == null ? null : Category.valueOf(r.queryParams("category"));
+		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
 		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
-		Boolean pinned = r.queryParams("pinned") == null ? null : Boolean.parseBoolean(r.queryParams("pinned"));
+		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
 
 		// Get resultSet from util method.
 		ResultSet rs = Queries.getItems(ItemType.DOCUMENT, conn, userId);
@@ -164,10 +158,7 @@ public class ItemFilter {
 		return -1;
 	}
 
-	// TODO, make parse with new format.
-	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {
-
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {		
 
 		if (itemDate != null) {
 

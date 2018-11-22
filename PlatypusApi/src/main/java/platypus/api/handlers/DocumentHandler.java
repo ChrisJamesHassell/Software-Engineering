@@ -1,6 +1,7 @@
 package platypus.api.handlers;
 
 import spark.Request;
+import util.DateParser;
 import util.ItemFilter;
 
 import java.sql.CallableStatement;
@@ -24,8 +25,6 @@ import platypus.api.models.ItemType;
 
 public class DocumentHandler {
 
-	// TODO: -Set up the response body to return CacheEntry + document stuff
-	// -Test more extensively if needed
 	public static JsonResponse addDoc(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
@@ -35,7 +34,6 @@ public class DocumentHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-			JsonObject user = jsonO.get("user").getAsJsonObject();
 			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject document = jsonO.get("document").getAsJsonObject();
 
@@ -43,14 +41,14 @@ public class DocumentHandler {
 
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertDoc(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
-			stmt.setString(1, document.get("pinned").getAsString());
-			stmt.setString(2, document.get("notification").getAsString());
+			stmt.setInt(1, document.get("pinned").getAsInt());
+			stmt.setDate(2, document.get("notification").isJsonNull() ? null : DateParser.parseDate(document.get("notification").getAsString()));
 			stmt.setInt(3, group.get("groupID").getAsInt());
 			stmt.setString(4, document.get("name").getAsString());
 			stmt.setString(5, document.get("description").getAsString());
 			stmt.setString(6, document.get("category").getAsString());
 			stmt.setString(7, document.get("fileName").getAsString());
-			stmt.setString(8, document.get("expirationDate").getAsString());
+			stmt.setDate(8, document.get("expirationDate").isJsonNull() ? null : DateParser.parseDate(document.get("expirationDate").getAsString()));
 			stmt.registerOutParameter(9, Types.INTEGER);
 
 			stmt.executeUpdate();
@@ -81,14 +79,14 @@ public class DocumentHandler {
 			JsonObject document = jsonO.get("document").getAsJsonObject();
 
 			conn = ds.getConnection();
+			conn.setAutoCommit(false);
 
 			// Prepare the call from request body
-			stmt = conn.prepareStatement(
-					"UPDATE documents SET name = ?, description = ?, category = ?, expirationDate = ? WHERE docID = ?");
+			stmt = conn.prepareStatement("UPDATE documents SET name = ?, description = ?, category = ?, expirationDate = ? WHERE docID = ?");
 			stmt.setString(1, document.get("name").getAsString());
 			stmt.setString(2, document.get("description").getAsString());
 			stmt.setString(3, document.get("category").getAsString());
-			stmt.setString(4, document.get("expirationDate").getAsString());
+			stmt.setDate(4, document.get("expirationDate").isJsonNull() ? null : DateParser.parseDate(document.get("expirationDate").getAsString()));
 			stmt.setInt(5, document.get("documentID").getAsInt());
 
 			int ret = stmt.executeUpdate();
@@ -98,12 +96,13 @@ public class DocumentHandler {
 			if (ret == 1) {
 				// Given a successful update, update the relational table too.
 				stmt = conn.prepareStatement("UPDATE has_documents SET pinned = ?, notification = ? WHERE docID = ?");
-				stmt.setString(1, document.get("pinned").getAsString());
-				stmt.setString(2, document.get("notification").getAsString());
+				stmt.setInt(1, document.get("pinned").getAsInt());
+				stmt.setDate(2, document.get("notification").isJsonNull() ? null : DateParser.parseDate(document.get("notification").getAsString()));
 				stmt.setInt(3, document.get("documentID").getAsInt());
 				
 				ret = stmt.executeUpdate();
 				stmt.close();
+				conn.commit();
 		
 				if (ret == 1) {
 					return new JsonResponse("SUCCESS", getReturnedDocument(document.get("documentID").getAsInt(), conn), "Successfully edited document");
@@ -135,8 +134,6 @@ public class DocumentHandler {
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
 			// Still necessary to build the CacheEntry response.
-			JsonObject user = jsonO.get("user").getAsJsonObject();
-			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject document = jsonO.get("document").getAsJsonObject();
 
 			conn = ds.getConnection();
@@ -148,8 +145,6 @@ public class DocumentHandler {
 			stmt.close();
 
 			if (ret != 0) {
-				// TODO: Need to return CacheEntry for this user + the documentInfo
-				// -Delete the file off the file system as well.
 				return new JsonResponse("SUCCESS", "", "Successfully deleted document.");
 			} else {
 				// There is no document with that documentID
@@ -179,8 +174,7 @@ public class DocumentHandler {
 
 	private static Document getReturnedDocument(int docID, Connection conn) throws SQLException {
 
-		PreparedStatement ps = conn.prepareStatement(
-				"SELECT * FROM documents INNER JOIN has_documents ON documents.docID = has_documents.docID WHERE documents.docID = ?");
+		PreparedStatement ps = conn.prepareStatement("SELECT * FROM documents INNER JOIN has_documents ON documents.docID = has_documents.docID WHERE documents.docID = ?");
 		ps.setInt(1, docID);
 
 		ResultSet rs = ps.executeQuery();

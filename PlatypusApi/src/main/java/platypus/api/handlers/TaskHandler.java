@@ -84,9 +84,9 @@ public class TaskHandler {
 
 			conn = ds.getConnection();
 			conn.setAutoCommit(false);
+			
 			// Prepare the call from request body
-			stmt = conn.prepareStatement(
-					"UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
+			stmt = conn.prepareStatement("UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
 			stmt.setString(1, task.get("name").getAsString());
 			stmt.setString(2, task.get("description").getAsString());
 			stmt.setString(3, task.get("category").getAsString());
@@ -109,6 +109,7 @@ public class TaskHandler {
 				ret = stmt.executeUpdate();
 				stmt.close();
 				conn.commit();
+				
 				if (ret == 1) {
 					return new JsonResponse("SUCCESS", getReturnedTask(task.get("taskID").getAsInt(), conn),
 							"Successfully edited task");
@@ -128,9 +129,7 @@ public class TaskHandler {
 		}
 	}
 
-	// Successfully removes the task from all appropriate tables.
-	// TODO: -Build the response correctly.
-	// -Test more extensively.
+	// Removes the task from all appropriate tables.
 	public static JsonResponse removeTask(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
@@ -140,7 +139,6 @@ public class TaskHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-			// Still necessary to build the CacheEntry response.
 			JsonObject task = jsonO.get("task").getAsJsonObject();
 
 			conn = ds.getConnection();
@@ -181,8 +179,7 @@ public class TaskHandler {
 
 	private static Task getReturnedTask(int taskID, Connection conn) throws SQLException {
 
-		PreparedStatement ps = conn.prepareStatement(
-				"SELECT * FROM tasks INNER JOIN has_tasks ON tasks.taskID = has_tasks.taskID WHERE tasks.taskID = ?");
+		PreparedStatement ps = conn.prepareStatement("SELECT * FROM tasks INNER JOIN has_tasks ON tasks.taskID = has_tasks.taskID WHERE tasks.taskID = ?");
 		ps.setInt(1, taskID);
 
 		ResultSet rs = ps.executeQuery();
