@@ -1,5 +1,6 @@
 package platypus.api.handlers;
 import spark.Request;
+import util.DateParser;
 import util.ItemFilter;
 
 import java.sql.CallableStatement;
@@ -34,7 +35,6 @@ public class EventHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-//			JsonObject user = jsonO.get("user").getAsJsonObject();
 			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
@@ -44,13 +44,13 @@ public class EventHandler {
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertEvent(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setInt(1, event.get("pinned").getAsInt());
-			stmt.setString(2, event.get("notification").getAsString());
+			stmt.setDate(2, event.get("notification").isJsonNull() ? null : DateParser.parseDate(event.get("notification").getAsString()));
 			stmt.setInt(3, group.get("groupID").getAsInt());
 			stmt.setString(4, event.get("name").getAsString());
 			stmt.setString(5, event.get("description").getAsString());
 			stmt.setString(6, event.get("category").getAsString());
-			stmt.setString(7, event.get("startDate").getAsString());
-			stmt.setString(8, event.get("endDate").getAsString());
+			stmt.setDate(7, event.get("startDate").isJsonNull() ? null : DateParser.parseDate(event.get("startDate").getAsString()));
+			stmt.setDate(8, event.get("endDate").isJsonNull() ? null : DateParser.parseDate(event.get("endDate").getAsString()));
 			stmt.setString(9, event.get("location").getAsString());
 			stmt.registerOutParameter(10, Types.INTEGER);
 
@@ -81,15 +81,15 @@ public class EventHandler {
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
 			conn = ds.getConnection();
+			conn.setAutoCommit(false);
 
 			// Prepare the call from request body
-			stmt = conn.prepareStatement(
-					"UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
+			stmt = conn.prepareStatement("UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
 			stmt.setString(1, event.get("name").getAsString());
 			stmt.setString(2, event.get("description").getAsString());
 			stmt.setString(3, event.get("category").getAsString());
-			stmt.setString(4, event.get("startDate").getAsString());
-			stmt.setString(5, event.get("endDate").getAsString());
+			stmt.setDate(4, event.get("startDate").isJsonNull() ? null : DateParser.parseDate(event.get("startDate").getAsString()));
+			stmt.setDate(5, event.get("endDate").isJsonNull() ? null : DateParser.parseDate(event.get("endDate").getAsString()));
 			stmt.setString(6, event.get("location").getAsString());
 			stmt.setInt(7, event.get("eventID").getAsInt());
 
@@ -100,12 +100,13 @@ public class EventHandler {
 			if (ret == 1) {
 				// Given a successful update, update the relational table too.
 				stmt = conn.prepareStatement("UPDATE has_events SET pinned = ?, notification = ? WHERE eventID = ?");
-				stmt.setString(1, event.get("pinned").getAsString());
-				stmt.setString(2, event.get("notification").getAsString());
+				stmt.setInt(1, event.get("pinned").getAsInt());
+				stmt.setDate(2, event.get("notification").isJsonNull() ? null : DateParser.parseDate(event.get("notification").getAsString()));
 				stmt.setInt(3, event.get("eventID").getAsInt());
 				
 				ret = stmt.executeUpdate();
 				stmt.close();
+				conn.commit();
 				
 				if (ret == 1) {
 					return new JsonResponse("SUCCESS", getReturnedEvent(event.get("eventID").getAsInt(), conn), "Successfully edited event");	
@@ -124,9 +125,7 @@ public class EventHandler {
 		}
 	}
 
-	// Successfully removes the event from all appropriate tables.
-	// TODO: -Build the response correctly.
-	// -Test more extensively.
+	// Removes the event from all appropriate tables.
 	public static JsonResponse removeEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
@@ -136,9 +135,6 @@ public class EventHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-			// Still necessary to build the CacheEntry response.
-//			JsonObject user = jsonO.get("user").getAsJsonObject();
-//			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject event = jsonO.get("event").getAsJsonObject();
 
 			conn = ds.getConnection();
@@ -150,7 +146,6 @@ public class EventHandler {
 			stmt.close();
 
 			if (ret != 0) {
-				// TODO: Need to return CacheEntry for this user + the EventInfo
 				return new JsonResponse("SUCCESS", "", "Successfully deleted event.");
 			} else {
 				// There is no event with that eventID

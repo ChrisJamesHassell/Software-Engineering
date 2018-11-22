@@ -25,9 +25,10 @@ import platypus.api.models.ItemType;
 import platypus.api.models.Priority;
 import platypus.api.models.Task;
 import spark.Request;
+import util.DateParser;
 import util.ItemFilter;
 
-public class TaskHandler {
+public class TaskHandler {	
 
 	public static JsonResponse addTask(HikariDataSource ds, Request req) throws SQLException {
 
@@ -39,7 +40,6 @@ public class TaskHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-//			JsonObject user = jsonO.get("user").getAsJsonObject();
 			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject task = jsonO.get("task").getAsJsonObject();
 
@@ -47,13 +47,13 @@ public class TaskHandler {
 
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertTask(?, ?, ?, ?, ?, ?, ?, ?, ?)}");
-			stmt.setString(1, task.get("pinned").getAsString());
-			stmt.setString(2, task.get("notification").getAsString());
+			stmt.setInt(1, task.get("pinned").getAsInt());
+			stmt.setDate(2, task.get("notification").isJsonNull() ? null : DateParser.parseDate(task.get("notification").getAsString()));
 			stmt.setInt(3, group.get("groupID").getAsInt());
 			stmt.setString(4, task.get("name").getAsString());
 			stmt.setString(5, task.get("description").getAsString());
 			stmt.setString(6, task.get("category").getAsString());
-			stmt.setString(7, task.get("deadline").getAsString());
+			stmt.setDate(7, task.get("deadline").isJsonNull() ? null : DateParser.parseDate(task.get("deadline").getAsString()));
 			stmt.setString(8, task.get("priority").getAsString());
 			stmt.registerOutParameter(9, Types.INTEGER);
 
@@ -84,14 +84,14 @@ public class TaskHandler {
 			JsonObject task = jsonO.get("task").getAsJsonObject();
 
 			conn = ds.getConnection();
-
+			conn.setAutoCommit(false);
+			
 			// Prepare the call from request body
-			stmt = conn.prepareStatement(
-					"UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
+			stmt = conn.prepareStatement("UPDATE tasks SET name = ?, description = ?, category = ?, deadline = ?, priority = ?, completed = ? WHERE taskID = ?");
 			stmt.setString(1, task.get("name").getAsString());
 			stmt.setString(2, task.get("description").getAsString());
 			stmt.setString(3, task.get("category").getAsString());
-			stmt.setString(4, task.get("deadline").getAsString());
+			stmt.setDate(4, task.get("deadline").isJsonNull() ? null : DateParser.parseDate(task.get("deadline").getAsString()));
 			stmt.setString(5, task.get("priority").getAsString());
 			stmt.setString(6, task.get("completed").getAsString());
 			stmt.setInt(7, task.get("taskID").getAsInt());
@@ -103,13 +103,14 @@ public class TaskHandler {
 			if (ret == 1) {
 				// Given a successful update, update the relational table too.
 				stmt = conn.prepareStatement("UPDATE has_tasks SET pinned = ?, notification = ? WHERE taskID = ?");
-				stmt.setString(1, task.get("pinned").getAsString());
-				stmt.setString(2, task.get("notification").getAsString());
+				stmt.setInt(1, task.get("pinned").getAsInt());
+				stmt.setDate(2, task.get("notification").isJsonNull() ? null : DateParser.parseDate(task.get("notification").getAsString()));
 				stmt.setInt(3, task.get("taskID").getAsInt());
 
 				ret = stmt.executeUpdate();
 				stmt.close();
-
+				conn.commit();
+				
 				if (ret == 1) {
 					return new JsonResponse("SUCCESS", getReturnedTask(task.get("taskID").getAsInt(), conn),
 							"Successfully edited task");
@@ -128,9 +129,7 @@ public class TaskHandler {
 		}
 	}
 
-	// Successfully removes the task from all appropriate tables.
-	// TODO: -Build the response correctly.
-	// -Test more extensively.
+	// Removes the task from all appropriate tables.
 	public static JsonResponse removeTask(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
@@ -140,9 +139,6 @@ public class TaskHandler {
 			Gson gson = new Gson();
 			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
 
-			// Still necessary to build the CacheEntry response.
-			JsonObject user = jsonO.get("user").getAsJsonObject();
-			JsonObject group = jsonO.get("group").getAsJsonObject();
 			JsonObject task = jsonO.get("task").getAsJsonObject();
 
 			conn = ds.getConnection();
@@ -183,8 +179,7 @@ public class TaskHandler {
 
 	private static Task getReturnedTask(int taskID, Connection conn) throws SQLException {
 
-		PreparedStatement ps = conn.prepareStatement(
-				"SELECT * FROM tasks INNER JOIN has_tasks ON tasks.taskID = has_tasks.taskID WHERE tasks.taskID = ?");
+		PreparedStatement ps = conn.prepareStatement("SELECT * FROM tasks INNER JOIN has_tasks ON tasks.taskID = has_tasks.taskID WHERE tasks.taskID = ?");
 		ps.setInt(1, taskID);
 
 		ResultSet rs = ps.executeQuery();
@@ -211,5 +206,5 @@ public class TaskHandler {
 		return t;
 
 	}
-
+	
 }
