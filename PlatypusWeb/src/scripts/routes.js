@@ -87,7 +87,7 @@ const routes = [
     glyph: 'documents', // <Icons.Events {...iconStyle} />,
     type: 'Actions',
     sidebar: () => <div />,
-    main: () => <Document />,
+    main: () => <Document itemType="doc" />,
   },
   {
     path: '/dashboard/events',

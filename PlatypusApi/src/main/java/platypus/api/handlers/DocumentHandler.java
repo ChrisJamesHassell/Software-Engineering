@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.UUID;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
@@ -36,7 +37,7 @@ public class DocumentHandler {
 
 	// TODO: -Set up the response body to return CacheEntry + document stuff
 	// -Test more extensively if needed
-	public static JsonResponse addDoc(HikariDataSource ds, Request req)
+	public static String addDoc(HikariDataSource ds, Request req, Response response)
 			throws SQLException, IOException, ServletException, NullPointerException {
 		System.out.println("==========================");
 		Connection conn = null;
@@ -72,7 +73,9 @@ public class DocumentHandler {
 			Part uploadedFile = req.raw().getPart("FILE");
 
 			if (uploadedFile.getSize() > maxFileSize) {
-				return new JsonResponse("FAILED", "", "File exceeds size limit.");
+//				return new JsonResponse("FAILED", "", "File exceeds size limit.");
+				response.redirect(req.headers("Referer"));
+				return "";
 			}
 
 			String fName = uploadedFile.getSubmittedFileName();
@@ -83,8 +86,10 @@ public class DocumentHandler {
 				ext = fName.substring(i);
 			}
 
-			String fileName = directoryName + req.queryParams("documentID") + ext;
+//			String fileName = directoryName + req.queryParams("documentID") + ext;
+			String fileName = directoryName + UUID.randomUUID().toString() + ext;
 
+//			Path fullPath = Paths.get(directoryName, UUID.randomUUID().toString());
 			Path fullPath = Paths.get(fileName);
 
 			System.out.println(fileName);
@@ -118,13 +123,19 @@ public class DocumentHandler {
 			uploadedFile = null;
 
 			// Need to return CacheEntry for this user + the document stuff
-			return new JsonResponse("SUCCESS", "", "Successfully inserted document.");
+//			return new JsonResponse("SUCCESS", "", "Successfully inserted document.");
+			response.redirect(req.headers("Referer"));
+			return "";
 		} catch (SQLException sqlE) {
 			sqlE.printStackTrace();
-			return new JsonResponse("ERROR", "", "SQLError in Add document");
+			response.redirect(req.headers("Referer"));
+			return "";
+//			return new JsonResponse("ERROR", "", "SQLError in Add document");
 		} catch (ServletException srvE) {
 			srvE.printStackTrace();
-			return new JsonResponse("ERROR", "", "ServletException in Add document");
+//			return new JsonResponse("ERROR", "", "ServletException in Add document");
+			response.redirect(req.headers("Referer"));
+			return "";
 		} finally {
 			conn.close();
 		}
@@ -182,19 +193,28 @@ public class DocumentHandler {
 		try {
 
 			// Must be called to pull body parts as queryParams
-			MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
-			req.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
+//			MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
+//			req.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
 
 			conn = ds.getConnection();
 
 			// Prepare the call from request body
+			Gson gson = new Gson();
+			JsonObject jsonO = gson.fromJson(req.body(), JsonObject.class);
+			JsonObject document = jsonO.get("document").getAsJsonObject();
+			
 			stmt = conn.prepareCall("{call delDoc(?)}");
-			stmt.setInt(1, Integer.parseInt(req.queryParams("documentID")));
+//			stmt.setInt(1, Integer.parseInt(req.queryParams("documentID")));
+			stmt.setInt(1, document.get("documentID").getAsInt());
 			int ret = stmt.executeUpdate();
 
 			String PATH = File.separator + "platypus" + File.separator + "users";
-			String directoryName = PATH + File.separator + req.queryParams("userID").toString() + File.separator;
-			String fName = req.queryParams("fileName");
+//			String directoryName = PATH + File.separator + req.queryParams("userID").toString() + File.separator;
+			String directoryName = PATH + File.separator + jsonO.get("userID").getAsInt() + File.separator;
+			//stmt.setInt(3, group.get("groupID").getAsInt());
+//			String fName = req.queryParams("fileName");
+			File f = new File(document.get("fileName").getAsString());
+			String fName = f.getName();
 			String fullPath = directoryName.concat(fName);
 
 			System.out.println(fullPath);

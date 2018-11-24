@@ -1,20 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
-import { Glyphicon, Panel, Label, Checkbox } from 'react-bootstrap';
+import { Glyphicon, Panel, Label, Checkbox, Button } from 'react-bootstrap';
 import qs from 'qs';
 import fetch from 'cross-fetch';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css'
 import NavIcons from '../../../images/icons/NavIcons';
-import { categories, path, categoryColor } from '../../fetchHelpers';
+import { categories, path, categoryColor, itemTypes, getPriorityStyle, filterProps } from '../../fetchHelpers';
 import moment from 'moment';
-
-const filterProps = {
-    task: 'deadline',
-    event: 'endDate',
-    // TODO: ADD DOCS
-}
+import EventForm from '../Forms/EventForm';
 
 // ================================================================== //
 //  DASHBODY
@@ -30,6 +25,9 @@ class DashBoxBody extends React.Component {
             method: '',
             itemTypeBg: '#b4bfbd',
             overdue: [],
+            error: '',
+            modal: '',
+            show: false,
         }
     }
 
@@ -67,68 +65,6 @@ class DashBoxBody extends React.Component {
         return result;
     }
 
-    getFormattedDate = (date) => {
-        if (date) return moment(date).format('MMM DD, YYYY');
-        return null;
-    }
-
-    // === GETFORMATTEDITEMS === //
-    getFormattedItem(values) {
-        let item = {
-            group: { groupID: localStorage.getItem('selfGroupId') },
-            [this.props.itemType]: {
-                name: values.name,
-                category: values.category,
-                description: values.description,
-                notification: this.getFormattedDate(values.notification),
-                pinned: values.pinned ? 1 : 0,
-                [this.props.itemType + 'ID']: values[this.props.itemType + 'ID'] || values.itemID,
-            }
-        }
-        switch (this.props.itemType) {
-            case "task":
-                item[this.props.itemType]['completed'] = values.completed ? 1 : 0;
-                item[this.props.itemType]['deadline'] = this.getFormattedDate(values.deadline);
-                item[this.props.itemType]['priority'] = values.priority;
-                break;
-
-            case "event":
-                item[this.props.itemType]['startDate'] = values.start;
-                item[this.props.itemType]['endDate'] = values.end;
-                item[this.props.itemType]['location'] = values.location;
-                break;
-
-            case "doc":
-                break;
-
-            default:
-        }
-        return item;
-    }
-
-    // === FILTERRESPONSEITEMS === //
-    filterResponseItems = (items) => {
-        const key = filterProps[this.props.itemType];
-        return items.filter(item => {
-            const overdue = Math.floor((moment.duration(moment().diff(item[key]))).asDays()) || 0;
-            this.handleOverdueState(item, key);
-            if (item.pinned || overdue < 1) return item;
-        })
-    }
-
-    // === HANDLEOVERDUESTATE === //
-    handleOverdueState = (item, dateKey) => {
-        const idKey = this.props.itemType + 'ID'; //eventID, taskID
-        const overdue = Math.floor((moment.duration(moment().diff(item[dateKey]))).asDays()) || 0;
-        const overdues = this.state.overdue.filter(od => od[idKey] !== item[idKey]);
-        let newOverdues = [];
-        if (overdue > 0 && item.pinned && !item.completed) newOverdues = [...overdues, item];
-        else newOverdues = this.state.overdue.filter(od => od[idKey] !== item[idKey]);
-
-        this.setState({ overdue: newOverdues });
-        this.setState({ itemTypeBg: newOverdues.length > 0 ? '#e74c3c' : '#b4bfbd' })
-    }
-
     // === HANDLEJSONRESPONSE === //
     handleJsonResponse(response, isEdit = false) {
         let { data: item } = response;
@@ -159,6 +95,74 @@ class DashBoxBody extends React.Component {
         this.setState({ items });
     }
 
+    getFormattedDate = (date) => {
+        if (date) return moment(date).format('MMM DD, YYYY');
+        return null;
+    }
+
+    // === GETFORMATTEDITEMS === //
+    getFormattedItem(values) {
+        let itemType = this.props.itemType !== 'doc' ? this.props.itemType : 'document';
+        let item = {
+            group: { groupID: localStorage.getItem('selfGroupId') },
+            [itemType]: {
+                name: values.name,
+                category: values.category,
+                description: values.description,
+                pinned: values.pinned ? 1 : 0,
+                // [itemType + 'ID']: values[itemType + 'ID'] || values.itemID,
+            }
+        }
+        switch (itemType) {
+            case "task":
+                item[itemType].completed = values.completed ? 1 : 0;
+                item[itemType].deadline = this.getFormattedDate(values.deadline);
+                item[itemType].priority = values.priority;
+                item[itemType].notification = this.getFormattedDate(values.notification);
+                item[itemType][itemType + 'ID'] = values[itemType + 'ID'] || values.itemID;
+                break;
+
+            case "event":
+                item[itemType].startDate = values.start;
+                item[itemType].endDate = values.end;
+                item[itemType].location = values.location;
+                item[itemType].notification = this.getFormattedDate(values.notification);
+                item[itemType][itemType + 'ID'] = values[itemType + 'ID'] || values.itemID;
+                break;
+
+            case "doc":
+                item[itemType].expirationDate = this.getFormattedDate(values.expirationDate);
+                item[itemType].documentID = values.documentID || values.itemID;
+                break;
+
+            default:
+        }
+        return item;
+    }
+
+    // === FILTERRESPONSEITEMS === //
+    filterResponseItems = (items) => {
+        const key = filterProps[this.props.itemType];
+        return items.filter(item => {
+            const overdue = Math.floor((moment.duration(moment().diff(item[key]))).asDays()) || 0;
+            this.handleOverdueState(item, key);
+            if (item.pinned || overdue < 1) return item;
+        })
+    }
+
+    // === HANDLEOVERDUESTATE === //
+    handleOverdueState = (item, dateKey) => {
+        const idKey = this.props.itemType + 'ID'; //eventID, taskID
+        const overdue = Math.floor((moment.duration(moment().diff(item[dateKey]))).asDays()) || 0;
+        const overdues = this.state.overdue.filter(od => od[idKey] !== item[idKey]);
+        let newOverdues = [];
+        if (overdue > 0 && item.pinned && !item.completed) newOverdues = [...overdues, item];
+        else newOverdues = this.state.overdue.filter(od => od[idKey] !== item[idKey]);
+
+        this.setState({ overdue: newOverdues });
+        this.setState({ itemTypeBg: newOverdues.length > 0 ? '#e74c3c' : '#b4bfbd' })
+    }
+
     // === ONUPDATE === //
     onUpdate = async (values, rowIndex = 0) => { // url, method, body, isEdit?
         const url = `${path}/app/${this.props.itemType}/update`;
@@ -167,6 +171,19 @@ class DashBoxBody extends React.Component {
         const body = this.getFormattedItem(newBody);
         this.setState({ method: 'POST' });
         this.fetchRequest(url, 'POST', body, true);
+    }
+
+    // === HANDLECLOSE === //
+    handleClose = () => {
+        this.setState({ show: false })
+    }
+
+    // === HANDLEDELETE === //
+    onDelete = (props) => {
+        this.setState({ currentId: props.event[this.props.itemType + 'ID'], method: 'POST' });
+        const url = `${path}/app/${this.props.itemType}/delete`;
+        this.fetchRequest(url, 'POST', props, true);
+        this.handleClose();
     }
 
     // === HANDLECHECK === //
@@ -218,6 +235,13 @@ class DashBoxBody extends React.Component {
                             content: rowInfo && rowInfo
                         }
                     }),
+                    Cell: props => {
+                        return (
+                            <div>
+                                {props.value}
+                            </div>
+                        )
+                    }
                 },
                 {
                     Header: 'Deadline',
@@ -245,10 +269,10 @@ class DashBoxBody extends React.Component {
                     className: 'dash-body-priority',
                     accessor: d => d.priority, // d[this.props.itemType].priority,
                     Cell: props => <Label className="dash-body-priority"
-                        bsStyle={this.getPriorityStyle(props.value, props.index, props.original.completed, props).class}
+                        bsStyle={getPriorityStyle(props.value, props.index, props.original.completed, props).class}
                         style={{ textDecoration: props.original.completed ? 'line-through' : 'none' }}
                     >
-                        {this.getPriorityStyle(props.value).value}
+                        {getPriorityStyle(props.value).value}
                     </Label>,
                     sortMethod: (a, b) => {
                         if (a.length === b.length) {
@@ -269,7 +293,20 @@ class DashBoxBody extends React.Component {
                     id: 'startDate',
                     accessor: d => d.startDate,
                     Cell: props => {
-                        return <div>{moment(props.value).format('MMM DD, YYYY')}</div>
+                        return (
+                            <div>
+                                <EventForm
+                                    visible={this.state.show}
+                                    modal={'Edit'}
+                                    handleClose={this.handleClose}
+                                    data={props}
+                                    // formData={this.state.data.data}
+                                    events={[]}
+                                    deleteEvent={this.deleteEvent}
+                                    handleSubmission={this.handleSubmission}
+                                />
+                                {moment(props.value).format('MMM DD, YYYY')}
+                            </div>)
                     }
                 },
                 {
@@ -290,24 +327,20 @@ class DashBoxBody extends React.Component {
         return colsMap[key];
     }
 
-    // === GETPRIORITYSTYLE === //
-    getPriorityStyle(key, index, completed = false, props) {
-        let classStyle = null;
-        if (completed) classStyle = "default";
-        let priorityMap = {
-            "LOW": { class: classStyle || "info", value: "LOW", key: 1, color: '#3498db' },
-            "MID": { class: classStyle || "warning", value: "MEDIUM", key: 2, color: '#f39c12' },
-            "HIGH": { class: classStyle || "danger", value: "HIGH", key: 3, color: '#e74c3c' }
-        }
-        return priorityMap[key];
-    }
-
     render() {
         return (
             <div className='dash-body'>
-                <div className='dash-body-type' style={{ color: this.state.itemTypeBg }}>
-                    <NavIcons icon={this.props.itemType + 's'} fill={this.state.itemTypeBg} />
-                    {this.props.itemType + 's'}
+                <div className='dash-body-type' style={{ color: this.state.itemTypeBg, display: 'inline-flex', width: '100%' }}>
+                    <div style={{ flex: '1' }}>
+                        <NavIcons icon={this.props.itemType + 's'} fill={this.state.itemTypeBg} />
+                        {this.props.itemType + 's'}
+                    </div>
+                    <div className='dash-body-buttons'>
+                        <Button style={{ background: 'transparent', border: '0' }}>
+                            <Glyphicon className='dash-type-add' glyph="plus-sign" />
+                        </Button>
+                        {/* <Button bsStyle="success" style={{borderRadius: '10px'}}><Glyphicon style={{fontSize: '1.1em', paddingRight: '5px', paddingTop: '2px'}} glyph="plus-sign" />Add</Button> */}
+                    </div>
                 </div>
                 {this.state.items.length > 0 ?
                     <ReactTable
@@ -361,7 +394,7 @@ export const DashBox = (props) => {
             <Panel.Heading style={{ background: categoryColor[props.category.toUpperCase()] }}>
                 <DashBoxHeader {...props} />
             </Panel.Heading>
-            {['task', 'event'].map(itemType => {
+            {(props.itemTypes || itemTypes).map(itemType => {
                 return <Panel.Body key={props.category + itemType}>
                     <DashBoxBody key={props.category + itemType} {...props} itemType={itemType} />
                 </Panel.Body>
@@ -403,7 +436,7 @@ export const DashBox = (props) => {
 // ================================================================== //
 //  DASH
 // ================================================================== //
-class Dash extends React.Component {
+export default class Dash extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -421,18 +454,26 @@ class Dash extends React.Component {
     }
 
     render() {
-        const appCategories = Object.keys(this.props)
-            .filter(key => categories.includes(key))
-            .reduce((obj, key) => {
-                obj[key] = this.props[key];
-                return obj;
-            }, {});
+        // const appCategories = Object.keys(this.props)
+        //     .filter(key => categories.includes(key))
+        //     .reduce((obj, key) => {
+        //         obj[key] = this.props[key];
+        //         return obj;
+        //     }, {});
+        const appCategories = categories;
 
         return (
             <div id='page-container'>
-                {Object.keys(appCategories).map((category, index) => {
+                {/* {Object.keys(appCategories).map((category, index) => { */}
+                {appCategories.map((category, index) => {
                     return (
-                        <DashBox key={index} category={category} {...this.props[category]} user={this.state.user} {...this.props} />
+                        // <DashBox key={index} itemTypes={itemTypes} category={category} {...this.props[category]} user={this.state.user} {...this.props} />
+                        <DashBox
+                            key={index}
+                            itemTypes={this.props.itemTypes || itemTypes}
+                            category={category} {...this.props[category]}
+                        // user={this.state.user} {...this.props}
+                        />
                     )
                 })}
             </div>
@@ -440,38 +481,38 @@ class Dash extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
-    Appliances: {
-        events: state.events.Appliances,
-        documents: state.documents.Appliances,
-        tasks: state.tasks.Appliances,
-    },
-    Auto: {
-        events: state.events.Auto,
-        documents: state.documents.Auto,
-        tasks: state.tasks.Auto,
-    },
-    Meals: {
-        events: state.events.Meals,
-        documents: state.documents.Meals,
-        tasks: state.tasks.Meals,
-    },
-    Medical: {
-        events: state.events.Medical,
-        documents: state.documents.Medical,
-        tasks: state.tasks.Medical,
-    },
-    Miscellaneous: {
-        events: state.events.Miscellaneous,
-        documents: state.documents.Miscellaneous,
-        tasks: state.tasks.Miscellaneous,
-    },
-    User: {
-        username: state.user.username,
-        userId: state.user.userId,
-        selfGroupId: state.user.selfGroupId,
-        groupList: state.user.groupList
-    }
-});
+// const mapStateToProps = state => ({
+//     Appliances: {
+//         events: state.events.Appliances,
+//         documents: state.documents.Appliances,
+//         tasks: state.tasks.Appliances,
+//     },
+//     Auto: {
+//         events: state.events.Auto,
+//         documents: state.documents.Auto,
+//         tasks: state.tasks.Auto,
+//     },
+//     Meals: {
+//         events: state.events.Meals,
+//         documents: state.documents.Meals,
+//         tasks: state.tasks.Meals,
+//     },
+//     Medical: {
+//         events: state.events.Medical,
+//         documents: state.documents.Medical,
+//         tasks: state.tasks.Medical,
+//     },
+//     Miscellaneous: {
+//         events: state.events.Miscellaneous,
+//         documents: state.documents.Miscellaneous,
+//         tasks: state.tasks.Miscellaneous,
+//     },
+//     User: {
+//         username: state.user.username,
+//         userId: state.user.userId,
+//         selfGroupId: state.user.selfGroupId,
+//         groupList: state.user.groupList
+//     }
+// });
 
-export default connect(mapStateToProps)(Dash);
+// export default connect(mapStateToProps)(Dash);

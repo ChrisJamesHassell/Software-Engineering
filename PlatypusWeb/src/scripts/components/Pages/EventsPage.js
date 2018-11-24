@@ -110,7 +110,7 @@ export class Events extends React.Component {
     }
 
     // === HANDLEDELETE === //
-    deleteEvent = (props, modal) => {
+    onDelete = (props, modal) => {
         this.setState({ currentId: props.event.eventID, method: 'POST' });
         const url = `${path}/app/event/delete`;
         this.fetchRequest(url, 'POST', props, true);
@@ -153,7 +153,6 @@ export class Events extends React.Component {
             this.state.events.forEach((item, index) => { if (item.id === event.id) editedIndex = index; });
             events[editedIndex] = event;
         }
-
         return events;
     }
 
@@ -220,7 +219,7 @@ export class Events extends React.Component {
                     data={this.state.data}
                     // formData={this.state.data.data}
                     events={this.state.events}
-                    deleteEvent={this.deleteEvent}
+                    onDelete={this.onDelete}
                     handleSubmission={this.handleSubmission}
                 />
                 <BigCalendar

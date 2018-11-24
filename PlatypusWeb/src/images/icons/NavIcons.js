@@ -12,6 +12,7 @@ const NavIcons = props => {
         "miscellaneous": Miscellaneous,
         "tasks": Tasks,
         "documents": Documents,
+        "docs": Documents,
         "": ""
     }
     var style = {

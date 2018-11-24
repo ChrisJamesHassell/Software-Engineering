@@ -1,16 +1,7 @@
 import React from 'react';
 import { Modal, Button, Form, Col, ControlLabel, FormGroup, FormControl, Checkbox, Glyphicon } from 'react-bootstrap';
 import moment from 'moment';
-import { getRandomId } from '../../fetchHelpers';
-
-const categoryOptions = [
-    { label: 'Pick a category...', value: '' },
-    { label: 'Appliances', value: 'APPLIANCES' },
-    { label: 'Auto', value: 'AUTO' },
-    { label: 'Meals', value: 'MEALS' },
-    { label: 'Medical', value: 'MEDICAL' },
-    { label: 'Miscellaneous', value: 'MISCELLANEOUS' },
-];
+import { getRandomId, categoryOptions } from '../../fetchHelpers';
 
 // Calendar requires the fields: id, title, start, end
 const fieldMap = {
@@ -73,7 +64,8 @@ export default class EventForm extends React.Component {
 
     handleDelete = () => {
         const request = { event: { eventID: this.state.data.eventID } };
-        this.props.deleteEvent(request);
+        this.setState({ ...defaultVals }); // Clears the form
+        this.props.onDelete(request);
     }
 
     handleSubmit = () => {

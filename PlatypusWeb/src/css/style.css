@@ -210,12 +210,19 @@ button:disabled, button[disabled] {
   font-weight: 600;
   font-size: 1.5em;
   /* border-bottom: 2px dashed #18bc9c; */
-  margin: 1em 0 1em 0;
+  margin: .5em 0 .5em 0;
   /* background: #b4bfbd; */
   color: #b4bfbd;
   /* text-transform: uppercase; */
   letter-spacing: .5px;
   /* padding-left: 1em; */
+  align-items: center;
+}
+
+.dash-type-add {
+  color: #18bc9c;
+  font-size: 2em;
+  display: flex;
 }
 
 .dash-body-complete {
@@ -232,6 +239,13 @@ button:disabled, button[disabled] {
 
 .dash-body-complete-text {
   padding: 1em 0 1em 0;
+}
+
+.dash-body-buttons {
+  display: flex;
+  color: #18bc9c;
+  font-weight: 500;
+  font-size: .8em;
 }
 
 .ReactTable {

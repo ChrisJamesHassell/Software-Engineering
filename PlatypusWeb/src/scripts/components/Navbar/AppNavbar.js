@@ -43,10 +43,10 @@ const AppNavbar = (props) => {
               </span>
             }
           >
-            <MenuItem eventKey={10.1}>Something1</MenuItem>
-            <MenuItem eventKey={10.2}>Something2</MenuItem>
+            {/* <MenuItem eventKey={10.1}>Something1</MenuItem>
+            <MenuItem eventKey={10.2}>Something2</MenuItem> */}
             <MenuItem divider />
-            <MenuItem eventKey={10.3}>Something3</MenuItem>
+            {/* <MenuItem eventKey={10.3}>Something3</MenuItem> */}
             <Button
               style={{ width: '100%', borderRadius: '0' }}
               onClick={() => {
