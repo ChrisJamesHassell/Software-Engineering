@@ -5,6 +5,7 @@ import Tasks from './components/Pages/Tasks';
 import Dash from './components/Pages/DashPage';
 import { Events } from './components/Pages/EventsPage';
 import Document from './components/Pages/DocumentsPage';
+import Category from './components/Layouts/CategoryLayout';
 // import * as Icons from '../images/icons/NavIcons';
 // import NavIcons from '../images/icons/NavIcons';
 
@@ -39,7 +40,7 @@ const routes = [
     glyph: 'appliances', // <Icons.Appliances {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Home and Appliances Page</b>,
+    main: () => <Category category="APPLIANCES" />,
   },
   {
     path: '/dashboard/auto',
@@ -47,7 +48,7 @@ const routes = [
     glyph: 'auto', // <Icons.Auto {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Auto Page</b>,
+    main: () => <Category category="AUTO" />,
   },
   {
     path: '/dashboard/meals',
@@ -55,7 +56,7 @@ const routes = [
     glyph: 'meals', // <Icons.Meals {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Meals</b>,
+    main: () => <Category category="MEALS" />,
   },
   {
     path: '/dashboard/medical',
@@ -63,7 +64,7 @@ const routes = [
     glyph: 'medical', // <Icons.Medical {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Medical Page</b>,
+    main: () => <Category category="MEDICAL" />,
   },
   {
     path: '/dashboard/miscellaneous',
@@ -71,7 +72,7 @@ const routes = [
     glyph: 'miscellaneous', // <Icons.Meals {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Miscellaneous</b>,
+    main: () => <Category category="MISCELLANEOUS" />,
   },
   {
     path: "",

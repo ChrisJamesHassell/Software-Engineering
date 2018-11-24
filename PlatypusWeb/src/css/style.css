@@ -212,7 +212,7 @@ button:disabled, button[disabled] {
   /* border-bottom: 2px dashed #18bc9c; */
   margin: 1em 0 1em 0;
   /* background: #b4bfbd; */
-  color:  #b4bfbd;
+  color: #b4bfbd;
   /* text-transform: uppercase; */
   letter-spacing: .5px;
   /* padding-left: 1em; */
@@ -264,17 +264,11 @@ button:disabled, button[disabled] {
   margin: 0;
 }
 
-.rbc-month-view, 
-.rbc-time-view, 
-.rbc-time-view, 
-.rbc-agenda-view, 
-.rbc-day-slot.rbc-time-column.rbc-now.rbc-today{
+.rbc-month-view, .rbc-time-view, .rbc-time-view, .rbc-agenda-view, .rbc-day-slot.rbc-time-column.rbc-now.rbc-today {
   background: white;
 }
 
-tbody > tr > td.rbc-agenda-event-cell, 
-tbody > tr > td.rbc-agenda-time-cell,
-tbody > tr > td.rbc-agenda-date-cell {
+tbody>tr>td.rbc-agenda-event-cell, tbody>tr>td.rbc-agenda-time-cell, tbody>tr>td.rbc-agenda-date-cell {
   background: white;
   color: black;
   font-weight: 500;
@@ -315,6 +309,16 @@ span.cb-check {
 
 .panel-default>.panel-heading {
   background: white;
+}
+
+/* CATEGORY PAGES */
+
+.category-layout {
+  display: flex;
+}
+
+.category-box {
+  flex: 1;
 }
 
 /* ***********************************XSmall devices (landscape phones, 0px and up)*********************************** */

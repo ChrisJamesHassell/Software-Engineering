@@ -90,13 +90,16 @@ class DashBoxBody extends React.Component {
                 item[this.props.itemType]['completed'] = values.completed ? 1 : 0;
                 item[this.props.itemType]['deadline'] = this.getFormattedDate(values.deadline);
                 item[this.props.itemType]['priority'] = values.priority;
+                break;
 
             case "event":
                 item[this.props.itemType]['startDate'] = values.start;
                 item[this.props.itemType]['endDate'] = values.end;
                 item[this.props.itemType]['location'] = values.location;
+                break;
 
             case "doc":
+                break;
 
             default:
         }
@@ -346,36 +349,56 @@ const DashBoxHeader = (props) => {
 // ================================================================== //
 //  DASHBOX
 // ================================================================== //
-class DashBox extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            style: {
-                minWidth: '400px',
-                flex: '1',
-                margin: '20px',
-                // background: categoryColor[this.props.category.toUpperCase()]
-            },
-            items: [],
-        }
+export const DashBox = (props) => {
+    let style = {
+        minWidth: '400px',
+        flex: '1',
+        margin: '20px',
     }
 
-    render() {
-        return (
-            <Panel style={this.state.style}>
-                <Panel.Heading style={{ background: categoryColor[this.props.category.toUpperCase()] }}>
-                    <DashBoxHeader {...this.props} />
-                </Panel.Heading>
-                {//['task', 'event', 'doc']
-                    ['task', 'event'].map(itemType => {
-                        return <Panel.Body key={this.props.category + itemType}>
-                            <DashBoxBody key={this.props.category + itemType} {...this.props} itemType={itemType} />
-                        </Panel.Body>
-                    })}
-            </Panel>
-        )
-    }
+    return (
+        <Panel style={style}>
+            <Panel.Heading style={{ background: categoryColor[props.category.toUpperCase()] }}>
+                <DashBoxHeader {...props} />
+            </Panel.Heading>
+            {['task', 'event'].map(itemType => {
+                return <Panel.Body key={props.category + itemType}>
+                    <DashBoxBody key={props.category + itemType} {...props} itemType={itemType} />
+                </Panel.Body>
+            })}
+        </Panel>
+    )
 }
+// class DashBox extends React.Component {
+//     constructor(props) {
+//         super(props);
+//         this.state = {
+//             style: {
+//                 minWidth: '400px',
+//                 flex: '1',
+//                 margin: '20px',
+//                 // background: categoryColor[this.props.category.toUpperCase()]
+//             },
+//             items: [],
+//         }
+//     }
+
+//     render() {
+//         return (
+//             <Panel style={this.state.style}>
+//                 <Panel.Heading style={{ background: categoryColor[this.props.category.toUpperCase()] }}>
+//                     <DashBoxHeader {...this.props} />
+//                 </Panel.Heading>
+//                 {//['task', 'event', 'doc']
+//                     ['task', 'event'].map(itemType => {
+//                         return <Panel.Body key={this.props.category + itemType}>
+//                             <DashBoxBody key={this.props.category + itemType} {...this.props} itemType={itemType} />
+//                         </Panel.Body>
+//                     })}
+//             </Panel>
+//         )
+//     }
+// }
 
 // ================================================================== //
 //  DASH
