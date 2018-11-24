@@ -1,7 +1,17 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import {App} from '../Pages/App.js';
-import {shallow} from 'enzyme';
+import { shallow, mount, render } from 'enzyme';
+import {App} from '../Pages/App';
+
+
+
+describe('App SnapShot', () => {
+
+  it('matches the snapshot', () =>{
+      const tree = shallow(<App />)
+      expect(tree).toMatchSnapshot()
+  })
+})
+
 
 describe('App', () =>{
     const app = shallow(<App />);

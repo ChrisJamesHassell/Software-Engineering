@@ -113,7 +113,7 @@ export class TaskList extends React.Component {
   }
 }
 
-class Tasks extends React.Component {
+export class Tasks extends React.Component {
   state = {
     activeModal: null,
   };
@@ -318,6 +318,7 @@ class Tasks extends React.Component {
             </Button>
           </Col>
         </Row>
+        
         {Object.keys(tasks).map((value, index) => (
           <Panel bsStyle="success" key={index}>
             <Panel.Heading>
