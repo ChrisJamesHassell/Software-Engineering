@@ -18,7 +18,6 @@ import spark.Spark;
 
 import java.util.Properties;
 
-
 public class Main {
 
 	public final static boolean IS_PRODUCTION = false;
@@ -60,6 +59,8 @@ public class Main {
 					Spark.post("/delete", (req, res) -> EventHandler.removeEvent(ds, req), gson::toJson);
 				});
 				Spark.path("/doc", () -> {
+					Spark.get("/get", (req, res)-> DocumentHandler.get(ds, req));
+					Spark.get("/download", (req, res)-> DocumentHandler.download(ds, req, res));
 					Spark.post("/add", (req, res) -> DocumentHandler.addDoc(ds, req), gson::toJson);
 					Spark.post("/update", (req, res) -> DocumentHandler.editDoc(ds, req), gson::toJson);
 					Spark.post("/delete", (req, res) -> DocumentHandler.removeDoc(ds, req), gson::toJson);

@@ -28,41 +28,41 @@ const Task = ({
     completed, description, id, name,
   },
 }) => (
-  <Draggable draggableId={id} index={index}>
-    {provided => (
-      <div
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        className="task"
-        onClick={onTaskClick}
-        ref={provided.innerRef}
-      >
-        <div style={{ alignItems: 'center', display: 'flex' }}>
-          <input
-            checked={completed}
-            onChange={onTaskComplete}
-            style={{ marginLeft: 'calc(1em - 8px)', marginRight: '1em' }}
-            type="checkbox"
-          />
-          <div style={{ flexGrow: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <h4>{name}</h4>
-              <div style={{ display: 'flex' }}>
-                <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
-                  <Glyphicon glyph="pencil" />
-                </a>
-                <a href="#remove" onClick={onTaskDeleteClick}>
-                  <Glyphicon glyph="remove" />
-                </a>
+    <Draggable draggableId={id} index={index}>
+      {provided => (
+        <div
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          className="task"
+          onClick={onTaskClick}
+          ref={provided.innerRef}
+        >
+          <div style={{ alignItems: 'center', display: 'flex' }}>
+            <input
+              checked={completed}
+              onChange={onTaskComplete}
+              style={{ marginLeft: 'calc(1em - 8px)', marginRight: '1em' }}
+              type="checkbox"
+            />
+            <div style={{ flexGrow: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <h4>{name}</h4>
+                <div style={{ display: 'flex' }}>
+                  <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
+                    <Glyphicon glyph="pencil" />
+                  </a>
+                  <a href="#remove" onClick={onTaskDeleteClick}>
+                    <Glyphicon glyph="remove" />
+                  </a>
+                </div>
               </div>
+              <p>{description}</p>
             </div>
-            <p>{description}</p>
           </div>
         </div>
-      </div>
-    )}
-  </Draggable>
-);
+      )}
+    </Draggable>
+  );
 
 export class TaskList extends React.Component {
   render() {
@@ -93,16 +93,16 @@ export class TaskList extends React.Component {
                         },
                         taskIndex,
                       ) => (
-                        <Task
-                          index={taskIndex}
-                          key={taskIndex}
-                          onTaskClick={onTaskClick}
-                          onTaskComplete={onTaskComplete}
-                          onTaskDeleteClick={onTaskDeleteClick}
-                          onTaskEditClick={onTaskEditClick}
-                          task={task}
-                        />
-                      ),
+                          <Task
+                            index={taskIndex}
+                            key={taskIndex}
+                            onTaskClick={onTaskClick}
+                            onTaskComplete={onTaskComplete}
+                            onTaskDeleteClick={onTaskDeleteClick}
+                            onTaskEditClick={onTaskEditClick}
+                            task={task}
+                          />
+                        ),
                     )}
                   {provided.placeholder}
                 </div>
@@ -192,15 +192,16 @@ class Tasks extends React.Component {
   });
 
   onTaskCreate = async (values) => {
+    console.log("TASK CREATE (VALUES): ", values);
     const response = await fetch(`${path}/app/task/add`, {
       body: JSON.stringify({
         group: {
           groupID: localStorage.getItem('selfGroupId'),
         },
         task: values,
-        user: {
-          userID: localStorage.getItem('userId'),
-        },
+        // user: {
+        //   userID: localStorage.getItem('userId'),
+        // },
       }),
       credentials: 'include',
       method: 'POST',
@@ -219,15 +220,15 @@ class Tasks extends React.Component {
   onTaskDelete = async ({ itemID, category }) => {
     await fetch(`${path}/app/task/delete`, {
       body: JSON.stringify({
-        group: {
-          groupID: localStorage.getItem('selfGroupId'),
-        },
+        // group: {
+        //   groupID: localStorage.getItem('selfGroupId'),
+        // },
         task: {
           taskID: itemID,
         },
-        user: {
-          userID: localStorage.getItem('userId'),
-        },
+        // user: {
+        //   userID: localStorage.getItem('userId'),
+        // },
       }),
       credentials: 'include',
       method: 'POST',
@@ -263,6 +264,8 @@ class Tasks extends React.Component {
       body: JSON.stringify({
         task: {
           ...values,
+          deadline: values.deadline ? moment(values.deadline).format('MMM DD, YYYY') : null,
+          notification: values.notification ? moment(values.notification).format('MMM DD, YYYY') : null,
           completed: values.completed ? 1 : 0,
           pinned: values.pinned ? 1 : 0,
           taskID: values.itemID,

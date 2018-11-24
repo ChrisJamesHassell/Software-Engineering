@@ -17,8 +17,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.servlet.MultipartConfigElement;
-
 import com.zaxxer.hikari.HikariDataSource;
 
 public class LoginHandler implements Route {
@@ -36,8 +34,8 @@ public class LoginHandler implements Route {
 		User u = JsonParser.getObject(User.class, request.body());
 
 		// Set up connection to db
-		//System.out.println(u.getUsername());
-		//System.out.println(u.getPassword());
+		System.out.println(u.getUsername());
+		System.out.println(u.getPassword());
 		Connection dbconn = null;
 
 		try {

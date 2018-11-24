@@ -39,8 +39,11 @@ export default class TaskForm extends React.Component {
   onSelectChange = (field, setFieldValue, defaultValue = null) => option => setFieldValue(field, Array.isArray(option) ? defaultValue : option);
 
   onSubmit = (values, { setSubmitting }) => {
+    console.log("ON SUBMIT VALS: ", values);
     this.props.onSubmit({
       ...values,
+      deadline: values.deadline.toString().length > 0 ? moment(values.deadline).format('MMM DD, YYYY') : null,
+      notification: values.notification.toString().length > 0 ?  moment(values.notification).format('MMM DD, YYYY') : null,
       category: values.category.value,
       pinned: values.pinned.value ? 1 : 0,
       priority: values.priority.value,
@@ -58,8 +61,8 @@ export default class TaskForm extends React.Component {
             ? {
               ...task,
               category: categoryOptions.find(op => op.value === task.category),
-              deadline: moment(task.deadline).format('YYYY-MM-DD'),
-              notification: moment(task.notification).format('YYYY-MM-DD'),
+              deadline: task.deadline ? moment(task.deadline).format('YYYY-MM-DD') : '',
+              notification: task.notification ? moment(task.notification).format('YYYY-MM-DD') : '',
               pinned: boolOptions.find(op => op.value === task.pinned),
               priority: priorityOptions.find(op => op.value === task.priority),
             }

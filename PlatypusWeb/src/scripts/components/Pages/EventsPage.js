@@ -80,9 +80,9 @@ export class Events extends React.Component {
                 eventID: item.itemID,
                 location: item.location,
                 name: item.name,
-                notification: moment(item.notification).format('YYYY-MM-DD'),
-                startDate: item.start,
-                endDate: item.end,
+                notification: item.notification ? moment(item.notification).format('YYYY-MM-DD') : '',
+                startDate: moment(item.start).format('YYYY-MM-DD'),
+                endDate: moment(item.end).format('YYYY-MM-DD'),
                 pinned: item.pinned ? 1 : 0
             }
         }
@@ -218,7 +218,7 @@ export class Events extends React.Component {
                     modal={this.state.modal}
                     handleClose={this.handleClose}
                     data={this.state.data}
-                    formData={this.state.data.data}
+                    // formData={this.state.data.data}
                     events={this.state.events}
                     deleteEvent={this.deleteEvent}
                     handleSubmission={this.handleSubmission}

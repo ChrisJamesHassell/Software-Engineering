@@ -67,46 +67,40 @@ class DashBoxBody extends React.Component {
         return result;
     }
 
+    getFormattedDate = (date) => {
+        if (date) return moment(date).format('MMM DD, YYYY');
+        return null;
+    }
+
     // === GETFORMATTEDITEMS === //
     getFormattedItem(values) {
+        let item = {
+            group: { groupID: localStorage.getItem('selfGroupId') },
+            [this.props.itemType]: {
+                name: values.name,
+                category: values.category,
+                description: values.description,
+                notification: this.getFormattedDate(values.notification),
+                pinned: values.pinned ? 1 : 0,
+                [this.props.itemType + 'ID']: values[this.props.itemType + 'ID'] || values.itemID,
+            }
+        }
         switch (this.props.itemType) {
             case "task":
-                return {
-                    task: {
-                        category: values.category,
-                        completed: values.completed ? 1 : 0,
-                        deadline: moment(values.deadline).format('YYYY-MM-DD'),
-                        description: values.description,
-                        taskID: values.taskID || values.itemID,
-                        name: values.name,
-                        notification: moment(values.notification).format('YYYY-MM-DD'),
-                        priority: values.priority,
-                        pinned: values.pinned ? 1 : 0
-                    }
-                }
-            case "event":
-                return {
-                    event: {
-                        startDate: moment(values.start).format('YYYY-MM-DD'),
-                        endDate: moment(values.end).format('YYYY-MM-DD'),
-                        location: values.location,
-                        eventID: values.eventID || values.itemID,
-                        name: values.name,
-                        description: values.description,
-                        category: values.category,
-                        notification: moment(values.notification).format('YYYY-MM-DD'),
-                        pinned: values.pinned ? 1 : 0
-                    }
-                }
-            case "doc":
-                return {
-                    doc: {
+                item[this.props.itemType]['completed'] = values.completed ? 1 : 0;
+                item[this.props.itemType]['deadline'] = this.getFormattedDate(values.deadline);
+                item[this.props.itemType]['priority'] = values.priority;
 
-                    }
-                }
+            case "event":
+                item[this.props.itemType]['startDate'] = values.start;
+                item[this.props.itemType]['endDate'] = values.end;
+                item[this.props.itemType]['location'] = values.location;
+
+            case "doc":
+
             default:
-                return "";
         }
+        return item;
     }
 
     // === FILTERRESPONSEITEMS === //
@@ -151,7 +145,6 @@ class DashBoxBody extends React.Component {
         else { // Otherwise it's an EDIT or a DELETE
             this.setState({ method: '' });
             const formattedItem = this.getFormattedItem(item)[this.props.itemType];
-            // console.log("FORMATTED ITEM: ", formattedItem)
             if (isEdit) {
                 // if (response.message.includes('delete')) events = this.handleEdit(this.state.currentId, true);
                 // else events = this.handleEdit(formattedItem);
@@ -167,8 +160,8 @@ class DashBoxBody extends React.Component {
     onUpdate = async (values, rowIndex = 0) => { // url, method, body, isEdit?
         const url = `${path}/app/${this.props.itemType}/update`;
         const newBody = Object.assign({}, { ...this.state.items[rowIndex] }, values);
-        const body = this.getFormattedItem(newBody);
 
+        const body = this.getFormattedItem(newBody);
         this.setState({ method: 'POST' });
         this.fetchRequest(url, 'POST', body, true);
     }
@@ -238,7 +231,7 @@ class DashBoxBody extends React.Component {
                     Cell: props => {
                         const overdue = Math.floor((moment.duration(moment().diff(props.value))).asDays());
                         const multiple = overdue > 1 ? 's' : '';
-                        return <div>{moment(props.value).format('MMM DD, YYYY')}
+                        return <div>{props.value && moment(props.value).format('MMM DD, YYYY')}
                             {overdue > 0 && <div style={{ color: props.original.completed ? '#c8d2d0' : '#e74c3c', fontSize: '.8em' }}>{overdue} day{multiple} overdue</div>}
                         </div>
                     }
@@ -272,7 +265,9 @@ class DashBoxBody extends React.Component {
                     Header: 'Start Date',
                     id: 'startDate',
                     accessor: d => d.startDate,
-                    Cell: props => <div>{moment(props.value).format('MMM DD, YYYY')}</div>
+                    Cell: props => {
+                        return <div>{moment(props.value).format('MMM DD, YYYY')}</div>
+                    }
                 },
                 {
                     Header: 'End Date',
@@ -308,7 +303,7 @@ class DashBoxBody extends React.Component {
         return (
             <div className='dash-body'>
                 <div className='dash-body-type' style={{ color: this.state.itemTypeBg }}>
-                    <NavIcons icon={this.props.itemType + 's'} fill={this.state.itemTypeBg}/>
+                    <NavIcons icon={this.props.itemType + 's'} fill={this.state.itemTypeBg} />
                     {this.props.itemType + 's'}
                 </div>
                 {this.state.items.length > 0 ?
@@ -342,7 +337,7 @@ const DashBoxHeader = (props) => {
                     height={40}
                     spanStyle={{ background: categoryColor[props.category.toUpperCase()], borderRadius: '50%', position: 'absolute', paddingBottom: '11px', paddingRight: '17px' }} />
             </div>
-            <div className='dash-header category' style={{color: 'white'}}>{props.category}</div>
+            <div className='dash-header category' style={{ color: 'white' }}>{props.category}</div>
             <div className='dash-header options'>{/* <Glyphicon glyph="cog" style={{ color: '#8c9198', fontSize: '1.5em' }} /> */}</div>
         </div>
     )
@@ -368,7 +363,7 @@ class DashBox extends React.Component {
     render() {
         return (
             <Panel style={this.state.style}>
-                <Panel.Heading style={{background: categoryColor[this.props.category.toUpperCase()]}}>
+                <Panel.Heading style={{ background: categoryColor[this.props.category.toUpperCase()] }}>
                     <DashBoxHeader {...this.props} />
                 </Panel.Heading>
                 {//['task', 'event', 'doc']

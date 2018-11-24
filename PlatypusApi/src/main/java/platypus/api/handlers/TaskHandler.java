@@ -20,7 +20,6 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
 import platypus.api.models.Category;
-import platypus.api.models.Category;
 import platypus.api.models.ItemType;
 import platypus.api.models.Priority;
 import platypus.api.models.Task;
@@ -93,7 +92,7 @@ public class TaskHandler {
 			stmt.setString(3, task.get("category").getAsString());
 			stmt.setDate(4, task.get("deadline").isJsonNull() ? null : DateParser.parseDate(task.get("deadline").getAsString()));
 			stmt.setString(5, task.get("priority").getAsString());
-			stmt.setString(6, task.get("completed").getAsString());
+			stmt.setInt(6, task.get("completed").getAsInt());
 			stmt.setInt(7, task.get("taskID").getAsInt());
 
 			int ret = stmt.executeUpdate();
@@ -121,8 +120,9 @@ public class TaskHandler {
 				// The tasktID does not exist.
 				return new JsonResponse("FAIL", "", "The task does not exist");
 			}
-
 		} catch (SQLException sqlE) {
+			sqlE.printStackTrace();
+			conn.rollback();
 			return new JsonResponse("ERROR", "", "SQLError in Edit Task");
 		} finally {
 			conn.close();
