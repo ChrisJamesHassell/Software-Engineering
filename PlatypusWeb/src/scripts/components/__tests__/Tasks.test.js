@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { TaskList, Tasks } from '../Pages/Tasks.js';
 import {shallow, mount } from 'enzyme';
+import * as actions from '../Pages/Tasks';
 
 const task= {
     completed:true, 
@@ -11,7 +12,7 @@ const task= {
   };
 
 
-describe('Tasks', () =>{
+describe('TaskList', () =>{
     const taskList = shallow(<TaskList />);
     // const tasks = shallow(<Tasks {...task } />);
     
@@ -22,10 +23,16 @@ describe('Tasks', () =>{
     });
 
     
-    // it('should render tasks', () => {
-    //     console.log(tasks.debug())
-    //     expect(tasks.find('my-tasks').exists()).toBe(true);
-    // });
 
+    describe('TaskList snap', () =>{
+
+        it('matches the snapshot', () =>{
+            const tree = shallow(<TaskList />)
+            expect(tree).toMatchSnapshot()
+        })
+    })
 
 });
+
+
+

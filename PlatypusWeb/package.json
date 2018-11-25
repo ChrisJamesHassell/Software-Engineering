@@ -60,5 +60,15 @@
     "eslint-plugin-react": "^7.11.1",
     "prettier": "^1.14.3",
     "redux-devtools-extension": "^2.13.5"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/index.js",
+      "!src/serviceWorker.js",
+      "!src/scripts/store/*",
+      "!src/images/**"
+    ]
   }
 }
+

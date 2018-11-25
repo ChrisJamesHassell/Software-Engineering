@@ -91,3 +91,71 @@ export const medState = {
 
     // {"categoryFilter": "SHOW_ALL", "documents": {"Medical": [{"category": "Medical", "description": "BlueCross", "docID": 1, "expiryDate": "2018-10-29T21:29:56.940Z", "filename": "IMG-12345.PNG", "name": "Dental Insurance"}]}, "events": {"Miscellaneous": [{"category": "Miscellaneous", "description": "Event Description", "end": "2018-10-29T21:29:56.940Z", "eventID": 1, "location": "That one place", "name": "Event Name", "start": "2018-10-29T21:29:48.475Z"}]}, "groupFilter": "SHOW_ALL", "itemTypeFilter": "SHOW_ALL", "pinFilter": "PINNED_ONLY", "tasks": {}, "user": {"groupList":[{}], "selfGroupId": null, "userId": null, "username": null}}
     
+
+    export const rabbleRouters = [
+        {
+          path: '/dashboard',
+          name: 'Dash',
+          exact: true,
+          glyph: 'dashboard',
+          type: 'home',
+          sidebar: () => <div />,
+          main: () => <Dash />,
+        },
+        {
+          path: '/dashboard/appliances',
+          name: 'Appliances',
+          glyph: 'appliances', // <Icons.Appliances {...iconStyle} />,
+          type: 'Category',
+          sidebar: () => <div />,
+          main: () => <b>Home and Appliances Page</b>,
+        },
+        {
+          path: '/dashboard/auto',
+          name: 'Auto',
+          glyph: 'auto', // <Icons.Auto {...iconStyle} />,
+          type: 'Category',
+          sidebar: () => <div />,
+          main: () => <b>Home and Appliances Page</b>,
+        },
+        {
+          path: '/dashboard/meals',
+          name: 'Meals',
+          glyph: 'meals', // <Icons.Meals {...iconStyle} />,
+          type: 'Category',
+          sidebar: () => <div />,
+          main: () => <b>Meals</b>,
+        },
+        {
+          path: '/dashboard/medical',
+          name: 'Medical',
+          glyph: 'medical', // <Icons.Medical {...iconStyle} />,
+          type: 'Category',
+          sidebar: () => <div />,
+          main: () => <b>Medical Page</b>,
+        },
+        {
+          path: '/dashboard/documents',
+          name: 'Documents',
+          glyph: 'documents', // <Icons.Events {...iconStyle} />,
+          type: 'Actions',
+          sidebar: () => <div />,
+          main: () => <b>Documents Page</b>,
+        },
+        {
+          path: '/dashboard/events',
+          name: 'Events',
+          glyph: 'events', // <Icons.Events {...iconStyle} />,
+          type: 'Actions',
+          sidebar: () => <div />,
+          main: () => <Events />,
+        },
+        {
+          path: '/dashboard/tasks',
+          name: 'Tasks',
+          glyph: 'tasks', // <Icons.Tasks {...iconStyle} />,
+          type: 'Actions',
+          sidebar: () => <div />,
+          main: () => <Tasks />,
+        },
+      ];
