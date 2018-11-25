@@ -104,7 +104,7 @@ class DashBoxBody extends React.Component {
                 break;
 
             case "document":
-                let imgUrl = `${path}/app/doc/download?docID=`;
+                let imgUrl = `${path}/app/doc/download?preview=true&docID=`;
                 item[itemType].expirationDate = this.getFormattedDate(values.expiration);
                 item[itemType].documentID = values.documentID || values.itemID;
                 item[itemType].fileName = values.fileName;
@@ -259,12 +259,12 @@ class DashBoxBody extends React.Component {
                     }
                 },
                 {
-                    Header: 'Download',
+                    Header: '',
                     id: 'imgUrl',
                     accessor: d => d.imgUrl,
                     Cell: props => {
                         const style = {
-                            background: categoryColor[props.original.category.toUpperCase()],
+                            background: '#18bc9c',
                             border: '0',
                             fontSize: '.8em',
                             borderRadius: '25px'
@@ -277,7 +277,7 @@ class DashBoxBody extends React.Component {
                             </div>
                         )
                     }
-                }
+                },
             ]
         }
         return colsMap[key];
