@@ -201,6 +201,11 @@ button:disabled, button[disabled] {
   letter-spacing: .5px;
 }
 
+.dash-panel {
+  min-width: 400px;
+  flex: 1;
+  margin: 20px;
+}
 .dash-body {
   margin: .5em;
 }
@@ -221,8 +226,11 @@ button:disabled, button[disabled] {
 
 .dash-type-add {
   color: #18bc9c;
-  font-size: 2em;
+  font-size: .8em;
   display: flex;
+  border: .21em solid;
+  padding: .6em .6em .4em .6em;
+  border-radius: 25px;
 }
 
 .dash-body-complete {
@@ -233,7 +241,7 @@ button:disabled, button[disabled] {
 }
 
 .dash-body-complete-glyph {
-  color: #18bc9c;
+  color: #95a5a6;
   font-size: 3em;
 }
 

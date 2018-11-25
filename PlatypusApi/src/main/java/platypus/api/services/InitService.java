@@ -14,7 +14,7 @@ public class InitService {
 
 	public static void initNotificationService(HikariDataSource ds, Properties emailConfig) {
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(new NotificationEngine(ds, emailConfig), 1, 30, TimeUnit.MINUTES);
+		scheduler.scheduleAtFixedRate(new NotificationEngine(ds, emailConfig), 1, 12, TimeUnit.HOURS);
 	}
 
 	public static HikariDataSource initDatabase() {

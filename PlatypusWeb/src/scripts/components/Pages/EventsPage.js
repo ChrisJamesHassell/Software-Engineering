@@ -130,7 +130,7 @@ export class Events extends React.Component {
     }
 
     // === EDITEVENT === //
-    editEvent = async (props, isEdit) => {
+    editEvent = (props, isEdit) => {
         this.setState({ method: 'POST' });
         const url = `${path}/app/event/update`;
         const request = { event: { ...props } }
