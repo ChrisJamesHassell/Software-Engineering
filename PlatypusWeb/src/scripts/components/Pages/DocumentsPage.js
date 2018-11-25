@@ -72,8 +72,6 @@ export default class Document extends React.Component {
         item[itemType].documentID = values.documentID || values.itemID;
         item[itemType].fileName = values.fileName;
         item[itemType].imgUrl = imgUrl + (values.documentID || values.itemID);
-
-        // console.log("FORMATTED ITEM: ", item);
         return item;
     }
 
@@ -163,10 +161,7 @@ export default class Document extends React.Component {
     // === HANDLEEDIT === //
     handleEdit = (itemType, isDelete = false) => {
         this.setState({ loading: true });
-        console.log("HANDLE EDIT (isdelete?): ", isDelete);
-        
         let editedIndex = this.state.rowIndex;
-        console.log("EDITEDINDEX: ", editedIndex);
         let items = Object.assign([], this.state.items);
 
         if (isDelete) { // For DELETION
@@ -182,7 +177,6 @@ export default class Document extends React.Component {
 
     // === HANDLEJSONRESPONSE === //
     handleJsonResponse(response, isEdit = false) {
-        console.log("RESPONSE: ", response);
         let { data: item } = response;
         let items = Object.assign([], this.state.items);
 
@@ -206,9 +200,6 @@ export default class Document extends React.Component {
             }
             else items = [...this.state.items, formattedItem]; // ADDing a document
         }
-
-        console.log("===============HANDLEJSON (ITEMS) ========================")
-        console.log("ITEMS: ", items);
         this.setState({ items });
     }
 
@@ -232,7 +223,6 @@ export default class Document extends React.Component {
 
     // === ONEDIT === //
     onEdit = (props) => {
-        console.log("EDIT PROPS: ", props);
         this.setState({ show: true, modal: 'Edit' });
     }
 

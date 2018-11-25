@@ -20,7 +20,7 @@ import java.util.Properties;
 
 public class Main {
 
-	public final static boolean IS_PRODUCTION = false;
+	public final static boolean IS_PRODUCTION = true;
 
 	public static void main(String[] args) {
 		// To build on eclipse:

@@ -192,16 +192,12 @@ class Tasks extends React.Component {
   });
 
   onTaskCreate = async (values) => {
-    console.log("TASK CREATE (VALUES): ", values);
     const response = await fetch(`${path}/app/task/add`, {
       body: JSON.stringify({
         group: {
           groupID: localStorage.getItem('selfGroupId'),
         },
         task: values,
-        // user: {
-        //   userID: localStorage.getItem('userId'),
-        // },
       }),
       credentials: 'include',
       method: 'POST',

@@ -39,7 +39,6 @@ export default class TaskForm extends React.Component {
   onSelectChange = (field, setFieldValue, defaultValue = null) => option => setFieldValue(field, Array.isArray(option) ? defaultValue : option);
 
   onSubmit = (values, { setSubmitting }) => {
-    console.log("ON SUBMIT VALS: ", values);
     this.props.onSubmit({
       ...values,
       deadline: values.deadline.toString().length > 0 ? moment(values.deadline).format('MMM DD, YYYY') : null,

@@ -299,7 +299,6 @@ class DashBoxBody extends React.Component {
     // === HANDLEJSONRESPONSE === //
     handleJsonResponse(response, isEdit = false) {
         let itemType = this.props.itemType !== 'doc' ? this.props.itemType : 'document';
-        console.log("RESPONSE: ", response);
         let { data: item } = response;
         let items = Object.assign([], this.state.items);
 
@@ -378,11 +377,11 @@ class DashBoxBody extends React.Component {
                         {this.props.itemType + 's'}
                     </div>
                     <div className='dash-body-buttons'>
-                        <Button style={{ background: 'transparent', border: '0' }}>
+                        {/* <Button style={{ background: 'transparent', border: '0' }}>
                             <span className='dash-type-add' color=''>
                                 <Glyphicon glyph="plus-sign" style={{ marginRight: '5px' }} /> <b>ADD</b>
                             </span>
-                        </Button>
+                        </Button> */}
                         {/* <Button bsStyle="default" style={{ borderRadius: '0px', marginTop: '10px'}}><Glyphicon style={{ fontSize: '1.1em', paddingRight: '5px', paddingTop: '2px' }} glyph="plus-sign" /><b>ADD {this.props.itemType.toUpperCase()}</b></Button> */}
 
                     </div>

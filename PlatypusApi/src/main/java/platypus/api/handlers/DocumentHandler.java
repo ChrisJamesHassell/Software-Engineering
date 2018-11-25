@@ -26,6 +26,8 @@ import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 
+import org.apache.tika.Tika;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
@@ -271,14 +273,15 @@ public class DocumentHandler {
 				return null;
 			}
 			String fileLocation = results.getString(1);
-			Path file = Paths.get(fileLocation);
-//			String mimeType = Files.probeContentType(file);
-			String mimeType = "application/octet-stream";
-			if("true".equals(request.queryParams("preview"))) {
-				mimeType = Files.probeContentType(file);
+			Path filePath = Paths.get(fileLocation);
+		    Tika tika = new Tika();
+		    response.header("Content-Type", tika.detect(filePath.toFile()));
+		    // Force download if preview mode is not specified
+			if(!"true".equals(request.queryParams("preview"))) {
+				response.header("Content-Disposition",
+						String.format("attachment; filename=\"%s\"", filePath.getFileName()));
 			}
-			response.header("Content-Type", mimeType);
-			return Files.readAllBytes(file);
+			return Files.readAllBytes(filePath);
 		}
 	}
 

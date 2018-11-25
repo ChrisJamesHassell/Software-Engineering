@@ -51,7 +51,6 @@ const pinFilterReducer = (state = appActions.PinFilters.PINNED_ONLY, action) => 
 const categoryFilterReducer = (state = appActions.CategoryFilters.SHOW_ALL, action) => {
     switch (action.type) {
         case 'SET_CATEGORY_FILTER':
-            console.log("GOT TO CAT FILTUH : ", action.filter);
             return action.filter;
         default:
             return state;
