@@ -1,56 +1,57 @@
-export default (
-    state = [
-        {
-            taskID: 3,
-            name: 'Cry into pillow 3',
-            description: 'I feel sad',
-            category: 'Miscellaneous',
-            deadline: '2018-10-29T19:30:34.888Z',
-            priority: 2,
-        },
-        {
-            taskID: 2,
-            name: 'Cry into pillow 2',
-            description: 'I feel sad',
-            category: 'Miscellaneous',
-            deadline: '2018-10-29T19:30:34.888Z',
-            priority: 1,
-        },
-        {
-            taskID: 1,
-            name: 'Cry into pillow 1',
-            description: 'I feel sad',
-            category: 'Miscellaneous',
-            deadline: '2018-10-29T19:30:34.888Z',
-            priority: 0,
-        },
-    ],
-    action
-) => {
-    switch (action.type) {
-        case 'ADD_TASK':
-            return [...state, action.payload].sort(
-                (a, b) => b.priority - a.priority
-            );
-        case 'ADD_TASKS':
-            return [...state, ...action.payload].sort(
-                (a, b) => b.priority - a.priority
-            );
-        case 'REMOVE_TASK':
-            return [...state].filter(
-                task => task.taskID !== action.payload.taskID
-            );
-        case 'UPDATE_TASK':
-            return [...state]
-                .map(task => {
-                    if (task.taskID === action.payload.taskID) {
-                        return action.payload;
-                    }
+const sortByPriority = (a, b) => b.priority - a.priority;
 
-                    return task;
-                })
-                .sort((a, b) => b.priority - a.priority);
-        default:
-            return state;
+export default (state = {}, action) => {
+  switch (action.type) {
+    case 'ADD_TASK':
+      return {
+        ...state,
+        [action.payload.category]: [...(state[action.payload.category] || []), action.payload].sort(
+          sortByPriority,
+        ),
+      };
+    case 'ADD_TASKS': {
+      if (action.payload.length === 0) {
+        return state;
+      }
+
+      return action.payload.reduce(
+        (prev, curr) => ({
+          ...prev,
+          [curr.category]: [...(prev[curr.category] || []), curr].sort(sortByPriority),
+        }),
+        { ...state },
+      );
     }
+    case 'REMOVE_ALL_TASKS':
+      return {};
+    case 'REMOVE_TASK': {
+      const obj = {
+        ...state,
+        [action.payload.category]: [...state[action.payload.category]].filter(
+          task => task.itemID !== action.payload.itemID,
+        ),
+      };
+
+      if (obj[action.payload.category].length === 0) {
+        delete obj[action.payload.category];
+      }
+
+      return obj;
+    }
+    case 'UPDATE_TASK':
+      return {
+        ...state,
+        [action.payload.category]: [...state[action.payload.category]]
+          .map((task) => {
+            if (task.itemID === action.payload.itemID) {
+              return action.payload;
+            }
+
+            return task;
+          })
+          .sort(sortByPriority),
+      };
+    default:
+      return state;
+  }
 };

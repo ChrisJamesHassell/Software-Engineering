@@ -11,8 +11,9 @@ public class Task extends Item {
 	public Task() {
 		super();
 	}
-	
-	public Task(int itemID, ItemType type, String name, String description, Category category, Date notification, boolean pinned, Date deadline, Priority priority, boolean completed) {
+
+	public Task(int itemID, ItemType type, String name, String description, Category category, Date notification,
+			boolean pinned, Date deadline, Priority priority, boolean completed) {
 		super(itemID, type, name, description, category, notification, pinned);
 		this.deadline = deadline;
 		this.priority = priority;
@@ -22,23 +23,23 @@ public class Task extends Item {
 	public Date getDeadline() {
 		return deadline;
 	}
-	
+
 	public void setDeadline(Date deadline) {
 		this.deadline = deadline;
 	}
-	
+
 	public Priority getPriority() {
 		return priority;
 	}
-	
+
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
-	
+
 	public boolean isCompleted() {
 		return completed;
 	}
-	
+
 	public void setCompleted(boolean b) {
 		completed = b;
 	}
@@ -50,5 +51,5 @@ public class Task extends Item {
 				+ getCategory() + ", toString()=" + super.toString() + ", getClass()=" + getClass() + ", hashCode()="
 				+ hashCode() + "]";
 	}
-	
+
 }
