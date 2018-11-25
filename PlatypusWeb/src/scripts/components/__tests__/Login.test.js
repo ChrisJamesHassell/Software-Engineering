@@ -1,12 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { Login } from '../Pages/Login.js';
 import {shallow} from 'enzyme';
-import renderer from 'react-test-renderer';
-
-// const props = {
-//     thing: {isLogin: true}
-// };\
 
 const props = {
     redirect: false,
@@ -16,15 +10,9 @@ const props = {
         pathname: '/login'}
   };
 
-// const isLogin = props.location.pathname === '/login';
 
 describe('Login', () =>{
-    // const login = shallow(<Login  {...props} />  );
-    // it('should render Login', () => {
-    //     // const wrapper = shallow(<App />)
-    //     // console.log(wrapper.debug())
-    //     // expect(wrapper.find('App').hasClass('container')).toBe(true)
-    // })
+
     it('matches the snapshot', () =>{
         const tree = shallow(<Login  {...props}/>)
         expect(tree).toMatchSnapshot()

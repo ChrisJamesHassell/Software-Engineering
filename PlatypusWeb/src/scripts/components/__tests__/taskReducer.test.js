@@ -6,11 +6,6 @@ import tasksReducer from '../../reducers/tasksReducer';
 const props = { defaultState };
 const props1 = { combineReducers }
 
-// describe('root reducer', () => {
-//     it('returns the initial state', () => {
-//       expect(combineReducers(undefined, {})).toEqual({...props});
-//     });
-// });
 
 describe('task reducer', () => {
     it('returns the initial state', () => {
@@ -54,14 +49,3 @@ describe('task reducer', () => {
 });
 
 
-// import rootReducer from '../../reducers/rootReducer';
-// import { defaultState } from '../dataFixtures/fixtures';
-
-// const props = { defaultState };
-
-
-// describe('root reducer', () => {
-//     it('returns the initial state', () => {
-//       expect(rootReducer( {},{} )).toEqual({...props});
-//     });
-// });

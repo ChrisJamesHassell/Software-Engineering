@@ -89,7 +89,6 @@ export const medState = {
       ],
     }
 
-    // {"categoryFilter": "SHOW_ALL", "documents": {"Medical": [{"category": "Medical", "description": "BlueCross", "docID": 1, "expiryDate": "2018-10-29T21:29:56.940Z", "filename": "IMG-12345.PNG", "name": "Dental Insurance"}]}, "events": {"Miscellaneous": [{"category": "Miscellaneous", "description": "Event Description", "end": "2018-10-29T21:29:56.940Z", "eventID": 1, "location": "That one place", "name": "Event Name", "start": "2018-10-29T21:29:48.475Z"}]}, "groupFilter": "SHOW_ALL", "itemTypeFilter": "SHOW_ALL", "pinFilter": "PINNED_ONLY", "tasks": {}, "user": {"groupList":[{}], "selfGroupId": null, "userId": null, "username": null}}
     
 
     export const rabbleRouters = [

@@ -1,6 +1,4 @@
-import combineReducers from '../../reducers/rootReducer';
 import * as actions from '../../reducers/documentsReducer';
-import { defaultState } from '../dataFixtures/fixtures';
 import documentsReducer from '../../reducers/documentsReducer';
 import { medState } from '../dataFixtures/fixtures';
 import { shallow, mount, render } from 'enzyme';
@@ -10,7 +8,6 @@ import React from 'react';
 describe('Login Form', () =>{
 
     it('matches the snapshot', () =>{
-    // const loginForm = shallow(<LoginForm  {...props} />  );
         const tree = shallow(<documentsReducer />)
         expect(tree).toMatchSnapshot()
     })
@@ -19,7 +16,6 @@ describe('Login Form', () =>{
 
 
 describe('documents reducer', () => {
-    // console.log(userReducer.debug());
     it('returns the initial state', () => {
       expect(documentsReducer( {},{} )).toEqual({});
     });

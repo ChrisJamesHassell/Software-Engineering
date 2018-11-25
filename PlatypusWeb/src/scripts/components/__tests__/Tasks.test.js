@@ -14,11 +14,9 @@ const task= {
 
 describe('TaskList', () =>{
     const taskList = shallow(<TaskList />);
-    // const tasks = shallow(<Tasks {...task } />);
     
 
     it('should render tasksList', () => {
-        // console.log(taskList.debug())
         expect(taskList.find('Fragment').exists()).toBe(true);
     });
 

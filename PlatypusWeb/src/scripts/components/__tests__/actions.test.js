@@ -5,7 +5,6 @@ describe ('actions', () => {
     it('creates action', () =>{
         const expectedAction = { type: axtons.SET_PIN_FILTER, task };
 
-        // expect(actions.)
 
     });
 });

@@ -4,11 +4,6 @@ import TextInput from '../Forms/TextInput';
 import { textInput } from '../dataFixtures/fixtures';
 
 const props = { textInput };
-//     state : {
-//         value: '',
-//         requiresValidation: false
-//     }
-// };
 
 describe('TextInput should do a thing', () => {
     const textInput = shallow(<TextInput {...props} />);

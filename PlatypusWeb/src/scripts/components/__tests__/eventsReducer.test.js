@@ -1,16 +1,12 @@
-import combineReducers from '../../reducers/rootReducer';
 import * as actions from '../../reducers/tasksReducer';
-import { defaultState } from '../dataFixtures/fixtures';
 import eventsReducer, { sortByStartDate } from '../../reducers/eventsReducer';
 import { eventState } from '../dataFixtures/fixtures';
 
 
 const props = eventState ;
-// const props1 = { combineReducers }
 
 
 describe('events reducer', () => {
-    // console.log(userReducer.debug());
     it('returns the initial state', () => {
       expect(eventsReducer( {},{} )).toEqual({});
     });

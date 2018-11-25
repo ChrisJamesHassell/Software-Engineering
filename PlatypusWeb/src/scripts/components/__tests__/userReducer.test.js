@@ -7,7 +7,6 @@ import React from 'react';
 describe('User reducer', () =>{
 
     it('matches the snapshot', () =>{
-    // const loginForm = shallow(<LoginForm  {...props} />  );
         const tree = shallow(<userReducer />)
         expect(tree).toMatchSnapshot()
     })

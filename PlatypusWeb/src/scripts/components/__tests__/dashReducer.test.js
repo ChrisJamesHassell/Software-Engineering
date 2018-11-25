@@ -8,8 +8,6 @@ import { userReducer,
         itemTypeFilter, 
         groupFilter } from '../../reducers/dashReducer';
 
-// const props = { defaultState };
-// const props1 = { combineReducers }
 
 const dfaltUser = defaultState.user;
 const dfalt = defaultState;
@@ -21,7 +19,6 @@ const dfaltGroup = defaultState.GroupFilters;
 const showAll = 'SHOW_ALL';
 
 describe('user reducer', () => {
-    // console.log(userReducer.debug());
     it('returns the initial state', () => {
       expect(userReducer( undefined ,{} )).toEqual(dfaltUser);
     });
