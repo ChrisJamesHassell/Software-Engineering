@@ -1,6 +1,6 @@
 -- --------------------------------------------------------
--- Host:                         localhost
--- Server version:               10.3.10-MariaDB - mariadb.org binary distribution
+-- Host:                         127.0.0.1
+-- Server version:               10.3.9-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win64
 -- HeidiSQL Version:             9.4.0.5125
 -- --------------------------------------------------------
@@ -238,10 +238,10 @@ CREATE TABLE IF NOT EXISTS `documents` (
   `name` varchar(32) NOT NULL,
   `description` varchar(250) DEFAULT NULL,
   `category` enum('Appliances','Auto','Meals','Medical','Miscellaneous') NOT NULL,
-  `fileName` varchar(128) NOT NULL,
+  `fileName` varchar(1024) NOT NULL,
   `expirationDate` date DEFAULT NULL,
   PRIMARY KEY (`docID`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.groups
@@ -249,7 +249,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `groupID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `groupName` varchar(50) NOT NULL DEFAULT '"Me"',
   PRIMARY KEY (`groupID`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.has_documents
@@ -295,16 +295,17 @@ CREATE TABLE IF NOT EXISTS `has_tasks` (
 DELIMITER //
 CREATE DEFINER=`platypus`@`localhost` PROCEDURE `insertDoc`(
 	IN `pinned` BINARY(1),
-	IN `notification` DATE,
 	IN `groupID` INT(11),
 	IN `name` VARCHAR(32),
 	IN `description` VARCHAR(250),
 	IN `category` ENUM('Appliances','Auto','Meals','Medical','Miscellaneous'),
-	IN `fileName` VARCHAR(32),
+	IN `fileName` VARCHAR(1024),
 	IN `expirationDate` DATE
 
 ,
 	OUT `returnID` INT(11)
+
+
 
 
 )
@@ -555,7 +556,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `priority` enum('Low','Mid','High') NOT NULL DEFAULT 'Low',
   `completed` binary(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`taskID`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.userevents
@@ -568,7 +569,7 @@ CREATE TABLE IF NOT EXISTS `userevents` (
   `endDate` date NOT NULL,
   `location` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`eventID`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 -- Dumping structure for table platypus.users
@@ -583,7 +584,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`userID`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
