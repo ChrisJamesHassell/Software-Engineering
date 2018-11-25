@@ -51,7 +51,7 @@ public class EventHandler {
 			stmt.setString(6, event.get("category").getAsString());
 			stmt.setDate(7, event.get("startDate").isJsonNull() ? null : DateParser.parseDate(event.get("startDate").getAsString()));
 			stmt.setDate(8, event.get("endDate").isJsonNull() ? null : DateParser.parseDate(event.get("endDate").getAsString()));
-			stmt.setString(9, event.get("location").getAsString());
+			stmt.setString(9, event.get("location") == null? null : event.get("location").getAsString());
 			stmt.registerOutParameter(10, Types.INTEGER);
 
 			stmt.executeUpdate();
