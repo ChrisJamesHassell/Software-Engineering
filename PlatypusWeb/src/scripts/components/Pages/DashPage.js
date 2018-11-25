@@ -64,7 +64,7 @@ class DashBoxBody extends React.Component {
         return items.filter(item => {
             const overdue = Math.floor((moment.duration(moment().diff(item[key]))).asDays()) || 0;
             this.handleOverdueState(item, key);
-            if (item.pinned || overdue < 1 || !item[key]) return item;
+            if (item.pinned || overdue < 1) return item;
         })
     }
 
