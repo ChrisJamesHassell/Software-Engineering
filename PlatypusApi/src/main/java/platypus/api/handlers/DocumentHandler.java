@@ -272,7 +272,11 @@ public class DocumentHandler {
 			}
 			String fileLocation = results.getString(1);
 			Path file = Paths.get(fileLocation);
-			String mimeType = Files.probeContentType(file);
+//			String mimeType = Files.probeContentType(file);
+			String mimeType = "application/octet-stream";
+			if("true".equals(request.queryParams("preview"))) {
+				mimeType = Files.probeContentType(file);
+			}
 			response.header("Content-Type", mimeType);
 			return Files.readAllBytes(file);
 		}

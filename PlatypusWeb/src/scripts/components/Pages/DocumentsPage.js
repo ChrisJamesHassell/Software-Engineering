@@ -1,12 +1,12 @@
 import React from 'react';
 import moment from 'moment';
 import qs from 'qs';
-import { Modal, FormGroup, Col, Checkbox, Glyphicon, Button, Form, FormControl, ControlLabel, HelpBlock, Panel, ButtonToolbar } from 'react-bootstrap';
+import { Glyphicon, Button, Panel, ButtonToolbar } from 'react-bootstrap';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css'
-import { DashBox, DashBoxHeader } from '../Pages/DashPage';
+import { DashBoxHeader } from '../Pages/DashPage';
 import DocumentForm from '../Forms/DocumentForm';
-import { path, categories, filterProps, categoryOptions, categoryColor, catMap } from '../../fetchHelpers';
+import { path } from '../../fetchHelpers';
 
 // =============================================================== //
 //  DOCUMENT
@@ -58,7 +58,7 @@ export default class Document extends React.Component {
     // === GETFORMATTEDITEMS === //
     getFormattedItem(values) {
         let itemType = 'document';
-        let imgUrl = `${path}/app/doc/download?docID=`;
+        let imgUrl = `${path}/app/doc/download?preview=true&docID=`;
         let item = {
             group: { groupID: localStorage.getItem('selfGroupId') },
             [itemType]: {
@@ -87,10 +87,10 @@ export default class Document extends React.Component {
                 Cell: props => {
                     return (
                         <div>
-                            <ButtonToolbar>
-                                <Button style={{ background: 'transparent', border: 'none' }} onClick={e => { this.onEdit(props) }}><Glyphicon glyph="pencil" style={{ color: "#18bc9c" }} /></Button>
+                            {/* <ButtonToolbar> */}
+                                {/* <Button style={{ background: 'transparent', border: 'none' }} onClick={e => { this.onEdit(props) }}><Glyphicon glyph="pencil" style={{ color: "#18bc9c" }} /></Button> */}
                                 <Button style={{ background: 'transparent', border: 'none' }} onClick={e => { this.onDelete(props) }}><Glyphicon glyph="trash" style={{ color: "#e74c3c" }} /></Button>
-                            </ButtonToolbar>
+                            {/* </ButtonToolbar> */}
                         </div>
                     )
                 }
