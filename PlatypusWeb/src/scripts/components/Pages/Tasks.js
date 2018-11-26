@@ -186,8 +186,8 @@ class Tasks extends React.Component {
   onTaskComplete = task => () => this.onTaskUpdate({
     ...task,
     completed: !task.completed,
-    deadline: moment(task.deadline).format('YYYY-MM-DD'),
-    notification: moment(task.notification).format('YYYY-MM-DD'),
+    deadline: moment(task.deadline).format('MMM d, YYYY'),
+    notification: moment(task.notification).format('MMM d, YYYY'),
     taskID: task.itemID,
   });
 
