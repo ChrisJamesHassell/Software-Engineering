@@ -51,7 +51,7 @@ const LoginLargeContent = () => (
 
 const RowSpacer = () => <Row id="row-space" />;
 
-class Login extends React.Component {
+export class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

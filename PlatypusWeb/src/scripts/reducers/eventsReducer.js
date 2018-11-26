@@ -1,4 +1,4 @@
-const sortByStartDate = (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime();
+export const sortByStartDate = (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime();
 
 export default (
   state = {

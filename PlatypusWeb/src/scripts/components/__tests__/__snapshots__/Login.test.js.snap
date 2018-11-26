@@ -1,0 +1,1372 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login matches the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Login
+    error=""
+    loading={false}
+    location={
+      Object {
+        "pathname": "/login",
+      }
+    }
+    redirect={false}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <LoadingModal
+          loading={false}
+        />,
+        <Grid
+          bsClass="container"
+          componentClass="div"
+          fluid={false}
+          id="row-container"
+        >
+          <RowSpacer />
+          <Row
+            bsClass="row"
+            componentClass="div"
+            id="login"
+          >
+            <LoginLargeContent />
+            <LoginMobileContent
+              logoUrl="http://localhost/icon_circle_white.svg"
+            />
+            <Col
+              bsClass="col"
+              componentClass="div"
+              id="login-creds"
+              md={4}
+              xs={12}
+            >
+              <div>
+                <Route
+                  exact={true}
+                  path="/login"
+                  render={[Function]}
+                />
+                <Route
+                  path="/login/signup"
+                  render={[Function]}
+                />
+                <Alert
+                  bsClass="alert"
+                  bsStyle="danger"
+                  closeLabel="Close alert"
+                  hidden={true}
+                >
+                  
+                </Alert>
+                <div
+                  id="login-links"
+                >
+                  <LinkContainer
+                    activeClassName="active"
+                    exact={false}
+                    replace={false}
+                    strict={false}
+                    to="/login"
+                  >
+                    <Button
+                      active={false}
+                      block={false}
+                      bsClass="btn"
+                      bsStyle="link"
+                      disabled={true}
+                    >
+                      Login
+                    </Button>
+                  </LinkContainer>
+                   
+                  or
+                  <LinkContainer
+                    activeClassName="active"
+                    exact={false}
+                    replace={false}
+                    strict={false}
+                    to="/login/signup"
+                  >
+                    <Button
+                      active={false}
+                      block={false}
+                      bsClass="btn"
+                      bsStyle="link"
+                      disabled={false}
+                    >
+                       
+                      Sign Up
+                    </Button>
+                  </LinkContainer>
+                </div>
+                <div />
+              </div>
+            </Col>
+          </Row>
+        </Grid>,
+      ],
+      "id": "login-container",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "loading": false,
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "bsClass": "container",
+          "children": Array [
+            <RowSpacer />,
+            <Row
+              bsClass="row"
+              componentClass="div"
+              id="login"
+            >
+              <LoginLargeContent />
+              <LoginMobileContent
+                logoUrl="http://localhost/icon_circle_white.svg"
+              />
+              <Col
+                bsClass="col"
+                componentClass="div"
+                id="login-creds"
+                md={4}
+                xs={12}
+              >
+                <div>
+                  <Route
+                    exact={true}
+                    path="/login"
+                    render={[Function]}
+                  />
+                  <Route
+                    path="/login/signup"
+                    render={[Function]}
+                  />
+                  <Alert
+                    bsClass="alert"
+                    bsStyle="danger"
+                    closeLabel="Close alert"
+                    hidden={true}
+                  >
+                    
+                  </Alert>
+                  <div
+                    id="login-links"
+                  >
+                    <LinkContainer
+                      activeClassName="active"
+                      exact={false}
+                      replace={false}
+                      strict={false}
+                      to="/login"
+                    >
+                      <Button
+                        active={false}
+                        block={false}
+                        bsClass="btn"
+                        bsStyle="link"
+                        disabled={true}
+                      >
+                        Login
+                      </Button>
+                    </LinkContainer>
+                     
+                    or
+                    <LinkContainer
+                      activeClassName="active"
+                      exact={false}
+                      replace={false}
+                      strict={false}
+                      to="/login/signup"
+                    >
+                      <Button
+                        active={false}
+                        block={false}
+                        bsClass="btn"
+                        bsStyle="link"
+                        disabled={false}
+                      >
+                         
+                        Sign Up
+                      </Button>
+                    </LinkContainer>
+                  </div>
+                  <div />
+                </div>
+              </Col>
+            </Row>,
+          ],
+          "componentClass": "div",
+          "fluid": false,
+          "id": "row-container",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "bsClass": "row",
+              "children": Array [
+                <LoginLargeContent />,
+                <LoginMobileContent
+                  logoUrl="http://localhost/icon_circle_white.svg"
+                />,
+                <Col
+                  bsClass="col"
+                  componentClass="div"
+                  id="login-creds"
+                  md={4}
+                  xs={12}
+                >
+                  <div>
+                    <Route
+                      exact={true}
+                      path="/login"
+                      render={[Function]}
+                    />
+                    <Route
+                      path="/login/signup"
+                      render={[Function]}
+                    />
+                    <Alert
+                      bsClass="alert"
+                      bsStyle="danger"
+                      closeLabel="Close alert"
+                      hidden={true}
+                    >
+                      
+                    </Alert>
+                    <div
+                      id="login-links"
+                    >
+                      <LinkContainer
+                        activeClassName="active"
+                        exact={false}
+                        replace={false}
+                        strict={false}
+                        to="/login"
+                      >
+                        <Button
+                          active={false}
+                          block={false}
+                          bsClass="btn"
+                          bsStyle="link"
+                          disabled={true}
+                        >
+                          Login
+                        </Button>
+                      </LinkContainer>
+                       
+                      or
+                      <LinkContainer
+                        activeClassName="active"
+                        exact={false}
+                        replace={false}
+                        strict={false}
+                        to="/login/signup"
+                      >
+                        <Button
+                          active={false}
+                          block={false}
+                          bsClass="btn"
+                          bsStyle="link"
+                          disabled={false}
+                        >
+                           
+                          Sign Up
+                        </Button>
+                      </LinkContainer>
+                    </div>
+                    <div />
+                  </div>
+                </Col>,
+              ],
+              "componentClass": "div",
+              "id": "login",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {},
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "logoUrl": "http://localhost/icon_circle_white.svg",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "class",
+                "props": Object {
+                  "bsClass": "col",
+                  "children": <div>
+                    <Route
+                      exact={true}
+                      path="/login"
+                      render={[Function]}
+                    />
+                    <Route
+                      path="/login/signup"
+                      render={[Function]}
+                    />
+                    <Alert
+                      bsClass="alert"
+                      bsStyle="danger"
+                      closeLabel="Close alert"
+                      hidden={true}
+                    >
+                      
+                    </Alert>
+                    <div
+                      id="login-links"
+                    >
+                      <LinkContainer
+                        activeClassName="active"
+                        exact={false}
+                        replace={false}
+                        strict={false}
+                        to="/login"
+                      >
+                        <Button
+                          active={false}
+                          block={false}
+                          bsClass="btn"
+                          bsStyle="link"
+                          disabled={true}
+                        >
+                          Login
+                        </Button>
+                      </LinkContainer>
+                       
+                      or
+                      <LinkContainer
+                        activeClassName="active"
+                        exact={false}
+                        replace={false}
+                        strict={false}
+                        to="/login/signup"
+                      >
+                        <Button
+                          active={false}
+                          block={false}
+                          bsClass="btn"
+                          bsStyle="link"
+                          disabled={false}
+                        >
+                           
+                          Sign Up
+                        </Button>
+                      </LinkContainer>
+                    </div>
+                    <div />
+                  </div>,
+                  "componentClass": "div",
+                  "id": "login-creds",
+                  "md": 4,
+                  "xs": 12,
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <Route
+                        exact={true}
+                        path="/login"
+                        render={[Function]}
+                      />,
+                      <Route
+                        path="/login/signup"
+                        render={[Function]}
+                      />,
+                      <Alert
+                        bsClass="alert"
+                        bsStyle="danger"
+                        closeLabel="Close alert"
+                        hidden={true}
+                      >
+                        
+                      </Alert>,
+                      <div
+                        id="login-links"
+                      >
+                        <LinkContainer
+                          activeClassName="active"
+                          exact={false}
+                          replace={false}
+                          strict={false}
+                          to="/login"
+                        >
+                          <Button
+                            active={false}
+                            block={false}
+                            bsClass="btn"
+                            bsStyle="link"
+                            disabled={true}
+                          >
+                            Login
+                          </Button>
+                        </LinkContainer>
+                         
+                        or
+                        <LinkContainer
+                          activeClassName="active"
+                          exact={false}
+                          replace={false}
+                          strict={false}
+                          to="/login/signup"
+                        >
+                          <Button
+                            active={false}
+                            block={false}
+                            bsClass="btn"
+                            bsStyle="link"
+                            disabled={false}
+                          >
+                             
+                            Sign Up
+                          </Button>
+                        </LinkContainer>
+                      </div>,
+                      <div />,
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "exact": true,
+                        "path": "/login",
+                        "render": [Function],
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "path": "/login/signup",
+                        "render": [Function],
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "bsClass": "alert",
+                        "bsStyle": "danger",
+                        "children": "",
+                        "closeLabel": "Close alert",
+                        "hidden": true,
+                      },
+                      "ref": null,
+                      "rendered": "",
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": Array [
+                          <LinkContainer
+                            activeClassName="active"
+                            exact={false}
+                            replace={false}
+                            strict={false}
+                            to="/login"
+                          >
+                            <Button
+                              active={false}
+                              block={false}
+                              bsClass="btn"
+                              bsStyle="link"
+                              disabled={true}
+                            >
+                              Login
+                            </Button>
+                          </LinkContainer>,
+                          " ",
+                          "or",
+                          <LinkContainer
+                            activeClassName="active"
+                            exact={false}
+                            replace={false}
+                            strict={false}
+                            to="/login/signup"
+                          >
+                            <Button
+                              active={false}
+                              block={false}
+                              bsClass="btn"
+                              bsStyle="link"
+                              disabled={false}
+                            >
+                               
+                              Sign Up
+                            </Button>
+                          </LinkContainer>,
+                        ],
+                        "id": "login-links",
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "class",
+                          "props": Object {
+                            "activeClassName": "active",
+                            "children": <Button
+                              active={false}
+                              block={false}
+                              bsClass="btn"
+                              bsStyle="link"
+                              disabled={true}
+                            >
+                              Login
+                            </Button>,
+                            "exact": false,
+                            "replace": false,
+                            "strict": false,
+                            "to": "/login",
+                          },
+                          "ref": null,
+                          "rendered": Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "class",
+                            "props": Object {
+                              "active": false,
+                              "block": false,
+                              "bsClass": "btn",
+                              "bsStyle": "link",
+                              "children": "Login",
+                              "disabled": true,
+                            },
+                            "ref": null,
+                            "rendered": "Login",
+                            "type": [Function],
+                          },
+                          "type": [Function],
+                        },
+                        " ",
+                        "or",
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "class",
+                          "props": Object {
+                            "activeClassName": "active",
+                            "children": <Button
+                              active={false}
+                              block={false}
+                              bsClass="btn"
+                              bsStyle="link"
+                              disabled={false}
+                            >
+                               
+                              Sign Up
+                            </Button>,
+                            "exact": false,
+                            "replace": false,
+                            "strict": false,
+                            "to": "/login/signup",
+                          },
+                          "ref": null,
+                          "rendered": Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "class",
+                            "props": Object {
+                              "active": false,
+                              "block": false,
+                              "bsClass": "btn",
+                              "bsStyle": "link",
+                              "children": Array [
+                                " ",
+                                "Sign Up",
+                              ],
+                              "disabled": false,
+                            },
+                            "ref": null,
+                            "rendered": Array [
+                              " ",
+                              "Sign Up",
+                            ],
+                            "type": [Function],
+                          },
+                          "type": [Function],
+                        },
+                      ],
+                      "type": "div",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {},
+                      "ref": null,
+                      "rendered": null,
+                      "type": "div",
+                    },
+                  ],
+                  "type": "div",
+                },
+                "type": [Function],
+              },
+            ],
+            "type": [Function],
+          },
+        ],
+        "type": [Function],
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <LoadingModal
+            loading={false}
+          />,
+          <Grid
+            bsClass="container"
+            componentClass="div"
+            fluid={false}
+            id="row-container"
+          >
+            <RowSpacer />
+            <Row
+              bsClass="row"
+              componentClass="div"
+              id="login"
+            >
+              <LoginLargeContent />
+              <LoginMobileContent
+                logoUrl="http://localhost/icon_circle_white.svg"
+              />
+              <Col
+                bsClass="col"
+                componentClass="div"
+                id="login-creds"
+                md={4}
+                xs={12}
+              >
+                <div>
+                  <Route
+                    exact={true}
+                    path="/login"
+                    render={[Function]}
+                  />
+                  <Route
+                    path="/login/signup"
+                    render={[Function]}
+                  />
+                  <Alert
+                    bsClass="alert"
+                    bsStyle="danger"
+                    closeLabel="Close alert"
+                    hidden={true}
+                  >
+                    
+                  </Alert>
+                  <div
+                    id="login-links"
+                  >
+                    <LinkContainer
+                      activeClassName="active"
+                      exact={false}
+                      replace={false}
+                      strict={false}
+                      to="/login"
+                    >
+                      <Button
+                        active={false}
+                        block={false}
+                        bsClass="btn"
+                        bsStyle="link"
+                        disabled={true}
+                      >
+                        Login
+                      </Button>
+                    </LinkContainer>
+                     
+                    or
+                    <LinkContainer
+                      activeClassName="active"
+                      exact={false}
+                      replace={false}
+                      strict={false}
+                      to="/login/signup"
+                    >
+                      <Button
+                        active={false}
+                        block={false}
+                        bsClass="btn"
+                        bsStyle="link"
+                        disabled={false}
+                      >
+                         
+                        Sign Up
+                      </Button>
+                    </LinkContainer>
+                  </div>
+                  <div />
+                </div>
+              </Col>
+            </Row>
+          </Grid>,
+        ],
+        "id": "login-container",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "loading": false,
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "bsClass": "container",
+            "children": Array [
+              <RowSpacer />,
+              <Row
+                bsClass="row"
+                componentClass="div"
+                id="login"
+              >
+                <LoginLargeContent />
+                <LoginMobileContent
+                  logoUrl="http://localhost/icon_circle_white.svg"
+                />
+                <Col
+                  bsClass="col"
+                  componentClass="div"
+                  id="login-creds"
+                  md={4}
+                  xs={12}
+                >
+                  <div>
+                    <Route
+                      exact={true}
+                      path="/login"
+                      render={[Function]}
+                    />
+                    <Route
+                      path="/login/signup"
+                      render={[Function]}
+                    />
+                    <Alert
+                      bsClass="alert"
+                      bsStyle="danger"
+                      closeLabel="Close alert"
+                      hidden={true}
+                    >
+                      
+                    </Alert>
+                    <div
+                      id="login-links"
+                    >
+                      <LinkContainer
+                        activeClassName="active"
+                        exact={false}
+                        replace={false}
+                        strict={false}
+                        to="/login"
+                      >
+                        <Button
+                          active={false}
+                          block={false}
+                          bsClass="btn"
+                          bsStyle="link"
+                          disabled={true}
+                        >
+                          Login
+                        </Button>
+                      </LinkContainer>
+                       
+                      or
+                      <LinkContainer
+                        activeClassName="active"
+                        exact={false}
+                        replace={false}
+                        strict={false}
+                        to="/login/signup"
+                      >
+                        <Button
+                          active={false}
+                          block={false}
+                          bsClass="btn"
+                          bsStyle="link"
+                          disabled={false}
+                        >
+                           
+                          Sign Up
+                        </Button>
+                      </LinkContainer>
+                    </div>
+                    <div />
+                  </div>
+                </Col>
+              </Row>,
+            ],
+            "componentClass": "div",
+            "fluid": false,
+            "id": "row-container",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "bsClass": "row",
+                "children": Array [
+                  <LoginLargeContent />,
+                  <LoginMobileContent
+                    logoUrl="http://localhost/icon_circle_white.svg"
+                  />,
+                  <Col
+                    bsClass="col"
+                    componentClass="div"
+                    id="login-creds"
+                    md={4}
+                    xs={12}
+                  >
+                    <div>
+                      <Route
+                        exact={true}
+                        path="/login"
+                        render={[Function]}
+                      />
+                      <Route
+                        path="/login/signup"
+                        render={[Function]}
+                      />
+                      <Alert
+                        bsClass="alert"
+                        bsStyle="danger"
+                        closeLabel="Close alert"
+                        hidden={true}
+                      >
+                        
+                      </Alert>
+                      <div
+                        id="login-links"
+                      >
+                        <LinkContainer
+                          activeClassName="active"
+                          exact={false}
+                          replace={false}
+                          strict={false}
+                          to="/login"
+                        >
+                          <Button
+                            active={false}
+                            block={false}
+                            bsClass="btn"
+                            bsStyle="link"
+                            disabled={true}
+                          >
+                            Login
+                          </Button>
+                        </LinkContainer>
+                         
+                        or
+                        <LinkContainer
+                          activeClassName="active"
+                          exact={false}
+                          replace={false}
+                          strict={false}
+                          to="/login/signup"
+                        >
+                          <Button
+                            active={false}
+                            block={false}
+                            bsClass="btn"
+                            bsStyle="link"
+                            disabled={false}
+                          >
+                             
+                            Sign Up
+                          </Button>
+                        </LinkContainer>
+                      </div>
+                      <div />
+                    </div>
+                  </Col>,
+                ],
+                "componentClass": "div",
+                "id": "login",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {},
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "logoUrl": "http://localhost/icon_circle_white.svg",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "class",
+                  "props": Object {
+                    "bsClass": "col",
+                    "children": <div>
+                      <Route
+                        exact={true}
+                        path="/login"
+                        render={[Function]}
+                      />
+                      <Route
+                        path="/login/signup"
+                        render={[Function]}
+                      />
+                      <Alert
+                        bsClass="alert"
+                        bsStyle="danger"
+                        closeLabel="Close alert"
+                        hidden={true}
+                      >
+                        
+                      </Alert>
+                      <div
+                        id="login-links"
+                      >
+                        <LinkContainer
+                          activeClassName="active"
+                          exact={false}
+                          replace={false}
+                          strict={false}
+                          to="/login"
+                        >
+                          <Button
+                            active={false}
+                            block={false}
+                            bsClass="btn"
+                            bsStyle="link"
+                            disabled={true}
+                          >
+                            Login
+                          </Button>
+                        </LinkContainer>
+                         
+                        or
+                        <LinkContainer
+                          activeClassName="active"
+                          exact={false}
+                          replace={false}
+                          strict={false}
+                          to="/login/signup"
+                        >
+                          <Button
+                            active={false}
+                            block={false}
+                            bsClass="btn"
+                            bsStyle="link"
+                            disabled={false}
+                          >
+                             
+                            Sign Up
+                          </Button>
+                        </LinkContainer>
+                      </div>
+                      <div />
+                    </div>,
+                    "componentClass": "div",
+                    "id": "login-creds",
+                    "md": 4,
+                    "xs": 12,
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        <Route
+                          exact={true}
+                          path="/login"
+                          render={[Function]}
+                        />,
+                        <Route
+                          path="/login/signup"
+                          render={[Function]}
+                        />,
+                        <Alert
+                          bsClass="alert"
+                          bsStyle="danger"
+                          closeLabel="Close alert"
+                          hidden={true}
+                        >
+                          
+                        </Alert>,
+                        <div
+                          id="login-links"
+                        >
+                          <LinkContainer
+                            activeClassName="active"
+                            exact={false}
+                            replace={false}
+                            strict={false}
+                            to="/login"
+                          >
+                            <Button
+                              active={false}
+                              block={false}
+                              bsClass="btn"
+                              bsStyle="link"
+                              disabled={true}
+                            >
+                              Login
+                            </Button>
+                          </LinkContainer>
+                           
+                          or
+                          <LinkContainer
+                            activeClassName="active"
+                            exact={false}
+                            replace={false}
+                            strict={false}
+                            to="/login/signup"
+                          >
+                            <Button
+                              active={false}
+                              block={false}
+                              bsClass="btn"
+                              bsStyle="link"
+                              disabled={false}
+                            >
+                               
+                              Sign Up
+                            </Button>
+                          </LinkContainer>
+                        </div>,
+                        <div />,
+                      ],
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "class",
+                        "props": Object {
+                          "exact": true,
+                          "path": "/login",
+                          "render": [Function],
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "class",
+                        "props": Object {
+                          "path": "/login/signup",
+                          "render": [Function],
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "class",
+                        "props": Object {
+                          "bsClass": "alert",
+                          "bsStyle": "danger",
+                          "children": "",
+                          "closeLabel": "Close alert",
+                          "hidden": true,
+                        },
+                        "ref": null,
+                        "rendered": "",
+                        "type": [Function],
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": Array [
+                            <LinkContainer
+                              activeClassName="active"
+                              exact={false}
+                              replace={false}
+                              strict={false}
+                              to="/login"
+                            >
+                              <Button
+                                active={false}
+                                block={false}
+                                bsClass="btn"
+                                bsStyle="link"
+                                disabled={true}
+                              >
+                                Login
+                              </Button>
+                            </LinkContainer>,
+                            " ",
+                            "or",
+                            <LinkContainer
+                              activeClassName="active"
+                              exact={false}
+                              replace={false}
+                              strict={false}
+                              to="/login/signup"
+                            >
+                              <Button
+                                active={false}
+                                block={false}
+                                bsClass="btn"
+                                bsStyle="link"
+                                disabled={false}
+                              >
+                                 
+                                Sign Up
+                              </Button>
+                            </LinkContainer>,
+                          ],
+                          "id": "login-links",
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "class",
+                            "props": Object {
+                              "activeClassName": "active",
+                              "children": <Button
+                                active={false}
+                                block={false}
+                                bsClass="btn"
+                                bsStyle="link"
+                                disabled={true}
+                              >
+                                Login
+                              </Button>,
+                              "exact": false,
+                              "replace": false,
+                              "strict": false,
+                              "to": "/login",
+                            },
+                            "ref": null,
+                            "rendered": Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "class",
+                              "props": Object {
+                                "active": false,
+                                "block": false,
+                                "bsClass": "btn",
+                                "bsStyle": "link",
+                                "children": "Login",
+                                "disabled": true,
+                              },
+                              "ref": null,
+                              "rendered": "Login",
+                              "type": [Function],
+                            },
+                            "type": [Function],
+                          },
+                          " ",
+                          "or",
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "class",
+                            "props": Object {
+                              "activeClassName": "active",
+                              "children": <Button
+                                active={false}
+                                block={false}
+                                bsClass="btn"
+                                bsStyle="link"
+                                disabled={false}
+                              >
+                                 
+                                Sign Up
+                              </Button>,
+                              "exact": false,
+                              "replace": false,
+                              "strict": false,
+                              "to": "/login/signup",
+                            },
+                            "ref": null,
+                            "rendered": Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "class",
+                              "props": Object {
+                                "active": false,
+                                "block": false,
+                                "bsClass": "btn",
+                                "bsStyle": "link",
+                                "children": Array [
+                                  " ",
+                                  "Sign Up",
+                                ],
+                                "disabled": false,
+                              },
+                              "ref": null,
+                              "rendered": Array [
+                                " ",
+                                "Sign Up",
+                              ],
+                              "type": [Function],
+                            },
+                            "type": [Function],
+                          },
+                        ],
+                        "type": "div",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {},
+                        "ref": null,
+                        "rendered": null,
+                        "type": "div",
+                      },
+                    ],
+                    "type": "div",
+                  },
+                  "type": [Function],
+                },
+              ],
+              "type": [Function],
+            },
+          ],
+          "type": [Function],
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
