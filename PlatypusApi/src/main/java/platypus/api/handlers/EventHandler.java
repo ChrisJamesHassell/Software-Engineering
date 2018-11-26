@@ -24,8 +24,6 @@ import platypus.api.models.Priority;
 import platypus.api.models.Task;
 public class EventHandler {
 
-	// TODO: -Set up the response body to return CacheEntry + Event stuff
-	// -Test more extensively if needed
 	public static JsonResponse addEvent(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;

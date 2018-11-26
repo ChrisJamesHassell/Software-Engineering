@@ -1,7 +1,8 @@
 package platypus.api.handlers;
 
 public class ErrorMessage {
-
+	// Private variables should only be thread safe, as the `handle()` method will
+	// be called in a multi-threaded fashion.
 	private String value;
 
 	public ErrorMessage(String val) {

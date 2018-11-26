@@ -3,16 +3,12 @@ package platypus.api;
 import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariDataSource;
 
-import platypus.api.handlers.IndexHandler;
 import platypus.api.handlers.LoginHandler;
 import platypus.api.handlers.TaskHandler;
-//import platypus.api.handlers.SettingsHandler;
-import platypus.api.handlers.UserHandler;
 import platypus.api.handlers.AuthFilter;
 import platypus.api.handlers.CreateHandler;
 import platypus.api.handlers.DocumentHandler;
 import platypus.api.services.*;
-import platypus.api.models.*;
 import platypus.api.handlers.EventHandler;
 import spark.Spark;
 

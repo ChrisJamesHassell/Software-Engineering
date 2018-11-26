@@ -39,11 +39,8 @@ import platypus.api.models.ItemType;
 
 public class DocumentHandler {
 
-	// TODO: -Set up the response body to return CacheEntry + document stuff
-	// -Test more extensively if needed
 	public static String addDoc(HikariDataSource ds, Request req, Response response)
 			throws SQLException, IOException, ServletException, NullPointerException {
-		System.out.println("==========================");
 		Connection conn = null;
 		CallableStatement stmt = null;
 
@@ -55,15 +52,12 @@ public class DocumentHandler {
 			MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
 			req.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
 
-			// TODO determine desired final pathway for project
 			String PATH = File.separator + "platypus" + File.separator + "users";
 			String directoryName = PATH + File.separator + req.queryParams("userID").toString() + File.separator;
 
 			File directory = new File(directoryName);
 			if (!directory.exists()) {
 				directory.mkdirs();
-				// If you require it to make the entire directory path including parents,
-				// use directory.mkdirs(); here instead.
 			}
 
 			long maxFileSize = 5 * 1024 * 1024; // the maximum size allowed for uploaded files
@@ -90,13 +84,8 @@ public class DocumentHandler {
 				ext = fName.substring(i);
 			}
 
-//			String fileName = directoryName + req.queryParams("documentID") + ext;
 			String fileName = directoryName + UUID.randomUUID().toString() + ext;
-
-//			Path fullPath = Paths.get(directoryName, UUID.randomUUID().toString());
 			Path fullPath = Paths.get(fileName);
-
-			System.out.println(fileName);
 
 			// Prepare the call from request body
 			String expirationDate = req.queryParams("expirationDate");
@@ -104,24 +93,16 @@ public class DocumentHandler {
 				expirationDate = null;
 			}
 			stmt = conn.prepareCall("{call insertDoc(?, ?, ?, ?, ?, ?, ?, ?)}");
-			System.out.println(req.queryParams("pinned"));
 			stmt.setString(1, req.queryParams("pinned"));
-			System.out.println(req.queryParams("groupID"));
 			stmt.setInt(2, Integer.parseInt(req.queryParams("groupID")));
-			System.out.println(req.queryParams("name"));
 			stmt.setString(3, req.queryParams("name"));
-			System.out.println(req.queryParams("description"));
 			stmt.setString(4, req.queryParams("description"));
-			System.out.println(req.queryParams("category"));
 			stmt.setString(5, req.queryParams("category"));
-			System.out.println("fileName: " + fileName);
 			stmt.setString(6, fileName);
-			System.out.println("expDate: " + expirationDate);
 			stmt.setString(7, expirationDate);
 			stmt.registerOutParameter(8, Types.INTEGER);
 			stmt.executeUpdate();
 			int outID = stmt.getInt(8);
-			System.out.println("outID: " + outID);
 
 			try (final InputStream in = uploadedFile.getInputStream()) {
 				Files.copy(in, fullPath, StandardCopyOption.REPLACE_EXISTING);
@@ -130,23 +111,24 @@ public class DocumentHandler {
 
 			// cleanup
 			MCE = null;
-			// parts = null;
 			uploadedFile = null;
 
-			// Need to return CacheEntry for this user + the document stuff
-//			return new JsonResponse("SUCCESS", "", "Successfully inserted document.");
+			// SUCCESSFUL response
 			response.redirect(req.headers("Referer"));
 			return "";
+			
 		} catch (SQLException sqlE) {
+			// ERROR in SQL response
 			sqlE.printStackTrace();
 			response.redirect(req.headers("Referer"));
 			return "";
-//			return new JsonResponse("ERROR", "", "SQLError in Add document");
+			
 		} catch (ServletException srvE) {
+			// SERVELET error
 			srvE.printStackTrace();
-//			return new JsonResponse("ERROR", "", "ServletException in Add document");
 			response.redirect(req.headers("Referer"));
 			return "";
+			
 		} finally {
 			conn.close();
 		}
@@ -164,8 +146,6 @@ public class DocumentHandler {
 			MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
 			req.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
 
-			// TODO if they do not change the actual document then only need these params
-			// if they do change the file then we need the same params as addDoc
 			stmt = conn.prepareStatement(
 					"UPDATE documents SET name = ?, description = ?, category = ?, expirationDate = ? WHERE docID = ?");
 			stmt.setString(1, req.queryParams("name").toString());
@@ -180,7 +160,6 @@ public class DocumentHandler {
 			if (ret == 1) {
 				// Should not need to touch anything on the file system here, since we only
 				// touched the database entry for it.
-				// TODO: Build the CacheEntry + new document stuff.
 				return new JsonResponse("SUCCESS",
 						getReturnedDocument(Integer.parseInt(req.queryParams("documentID")), conn),
 						"Successfully edited document");
@@ -197,18 +176,11 @@ public class DocumentHandler {
 	}
 
 	// Successfully removes the document from all appropriate tables.
-	// TODO: -Build the response correctly.
-	// -Test more extensively.
 	public static JsonResponse removeDoc(HikariDataSource ds, Request req) throws SQLException {
 		Connection conn = null;
 		CallableStatement stmt = null;
 
 		try {
-
-			// Must be called to pull body parts as queryParams
-//			MultipartConfigElement multipartConfigElement = new MultipartConfigElement("/tmp");
-//			req.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
-
 			conn = ds.getConnection();
 
 			// Prepare the call from request body
@@ -217,15 +189,11 @@ public class DocumentHandler {
 			JsonObject document = jsonO.get("document").getAsJsonObject();
 
 			stmt = conn.prepareCall("{call delDoc(?)}");
-//			stmt.setInt(1, Integer.parseInt(req.queryParams("documentID")));
 			stmt.setInt(1, document.get("documentID").getAsInt());
 			int ret = stmt.executeUpdate();
 
 			String PATH = File.separator + "platypus" + File.separator + "users";
-//			String directoryName = PATH + File.separator + req.queryParams("userID").toString() + File.separator;
 			String directoryName = PATH + File.separator + jsonO.get("userID").getAsInt() + File.separator;
-			// stmt.setInt(3, group.get("groupID").getAsInt());
-//			String fName = req.queryParams("fileName");
 			File f = new File(document.get("fileName").getAsString());
 			String fName = f.getName();
 			String fullPath = directoryName.concat(fName);
@@ -247,8 +215,6 @@ public class DocumentHandler {
 			}
 
 			if (ret != 0) {
-				// TODO: Need to return CacheEntry for this user + the documentInfo
-				// -Delete the file off the file system as well.
 				return new JsonResponse("SUCCESS", "", "Successfully deleted document.");
 			} else {
 				// There is no document with that documentID
@@ -269,7 +235,7 @@ public class DocumentHandler {
 			stmt.setString(1, request.queryParams("docID"));
 			ResultSet results = stmt.executeQuery();
 			if (!results.next()) {
-				// TODO maybe show a real error code?
+				// Error occurred
 				return null;
 			}
 			String fileLocation = results.getString(1);
@@ -323,9 +289,6 @@ public class DocumentHandler {
 			d.setPinned(rs.getBoolean(ItemFilter.getColumnWithName("pinned", rs)));
 		}
 		rs.close();
-
 		return d;
-
 	}
-
 }

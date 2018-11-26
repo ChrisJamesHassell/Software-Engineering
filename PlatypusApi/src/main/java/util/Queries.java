@@ -35,7 +35,6 @@ public class Queries {
 		ps.setInt(1, userId);
 		ResultSet rs = ps.executeQuery();
 		ps.close();
-//		conn.close();
 		return rs;
 	}
 	
