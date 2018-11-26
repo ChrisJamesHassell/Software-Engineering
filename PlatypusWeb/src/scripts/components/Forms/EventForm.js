@@ -1,15 +1,7 @@
 import React from 'react';
 import { Modal, Button, Form, Col, ControlLabel, FormGroup, FormControl, Checkbox, Glyphicon } from 'react-bootstrap';
 import moment from 'moment';
-import { getRandomId } from '../../fetchHelpers';
-
-const categoryOptions = [
-    { label: 'Appliances', value: 'APPLIANCES' },
-    { label: 'Auto', value: 'AUTO' },
-    { label: 'Meals', value: 'MEALS' },
-    { label: 'Medical', value: 'MEDICAL' },
-    { label: 'Miscellaneous', value: 'MISCELLANEOUS' },
-];
+import { getRandomId, categoryOptions } from '../../fetchHelpers';
 
 // Calendar requires the fields: id, title, start, end
 const fieldMap = {
@@ -24,6 +16,7 @@ const defaultVals = {
     start: null,
     end: null,
     isSelf: true,
+    initialLoaded: false,
     data: {
         name: '',
         category: '',
@@ -32,11 +25,9 @@ const defaultVals = {
         startDate: '',
         endDate: '',
         location: '',
-        pinned: ''
+        pinned: 0
     }
 }
-
-
 
 // ======================================================= //
 //  EVENTFORM
@@ -51,17 +42,20 @@ export default class EventForm extends React.Component {
         this.setState({ id: getRandomId(this.props.events) });
     }
 
+    static getDerivedStateFromProps = (nextProps, prevState) => {
+        if (!prevState.initialLoaded) {
+            if (nextProps.visible) return { initialLoaded: true, data: { ...nextProps.data.data } };
+            else return defaultVals;
+        }
+        return null;
+    }
+
     handleChange = (e) => {
         let { id, value } = e;
         let stateIndex = fieldMap[id];
-        if (this.props.formData) {
-            this.setState({ formData: this.props.formData })
-            this.setState({ formData: { ...this.props.formData, [id]: value } })
-        }
-        if (['name', 'startDate', 'endDate'].includes(id)) {
-            this.setState({ [stateIndex]: value });
-        }
-        this.setState({ data: { ...this.state.data, [id]: value } });
+
+        if (['name', 'startDate', 'endDate'].includes(id)) this.setState({ [stateIndex]: value });
+        this.setState(Object.assign({ data: {} }, { data: { ...this.state.data, [id]: value } }))
     }
 
     handleCheck = (e) => {
@@ -69,8 +63,9 @@ export default class EventForm extends React.Component {
     }
 
     handleDelete = () => {
-        const request = { event: { eventID: this.props.formData.eventID } };
-        this.props.deleteEvent(request);
+        const request = { event: { eventID: this.state.data.eventID } };
+        this.setState({ ...defaultVals }); // Clears the form
+        this.props.onDelete(request);
     }
 
     handleSubmit = () => {
@@ -80,8 +75,13 @@ export default class EventForm extends React.Component {
         const endHour = moment(endDate).hour();
 
         const start = startHour === 0 ? moment(startDate).add(2, 'hours').toDate() : moment(startDate).toDate();
-        const end = endHour === 0 ? moment(endDate).add(2, 'hours').toDate(): moment(endDate).toDate();
-
+        const end = endHour === 0 ? moment(endDate).add(2, 'hours').toDate() : moment(endDate).toDate();
+        const data = {
+            ...this.state.data,
+            notification: this.state.data.notification ? moment(this.state.data.notification).format('MMM DD, YYYY') : null,
+            startDate: moment(start).format('MMM DD, YYYY'),
+            endDate: moment(end).format('MMM DD, YYYY'),
+        };
         let event = {};
         if (this.props.modal === 'Create') {
             event = Object.assign(
@@ -89,41 +89,26 @@ export default class EventForm extends React.Component {
                 { ...this.state },
                 { start },
                 { end },
-                {
-                    data: {
-                        ...this.state.data,
-                        startDate: moment(start).format('YYYY-MM-DD'),
-                        endDate: moment(end).format('YYYY-MM-DD')
-                    }
-                }
+                { data: data }
             )
         }
-        else {
-            event = {
-                ...this.state.formData,
-                startDate: moment(this.state.formData.startDate).format('YYYY-MM-DD'),
-                endDate: moment(this.state.formData.endDate).format('YYYY-MM-DD')
-            };
-        }
+        else event = data;
 
-        this.setState({ ...defaultVals }); // Clears the form
+        this.onClose();
         this.props.handleSubmission(event, this.props.modal);
     }
 
-    getValue = (key) => {
-        const hasFormData = this.props.formData;
-        const value = this.state.data[key].length < 1 && hasFormData ?
-            this.props.formData[key] :
-            this.state.data[key];
-        return value;
+    onClose = () => {
+        this.setState({ ...defaultVals }); // Clears the form
+        this.props.handleClose();
     }
 
     render() {
         let start = this.state.data.startDate || moment(this.props.data.start).format('YYYY-MM-DD');
-        let end = this.state.data.endDate || moment(this.props.data.end).format('YYYY-MM-DD')
+        let end = this.state.data.endDate || moment(this.props.data.end).format('YYYY-MM-DD');
 
         return (
-            <Modal show={this.props.visible} onHide={this.props.handleClose} style={{ width: '100%' }}>
+            <Modal show={this.props.visible} onHide={this.onClose} style={{ width: '100%' }}>
                 <Modal.Header style={{ background: this.props.modal === 'Edit' ? '#f5c900' : '#18bc9c', color: 'white' }} closeButton>
                     <Modal.Title>{this.props.modal} Event</Modal.Title>
                 </Modal.Header>
@@ -134,7 +119,7 @@ export default class EventForm extends React.Component {
                             <FormControl
                                 type="text"
                                 placeholder="Name of the event..."
-                                value={this.getValue('name')}
+                                value={this.state.data.name || ''}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -146,7 +131,7 @@ export default class EventForm extends React.Component {
                             <FormControl
                                 componentClass="select"
                                 placeholder="Select a category..."
-                                value={this.getValue('category')}
+                                value={this.state.data.category}
                                 onChange={e => this.handleChange(e.target)}
                             >
                                 {categoryOptions.map((category) => {
@@ -162,7 +147,7 @@ export default class EventForm extends React.Component {
                             <FormControl
                                 type="text"
                                 placeholder=""
-                                value={this.getValue('description')}
+                                value={this.state.data.description || ''}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -173,8 +158,7 @@ export default class EventForm extends React.Component {
                         <Col sm={9}>
                             <FormControl
                                 type="date"
-                                placeholder={Date.now()}
-                                value={this.getValue('notification')}
+                                value={this.state.data.notification || ''}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -185,7 +169,7 @@ export default class EventForm extends React.Component {
                         <Col sm={9}>
                             <FormControl
                                 type="date"
-                                value={this.state.data.startDate || start}
+                                value={start}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -196,7 +180,7 @@ export default class EventForm extends React.Component {
                         <Col sm={9}>
                             <FormControl
                                 type="date"
-                                value={this.state.data.endDate || end}
+                                value={end}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -208,7 +192,7 @@ export default class EventForm extends React.Component {
                             <FormControl
                                 type="text"
                                 placeholder=""
-                                value={this.getValue('location')}
+                                value={this.state.data.location || ''}
                                 onChange={e => this.handleChange(e.target)}
                             />
                         </Col>
@@ -219,22 +203,22 @@ export default class EventForm extends React.Component {
                         <Col sm={9}>
                             <Checkbox
                                 className="cb"
-                                style={{ background: this.getValue('pinned') ? '#18bc9c' : '#eee' }}
-                                checked={this.getValue('pinned')}
+                                style={{ background: this.state.data.pinned ? '#18bc9c' : '#eee' }}
+                                checked={this.state.data.pinned || 0}
                                 onChange={e => this.handleCheck(e.target)}>
                                 <Glyphicon
                                     className="cb-check"
                                     glyph="ok"
-                                    style={{ color: 'white', fontSize: this.getValue('pinned') ? '15px' : '0', transition: 'font-size .5s', top: '-5px' }}
+                                    style={{ color: 'white', fontSize: this.state.data.pinned ? '15px' : '0', transition: 'font-size .5s', top: '-5px' }}
                                 />
                             </Checkbox>
                         </Col>
                     </FormGroup>
                 </Form>
                 <Modal.Footer>
-                    {this.props.modal === 'Edit' && <Button bsStyle="danger" onClick={this.handleDelete}><b>DELETE</b></Button>}
                     <Button onClick={this.handleSubmit}><b>SUBMIT</b></Button>
-                    <Button onClick={this.props.handleClose}><b>CLOSE</b></Button>
+                    <Button onClick={this.onClose}><b>CLOSE</b></Button>
+                    {this.props.modal === 'Edit' && <Button bsStyle="danger" onClick={this.handleDelete}><b>DELETE</b></Button>}
                 </Modal.Footer>
 
             </Modal>

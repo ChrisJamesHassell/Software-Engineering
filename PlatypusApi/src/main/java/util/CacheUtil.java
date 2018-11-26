@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
@@ -29,47 +28,15 @@ import platypus.api.models.Priority;
 import platypus.api.models.Task;
 import platypus.api.models.TaskWrapper;
 
-
 public class CacheUtil {
-
-	/*
-
-	public static CacheEntry buildCacheEntry(Request req, Connection conn) throws SQLException {
-
-		// Parse request to fill the bulk of the CacheEntry object.
-		JsonObject o = new JsonParser().parse(req.body()).getAsJsonObject();
-		int userId = o.get("userId").getAsInt();
-		String userName = o.get("userName").getAsString();
-		int groupId = o.get("groupId").getAsInt();
-		String groupName = o.get("groupName").getAsString();
-
-		// Use request info to get a list of all groups associated with the user.
-		// TODO: Update to retrieve all correct info later.
-		PreparedStatement ps = conn.prepareStatement("SELECT groupId, groupName FROM belongs_to inner join groups on groupId where belongs_to.userID = ?");
-		ps.setInt(1, userId);
-		ResultSet rs = ps.executeQuery();
-		ps.close();
-
-		GroupyWrapper[] groupyWrappers = new GroupyWrapper[getResultSetSize(rs)];
-
-		int ct = 0;
-		while (rs.next()) {
-			groupyWrappers[ct] = new GroupyWrapper(rs.getInt(1), rs.getString(2));
-			ct++;
-		}
-
-		return new CacheEntry(userName, userId, groupId, groupName, groupyWrappers);
-
-	}
-
-	*/
 
 	public static CacheEntry buildCacheEntry(String userName, int id, Connection conn) throws SQLException {
 
 		// Use userId to get groupId & groupName for the user's self group.
-		PreparedStatement ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
-													+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
-													+ "WHERE belongs_to.userID = ? and belongs_to.self = '1'");
+		PreparedStatement ps = conn
+				.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
+						+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
+						+ "WHERE belongs_to.userID = ? and belongs_to.self = '1'");
 		ps.setInt(1, id);
 		ResultSet rs = ps.executeQuery();
 		ps.close();
@@ -80,8 +47,7 @@ public class CacheUtil {
 		rs.close();
 
 		ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
-									+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
-									+ "WHERE belongs_to.userID = ?");
+				+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID " + "WHERE belongs_to.userID = ?");
 		ps.setInt(1, id);
 		rs = ps.executeQuery();
 		ps.close();
@@ -95,8 +61,6 @@ public class CacheUtil {
 		}
 		rs.close();
 
-		// TODO, verify that a user with multiple groups gets the right cacheEntry return.
-		// Needs a user in multiple groups.
 		return new CacheEntry(userName, id, groupId, groupName, groupyWrappers);
 
 	}
@@ -104,13 +68,8 @@ public class CacheUtil {
 	public static LoginEntry buildLoginEntry(String userName, int id, Connection conn) throws SQLException {
 		// Populate guaranteed returns
 		CacheEntry ce = buildCacheEntry(userName, id, conn);
-		LoginEntry loginEntry = new LoginEntry(
-				ce.getUsername(),
-				ce.getId(),
-				ce.getGroupId(),
-				ce.getselfGroupName(),
-				ce.getGroupyWrapper()
-		);
+		LoginEntry loginEntry = new LoginEntry(ce.getUsername(), ce.getId(), ce.getGroupId(), ce.getselfGroupName(),
+				ce.getGroupyWrapper());
 
 		// Get all tasks that meet filter criteria.
 		ResultSet rs = Queries.getItems(ItemType.TASK, conn, id);
@@ -225,13 +184,11 @@ public class CacheUtil {
 
 	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {
 
-		// TODO, verify that MM-dd is correct and not dd-MM;
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
 		if (itemDate != null) {
 
 			Date currentDate = new Date();
-			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)), ZoneId.systemDefault());
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)),
+					ZoneId.systemDefault());
 			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
 			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
@@ -250,9 +207,9 @@ public class CacheUtil {
 		ResultSetMetaData md = rs.getMetaData();
 		int count = md.getColumnCount();
 		for (int i = 1; i <= count; i++) {
-		    if (md.getColumnName(i).equals(s)) {
-		        return i;
-		    }
+			if (md.getColumnName(i).equals(s)) {
+				return i;
+			}
 		}
 
 		// Doesn't exist

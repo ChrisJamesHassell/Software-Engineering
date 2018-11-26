@@ -14,7 +14,7 @@ public class InitService {
 
 	public static void initNotificationService(HikariDataSource ds, Properties emailConfig) {
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(new NotificationEngine(ds, emailConfig), 1, 30, TimeUnit.MINUTES);
+		scheduler.scheduleAtFixedRate(new NotificationEngine(ds, emailConfig), 1, 12, TimeUnit.HOURS);
 	}
 
 	public static HikariDataSource initDatabase() {
@@ -24,23 +24,6 @@ public class InitService {
 		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/platypus");
 		ds.addDataSourceProperty("user", "platypus");
 		ds.addDataSourceProperty("password", "mydogfartsblue!ps");
-		/* To create a mysql user in terminal:
-			
-			sudo su #swaps to root user
-			mysql --user=root mysql #launches a local connection to the mysql database as root
-
-			MariaDB [mysql]> DROP USER platypus@localhost;
-			Query OK, 0 rows affected (0.00 sec)
-			
-			MariaDB [mysql]> FLUSH PRIVILEGES;
-			Query OK, 0 rows affected (0.00 sec)
-			
-			MariaDB [mysql]> CREATE USER 'platypus'@'localhost' IDENTIFIED BY 'mydogfartsblue!ps';
-			Query OK, 0 rows affected (0.00 sec)
-			
-			MariaDB [mysql]> GRANT ALL PRIVILEGES ON platypus.* TO 'platypus'@'localhost' WITH GRANT OPTION;
-			Query OK, 0 rows affected (0.00 sec)
-		 */
 		ds.setAutoCommit(true); // Changed to true
 		return ds;
 	}
@@ -49,18 +32,17 @@ public class InitService {
 		Properties emailConfig = new Properties();
 		emailConfig.put("mail.smtp.auth", true);
 		emailConfig.put("mail.smtp.starttls.enable", "true");
-		emailConfig.put("mail.smtp.host", "smtp.gmail.com"); // TODO
+		emailConfig.put("mail.smtp.host", "smtp.gmail.com");
 		emailConfig.put("mail.smtp.port", "587");
-		emailConfig.put("username", "setest465@gmail.com"); // TODO: set this
-		emailConfig.put("password", "mydogfartsblue!ps"); // TODO: set this
+		emailConfig.put("username", "setest465@gmail.com");
+		emailConfig.put("password", "mydogfartsblue!ps");
 		return emailConfig;
 	}
 
 	public static void initSparkConfig() {
-		// Force the server to only listen on localhost:8080. Nginx will forward to this
-		// interface / port.
+		// Force the server to only listen on localhost:8080. Nginx will forward to this interface / port.
 		Spark.ipAddress("127.0.0.1");
-		Spark.port(8080); // TODO: This will probably need to be changed
+		Spark.port(8080);
 		Spark.options("/*", (request, response) -> {
 
 			String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");

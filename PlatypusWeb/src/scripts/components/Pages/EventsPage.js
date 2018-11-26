@@ -3,9 +3,7 @@ import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import qs from 'qs';
 import EventForm from '../Forms/EventForm';
-import { path } from '../../fetchHelpers';
-import { getRandomId } from '../../fetchHelpers';
-
+import { path, categoryColor } from '../../fetchHelpers';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.less'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 const localizer = BigCalendar.momentLocalizer(moment)
@@ -53,6 +51,7 @@ export class Events extends React.Component {
             modal: '',
             show: false,
             data: {},
+            method: '',
             currentId: null,
             currentStart: null,
             currentEnd: null
@@ -75,6 +74,7 @@ export class Events extends React.Component {
     }
 
     componentDidMount() {
+        this.setState({ method: 'GET' });
         const url = `${path}/app/event?${qs.stringify({
             category: 'null',
             groupID: localStorage.getItem('selfGroupId'),
@@ -99,9 +99,9 @@ export class Events extends React.Component {
                 eventID: item.itemID,
                 location: item.location,
                 name: item.name,
-                notification: moment(item.notification).format('YYYY-MM-DD'),
-                startDate: item.start,
-                endDate: item.end,
+                notification: item.notification ? moment(item.notification).format('YYYY-MM-DD') : '',
+                startDate: moment(item.start).format('YYYY-MM-DD'),
+                endDate: moment(item.end).format('YYYY-MM-DD'),
                 pinned: item.pinned ? 1 : 0
             }
         }
@@ -129,8 +129,8 @@ export class Events extends React.Component {
     }
 
     // === HANDLEDELETE === //
-    deleteEvent = (props, modal) => {
-        this.setState({ currentId: props.event.eventID });
+    onDelete = (props, modal) => {
+        this.setState({ currentId: props.event.eventID, method: 'POST' });
         const url = `${path}/app/event/delete`;
         this.fetchRequest(url, 'POST', props, true);
         this.handleClose();
@@ -149,7 +149,8 @@ export class Events extends React.Component {
     }
 
     // === EDITEVENT === //
-    editEvent = async (props, isEdit) => {
+    editEvent = (props, isEdit) => {
+        this.setState({ method: 'POST' });
         const url = `${path}/app/event/update`;
         const request = { event: { ...props } }
 
@@ -171,7 +172,6 @@ export class Events extends React.Component {
             this.state.events.forEach((item, index) => { if (item.id === event.id) editedIndex = index; });
             events[editedIndex] = event;
         }
-
         return events;
     }
 
@@ -185,17 +185,21 @@ export class Events extends React.Component {
     handleJsonResponse(response, isEdit = false) {
         let { data: event } = response;
         let events = [];
-
-        /* TODO: Eventually, we need to allow TIME to be saved in the database 
+        /* TODO: Eventually, we need to allow TIME to be saved in the database
             so that the "weekly" and "daily" views show the correct span and PERSIST it
         */
-        if (event.length > 0) { // Then it's an initial GET request which will return multiple events
-            event.forEach(item => {
-                events.push(this.getFormattedItem(item.event));
-            })
+        if (this.state.method === 'GET') { // Then it's an initial GET request which will return multiple events
+            this.setState({ method: '' });  // Reset it
+            if (event.length < 1) events = []; // Make sure we have events before doing any work
+            else {
+                event.forEach(item => {
+                    events.push(this.getFormattedItem(item.event));
+                })
+            }
         }
 
         else {
+            this.setState({ method: '' }); // Reset method
             if (this.state.currentStart) event = { ...event, start: this.state.currentStart, end: this.state.currentEnd };
             const formattedEvent = this.getFormattedItem(event);
             this.setState({ currentStart: null, currentEnd: null });
@@ -209,17 +213,8 @@ export class Events extends React.Component {
     }
 
     eventStyleGetter = (event) => {
-        const category = event.data.category;
-        const bgColor = {
-            'APPLIANCES': '#229ac7',
-            'AUTO': '#18bc9c',
-            'MEALS': '#e8c422',
-            'MEDICAL': '#f8666b',
-            'MISCELLANEOUS': '#a28ad7'
-        }
-
         var style = {
-            backgroundColor: bgColor[category],
+            backgroundColor: categoryColor[event.data.category],
             borderRadius: '0px',
             opacity: 0.8,
             color: 'white',
@@ -227,6 +222,7 @@ export class Events extends React.Component {
             display: 'block',
             fontWeight: 600
         };
+
         return {
             style: style
         };
@@ -240,9 +236,9 @@ export class Events extends React.Component {
                     modal={this.state.modal}
                     handleClose={this.handleClose}
                     data={this.state.data}
-                    formData={this.state.data.data}
+                    // formData={this.state.data.data}
                     events={this.state.events}
-                    deleteEvent={this.deleteEvent}
+                    onDelete={this.onDelete}
                     handleSubmission={this.handleSubmission}
                 />
                 <BigCalendar

@@ -4,6 +4,23 @@ const path = window.location.origin.toLowerCase().includes('platypus')
 
 const categories = ['Appliances', 'Auto', 'Meals', 'Medical', 'Miscellaneous'];
 
+const categoryOptions = [
+  { label: 'Pick a category...', value: '' },
+  { label: 'Appliances', value: 'APPLIANCES' },
+  { label: 'Auto', value: 'AUTO' },
+  { label: 'Meals', value: 'MEALS' },
+  { label: 'Medical', value: 'MEDICAL' },
+  { label: 'Miscellaneous', value: 'MISCELLANEOUS' },
+];
+
+function catMap(key) {
+  let catMap = {};
+  categoryOptions.map(category =>{
+    catMap[category.label] = category.value;
+  });
+  return catMap[key];
+}
+
 function deleteAllCookies() {
   const cookies = document.cookie.split(';');
   for (let i = 0; i < cookies.length; i += 1) {
@@ -27,10 +44,37 @@ function getRandomId(events) {
   return id;
 }
 
+function getPriorityStyle(key, index, completed = false, props) {
+  let classStyle = null;
+  if (completed) classStyle = "default";
+  let priorityMap = {
+      "LOW": { class: classStyle || "info", value: "LOW", key: 1, color: '#3498db' },
+      "MID": { class: classStyle || "warning", value: "MEDIUM", key: 2, color: '#f39c12' },
+      "HIGH": { class: classStyle || "danger", value: "HIGH", key: 3, color: '#e74c3c' }
+  }
+  return priorityMap[key];
+}
+
+const filterProps = {
+  task: 'deadline',
+  event: 'endDate',
+  doc: 'expirationDate'
+}
+
+const itemTypes = ['task', 'event', 'doc'];
+
+const categoryColor = {
+  'APPLIANCES': '#229ac7',
+  'AUTO': '#18bc9c',
+  'MEALS': '#e8c422',
+  'MEDICAL': '#f8666b',
+  'MISCELLANEOUS': '#a28ad7'
+}
+
 const hasCookie = document.cookie.length > 0;
 
 const currentPath = window.location.pathname;
 
 export {
-  categories, path, currentPath, hasCookie, deleteAllCookies, getRandomId
+  categories, path, currentPath, hasCookie, deleteAllCookies, getRandomId, categoryColor, itemTypes, getPriorityStyle, filterProps, categoryOptions, catMap
 };

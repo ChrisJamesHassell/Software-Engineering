@@ -4,7 +4,10 @@
 }
 
 @import url('https://fonts.googleapis.com/css?family=Raleway:300,500,800|Roboto:300,700');
-html, body, #root, #container {
+html,
+body,
+#root,
+#container {
   height: 100%;
   background: #47b5ab;
   font-family: 'Roboto', sans-serif;
@@ -13,12 +16,15 @@ html, body, #root, #container {
   color: #3f5261;
 }
 
-#container>nav>div, #left-nav-container {
+#container>nav>div,
+#left-nav-container {
   margin: 0;
   width: 100%;
 }
 
-#content, #left-nav, #left-nav-container {
+#content,
+#left-nav,
+#left-nav-container {
   height: 100%;
 }
 
@@ -26,7 +32,8 @@ html, body, #root, #container {
   display: flex;
 }
 
-#content, #main-div {
+#content,
+#main-div {
   padding: 0;
   margin: 0;
   background: #f2f5f8;
@@ -136,12 +143,14 @@ a.active.btn.btn-link.disabled {
   font-weight: 300;
 }
 
-a.active.btn.btn-link, a.btn.btn-link {
+a.active.btn.btn-link,
+a.btn.btn-link {
   padding: 0;
   font-weight: 700;
 }
 
-button:disabled, button[disabled] {
+button:disabled,
+button[disabled] {
   background: #929db1;
   border-color: #929db1;
 }
@@ -201,31 +210,48 @@ button:disabled, button[disabled] {
   letter-spacing: .5px;
 }
 
+.dash-panel {
+  min-width: 400px;
+  flex: 1;
+  margin: 20px;
+}
+
 .dash-body {
   margin: .5em;
 }
 
 .dash-body-type {
   font-family: 'Raleway', sans-serif;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1.5em;
   /* border-bottom: 2px dashed #18bc9c; */
-  margin: 1em 0 1em 0;
-  background: #b4bfbd;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding-left: 1em;
+  margin: .5em 0 .5em 0;
+  /* background: #b4bfbd; */
+  color: #b4bfbd;
+  /* text-transform: uppercase; */
+  letter-spacing: .5px;
+  /* padding-left: 1em; */
+  align-items: center;
+}
+
+.dash-type-add {
+  color: #18bc9c;
+  font-size: .8em;
+  display: flex;
+  border: .21em solid;
+  padding: .6em .6em .4em .6em;
+  border-radius: 25px;
 }
 
 .dash-body-complete {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: white;
 }
 
 .dash-body-complete-glyph {
-  color: #18bc9c;
+  color: #95a5a6;
   font-size: 3em;
 }
 
@@ -233,8 +259,16 @@ button:disabled, button[disabled] {
   padding: 1em 0 1em 0;
 }
 
+.dash-body-buttons {
+  display: flex;
+  color: #18bc9c;
+  font-weight: 500;
+  font-size: .8em;
+}
+
 .ReactTable {
   border: 0;
+  background: white;
 }
 
 .ReactTable .rt-thead.-header {
@@ -262,17 +296,17 @@ button:disabled, button[disabled] {
   margin: 0;
 }
 
-.rbc-month-view, 
-.rbc-time-view, 
-.rbc-time-view, 
-.rbc-agenda-view, 
-.rbc-day-slot.rbc-time-column.rbc-now.rbc-today{
+.rbc-month-view,
+.rbc-time-view,
+.rbc-time-view,
+.rbc-agenda-view,
+.rbc-day-slot.rbc-time-column.rbc-now.rbc-today {
   background: white;
 }
 
-tbody > tr > td.rbc-agenda-event-cell, 
-tbody > tr > td.rbc-agenda-time-cell,
-tbody > tr > td.rbc-agenda-date-cell {
+tbody>tr>td.rbc-agenda-event-cell,
+tbody>tr>td.rbc-agenda-time-cell,
+tbody>tr>td.rbc-agenda-date-cell {
   background: white;
   color: black;
   font-weight: 500;
@@ -287,7 +321,8 @@ tbody > tr > td.rbc-agenda-date-cell {
 
 /* Hide the default checkbox */
 
-.checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -313,6 +348,16 @@ span.cb-check {
 
 .panel-default>.panel-heading {
   background: white;
+}
+
+/* CATEGORY PAGES */
+
+.category-layout {
+  display: flex;
+}
+
+.category-box {
+  flex: 1;
 }
 
 /* ***********************************XSmall devices (landscape phones, 0px and up)*********************************** */
@@ -422,7 +467,8 @@ span.cb-check {
   }
 }
 
-.task, .task-list {
+.task,
+.task-list {
   border: solid 1px lightgrey;
   padding: 8px;
 }
@@ -492,7 +538,8 @@ span.cb-check {
     background: transparent;
     margin-left: -4px;
   }
-  .nav>li>a:hover, .nav>li>a:focus {
+  .nav>li>a:hover,
+  .nav>li>a:focus {
     background: transparent;
   }
   #left-nav {

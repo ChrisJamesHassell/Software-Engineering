@@ -5,18 +5,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.google.gson.JsonObject;
 
 import platypus.api.models.Category;
 import platypus.api.models.Document;
@@ -34,7 +28,6 @@ public class ItemFilter {
 	public static TaskWrapper[] getTasks(Connection conn, Request r) throws SQLException {
 
 		int userId = Integer.parseInt(r.queryParams("userID"));
-		int groupId = Integer.parseInt(r.queryParams("groupID"));
 		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
 		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
 		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
@@ -62,8 +55,8 @@ public class ItemFilter {
 
 		Stream<TaskWrapper> stream = tasks.stream().filter(t -> {
 			if ((category == null || t.getTask().getCategory().equals(category))
-					&& ((weeksAhead == -1
-							|| (t.getTask().getDeadline() != null && dateWithin(weeksAhead, t.getTask().getDeadline()))))
+					&& ((weeksAhead == -1 || t.getTask().getDeadline() == null
+							|| dateWithin(weeksAhead, t.getTask().getDeadline())))
 					&& (pinned == null || t.getTask().isPinned() == pinned)) {
 				return true;
 			}
@@ -76,7 +69,6 @@ public class ItemFilter {
 	public static EventWrapper[] getEvents(Connection conn, Request r) throws SQLException {
 
 		int userId = Integer.parseInt(r.queryParams("userID"));
-		int groupId = Integer.parseInt(r.queryParams("groupID"));
 		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
 		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
 		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
@@ -117,7 +109,6 @@ public class ItemFilter {
 	public static DocumentWrapper[] getDocuments(Connection conn, Request r) throws SQLException {
 
 		int userId = Integer.parseInt(r.queryParams("userID"));
-		int groupId = Integer.parseInt(r.queryParams("groupID"));
 		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
 		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
 		Boolean pinned = r.queryParams("pinned").equals("null") ? null : Boolean.parseBoolean(r.queryParams("pinned"));
@@ -129,7 +120,7 @@ public class ItemFilter {
 
 		while (rs.next()) {
 			Document d = new Document();
-			d.setItemID(rs.getInt(getColumnWithName("documentID", rs)));
+			d.setItemID(rs.getInt(getColumnWithName("docID", rs)));
 			d.setType(ItemType.DOCUMENT);
 			d.setName(rs.getString(getColumnWithName("name", rs)));
 			d.setDescription(rs.getString(getColumnWithName("description", rs)));
@@ -170,8 +161,6 @@ public class ItemFilter {
 
 	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {
 
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
 		if (itemDate != null) {
 
 			Date currentDate = new Date();
@@ -179,12 +168,8 @@ public class ItemFilter {
 					ZoneId.systemDefault());
 			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-			/*
-			 * System.out.println("item deadline: " +
-			 * DateFormat.getDateInstance().format(itemDate));
-			 * System.out.println("Date to compare to: " +
-			 * DateFormat.getDateInstance().format(dateToCompareTo));
-			 */
+			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
+			System.out.println("Date to compare to: " + DateFormat.getDateInstance().format(dateToCompareTo));
 
 			if (itemDate.compareTo(dateToCompareTo) < 0) {
 				return true;
