@@ -316,6 +316,11 @@ tbody>tr>td.rbc-agenda-date-cell {
   padding: .6em;
   border-radius: .4em;
 }
+/* === DRAGGABLE === */
+/* [data-react-beautiful-dnd-droppable] {
+  border: 0px;
+  padding: 0px;
+} */
 
 /* === CUSTOM CHECKBOX === */
 
@@ -467,14 +472,20 @@ span.cb-check {
   }
 }
 
+[data-react-beautiful-dnd-drag-handle]{
+  background: white;
+}
 .task,
 .task-list {
-  border: solid 1px lightgrey;
+  /* border: solid 1px lightgrey; */
   padding: 8px;
 }
-
+/* 
 .task {
   background-color: white;
+} */
+#myTasks {
+  font-family: 'Roboto', sans-serif;
 }
 
 /* ***********************************Medium devices (tablets, 768px and up)*********************************** */

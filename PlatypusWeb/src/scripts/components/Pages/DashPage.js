@@ -411,8 +411,9 @@ class DashBoxBody extends React.Component {
 //  DASHBOXHEADER
 // ================================================================== //
 export const DashBoxHeader = (props) => {
+    console.log("DASHBOXHEADERPROPS: ", props)
     return (
-        <div className='dash-header' style={{ display: 'inline-flex' }}>
+        <div className='dash-header' style={props.style || { display: 'inline-flex' }}>
             <div className='dash-header icon' style={{ position: 'relative' }}>
                 <NavIcons
                     icon={props.category}

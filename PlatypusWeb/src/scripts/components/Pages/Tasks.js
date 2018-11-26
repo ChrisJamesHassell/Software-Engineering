@@ -14,9 +14,15 @@ import {
 } from 'react-bootstrap';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { connect } from 'react-redux';
-
-import { path } from '../../fetchHelpers';
+import { DashBoxHeader } from '../Pages/DashPage';
+import { path, categoryColor } from '../../fetchHelpers';
 import TaskForm, { priorityOptions } from '../Forms/TaskForm';
+
+const priorityColors = {
+  Low: '#3498db',
+  Medium: '#f39c12',
+  High: '#e74c3c'
+}
 
 const Task = ({
   index,
@@ -28,41 +34,42 @@ const Task = ({
     completed, description, id, name,
   },
 }) => (
-  <Draggable draggableId={id} index={index}>
-    {provided => (
-      <div
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        className="task"
-        onClick={onTaskClick}
-        ref={provided.innerRef}
-      >
-        <div style={{ alignItems: 'center', display: 'flex' }}>
-          <input
-            checked={completed}
-            onChange={onTaskComplete}
-            style={{ marginLeft: 'calc(1em - 8px)', marginRight: '1em' }}
-            type="checkbox"
-          />
-          <div style={{ flexGrow: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <h4>{name}</h4>
-              <div style={{ display: 'flex' }}>
-                <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
-                  <Glyphicon glyph="pencil" />
-                </a>
-                <a href="#remove" onClick={onTaskDeleteClick}>
-                  <Glyphicon glyph="remove" />
-                </a>
+    <Draggable draggableId={id} index={index}>
+      {provided => (
+        <div
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          className="task"
+          onClick={onTaskClick}
+          ref={provided.innerRef}
+          style={{borderRadius: '10px', marginBottom: '5px'}}
+        >
+          <div style={{ alignItems: 'center', display: 'flex',}}>
+            <input
+              checked={completed}
+              onChange={onTaskComplete}
+              style={{ marginLeft: 'calc(1em - 8px)', marginRight: '1em' }}
+              type="checkbox"
+            />
+            <div style={{ flexGrow: 1, }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', }}>
+                <h4>{name}</h4>
+                <div style={{ display: 'flex' }}>
+                  <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
+                    <Glyphicon glyph="pencil" />
+                  </a>
+                  <a href="#remove" onClick={onTaskDeleteClick}>
+                    <Glyphicon glyph="remove" />
+                  </a>
+                </div>
               </div>
+              <p>{description}</p>
             </div>
-            <p>{description}</p>
           </div>
         </div>
-      </div>
-    )}
-  </Draggable>
-);
+      )}
+    </Draggable>
+  );
 
 export class TaskList extends React.Component {
   render() {
@@ -78,8 +85,8 @@ export class TaskList extends React.Component {
           return (
             <Droppable droppableId={`tasks-${priority.label.toLowerCase()}`} key={index}>
               {provided => (
-                <div {...provided.droppableProps} className="task-list" ref={provided.innerRef}>
-                  <h4>{priority.label}</h4>
+                <div {...provided.droppableProps} className="task-list" ref={provided.innerRef} style={{padding: '0',  margin: '1em'}}>
+                  <h4 style={{fontFamily: "'Raleway', sans-serif", fontWeight: '600',}}>{priority.label.toUpperCase()}</h4>
                   {tasks
                     .filter(task => task.priority === value)
                     .map(
@@ -93,16 +100,16 @@ export class TaskList extends React.Component {
                         },
                         taskIndex,
                       ) => (
-                        <Task
-                          index={taskIndex}
-                          key={taskIndex}
-                          onTaskClick={onTaskClick}
-                          onTaskComplete={onTaskComplete}
-                          onTaskDeleteClick={onTaskDeleteClick}
-                          onTaskEditClick={onTaskEditClick}
-                          task={task}
-                        />
-                      ),
+                          <Task
+                            index={taskIndex}
+                            key={taskIndex}
+                            onTaskClick={onTaskClick}
+                            onTaskComplete={onTaskComplete}
+                            onTaskDeleteClick={onTaskDeleteClick}
+                            onTaskEditClick={onTaskEditClick}
+                            task={task}
+                          />
+                        ),
                     )}
                   {provided.placeholder}
                 </div>
@@ -348,7 +355,7 @@ class Tasks extends React.Component {
             style={{ alignItems: 'flex-end', display: 'flex', justifyContent: 'space-between' }}
             xs={12}
           >
-            <h2 style={{ width: 'fit-content' }}>Tasks</h2>
+            {/* <h2 style={{ width: 'fit-content' }}>Tasks</h2>
             <Button
               bsSize="sm"
               bsStyle="primary"
@@ -356,15 +363,19 @@ class Tasks extends React.Component {
               style={{ height: 'fit-content', marginBottom: '10.5px' }}
             >
               Create Task
-            </Button>
+            </Button> */}
+            <DashBoxHeader
+              style={{ display: 'inline-flex', padding: '.5em', background: '#33363b', marginBottom: '1em', borderRadius: '5px' }}
+              category={'tasks'}
+              options={() => <Button bsStyle="success" style={{ borderRadius: '15px', margin: '.5em' }} onClick={this.onTaskCreateClick}><Glyphicon style={{ fontSize: '1.1em', paddingRight: '5px', paddingTop: '2px' }} glyph="plus-sign" /><b>CREATE TASK</b></Button>} />
           </Col>
         </Row>
         {Object.keys(tasks).map((value, index) => (
-          <Panel bsStyle="success" key={index}>
-            <Panel.Heading>
-              <Panel.Title componentClass="h3">{value}</Panel.Title>
+          <Panel key={index}>
+            <Panel.Heading style={{ background: categoryColor[value], border: '0' }}>
+              <Panel.Title componentClass="h3" style={{ color: 'white', fontWeight: '600', fontSize: '1.5em', fontFamily: 'Roboto, sans-serif' }}><b>{value.toLowerCase()}</b></Panel.Title>
             </Panel.Heading>
-            <Panel.Body>
+            <Panel.Body style={{padding: '0', background: '#d0d7da'}}>
               <DragDropContext onDragEnd={this.onDragEnd}>
                 <TaskList
                   tasks={tasks[value].map(task => ({

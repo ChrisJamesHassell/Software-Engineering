@@ -66,7 +66,6 @@ export default (state = {}, action) => {
           ...obj,
           [action.payload.category]: [...items, action.payload]
         }
-
       }
 
       return {
