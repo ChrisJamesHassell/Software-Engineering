@@ -4,7 +4,10 @@
 }
 
 @import url('https://fonts.googleapis.com/css?family=Raleway:300,500,800|Roboto:300,700');
-html, body, #root, #container {
+html,
+body,
+#root,
+#container {
   height: 100%;
   background: #47b5ab;
   font-family: 'Roboto', sans-serif;
@@ -13,12 +16,15 @@ html, body, #root, #container {
   color: #3f5261;
 }
 
-#container>nav>div, #left-nav-container {
+#container>nav>div,
+#left-nav-container {
   margin: 0;
   width: 100%;
 }
 
-#content, #left-nav, #left-nav-container {
+#content,
+#left-nav,
+#left-nav-container {
   height: 100%;
 }
 
@@ -26,7 +32,8 @@ html, body, #root, #container {
   display: flex;
 }
 
-#content, #main-div {
+#content,
+#main-div {
   padding: 0;
   margin: 0;
   background: #f2f5f8;
@@ -136,12 +143,14 @@ a.active.btn.btn-link.disabled {
   font-weight: 300;
 }
 
-a.active.btn.btn-link, a.btn.btn-link {
+a.active.btn.btn-link,
+a.btn.btn-link {
   padding: 0;
   font-weight: 700;
 }
 
-button:disabled, button[disabled] {
+button:disabled,
+button[disabled] {
   background: #929db1;
   border-color: #929db1;
 }
@@ -206,6 +215,7 @@ button:disabled, button[disabled] {
   flex: 1;
   margin: 20px;
 }
+
 .dash-body {
   margin: .5em;
 }
@@ -286,11 +296,17 @@ button:disabled, button[disabled] {
   margin: 0;
 }
 
-.rbc-month-view, .rbc-time-view, .rbc-time-view, .rbc-agenda-view, .rbc-day-slot.rbc-time-column.rbc-now.rbc-today {
+.rbc-month-view,
+.rbc-time-view,
+.rbc-time-view,
+.rbc-agenda-view,
+.rbc-day-slot.rbc-time-column.rbc-now.rbc-today {
   background: white;
 }
 
-tbody>tr>td.rbc-agenda-event-cell, tbody>tr>td.rbc-agenda-time-cell, tbody>tr>td.rbc-agenda-date-cell {
+tbody>tr>td.rbc-agenda-event-cell,
+tbody>tr>td.rbc-agenda-time-cell,
+tbody>tr>td.rbc-agenda-date-cell {
   background: white;
   color: black;
   font-weight: 500;
@@ -305,7 +321,8 @@ tbody>tr>td.rbc-agenda-event-cell, tbody>tr>td.rbc-agenda-time-cell, tbody>tr>td
 
 /* Hide the default checkbox */
 
-.checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -450,7 +467,8 @@ span.cb-check {
   }
 }
 
-.task, .task-list {
+.task,
+.task-list {
   border: solid 1px lightgrey;
   padding: 8px;
 }
@@ -520,7 +538,8 @@ span.cb-check {
     background: transparent;
     margin-left: -4px;
   }
-  .nav>li>a:hover, .nav>li>a:focus {
+  .nav>li>a:hover,
+  .nav>li>a:focus {
     background: transparent;
   }
   #left-nav {

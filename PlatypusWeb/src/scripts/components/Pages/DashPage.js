@@ -287,7 +287,7 @@ class DashBoxBody extends React.Component {
     handleCheck = (e, values, rowIndex) => { // Assume only tasks will be checked
         this.setState({ rowIndex: rowIndex });
         const newVal = Object.assign({}, { ...values }, { completed: e.checked ? 1 : 0 })
-        this.handleOverdueState(newVal, filterProps[this.props.itemType]); // Now update all the "overdue" items      
+        this.handleOverdueState(newVal, filterProps[this.props.itemType]); // Now update all the "overdue" items
         this.onUpdate(newVal, rowIndex);
     }
 
@@ -453,7 +453,14 @@ export const DashBox = (props) => {
 export default class Dash extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {
+            user: {
+                username: localStorage.getItem('username').toString(),
+                userId: parseInt(localStorage.getItem('userId')),
+                selfGroupId: parseInt(localStorage.getItem('selfGroupId')),
+                groupList: JSON.parse(localStorage.getItem('groupList'))
+            }
+        }
     }
 
     render() {
