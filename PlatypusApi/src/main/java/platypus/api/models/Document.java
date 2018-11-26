@@ -1,6 +1,7 @@
 package platypus.api.models;
-
 import java.sql.Date;
+
+import java.nio.file.Path;
 
 public class Document extends Item {
 

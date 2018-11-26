@@ -28,15 +28,15 @@ import platypus.api.models.Priority;
 import platypus.api.models.Task;
 import platypus.api.models.TaskWrapper;
 
-
 public class CacheUtil {
 
 	public static CacheEntry buildCacheEntry(String userName, int id, Connection conn) throws SQLException {
 
 		// Use userId to get groupId & groupName for the user's self group.
-		PreparedStatement ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
-													+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
-													+ "WHERE belongs_to.userID = ? and belongs_to.self = '1'");
+		PreparedStatement ps = conn
+				.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
+						+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
+						+ "WHERE belongs_to.userID = ? and belongs_to.self = '1'");
 		ps.setInt(1, id);
 		ResultSet rs = ps.executeQuery();
 		ps.close();
@@ -47,8 +47,7 @@ public class CacheUtil {
 		rs.close();
 
 		ps = conn.prepareStatement("SELECT belongs_to.userID, groups.groupID, groups.groupName FROM belongs_to "
-									+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID "
-									+ "WHERE belongs_to.userID = ?");
+				+ "INNER JOIN groups ON belongs_to.groupID = groups.groupID " + "WHERE belongs_to.userID = ?");
 		ps.setInt(1, id);
 		rs = ps.executeQuery();
 		ps.close();
@@ -69,13 +68,8 @@ public class CacheUtil {
 	public static LoginEntry buildLoginEntry(String userName, int id, Connection conn) throws SQLException {
 		// Populate guaranteed returns
 		CacheEntry ce = buildCacheEntry(userName, id, conn);
-		LoginEntry loginEntry = new LoginEntry(
-				ce.getUsername(),
-				ce.getId(),
-				ce.getGroupId(),
-				ce.getselfGroupName(),
-				ce.getGroupyWrapper()
-		);
+		LoginEntry loginEntry = new LoginEntry(ce.getUsername(), ce.getId(), ce.getGroupId(), ce.getselfGroupName(),
+				ce.getGroupyWrapper());
 
 		// Get all tasks that meet filter criteria.
 		ResultSet rs = Queries.getItems(ItemType.TASK, conn, id);
@@ -193,7 +187,8 @@ public class CacheUtil {
 		if (itemDate != null) {
 
 			Date currentDate = new Date();
-			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)), ZoneId.systemDefault());
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(currentDate.toInstant().plus(Period.ofWeeks(weeks)),
+					ZoneId.systemDefault());
 			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
 			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
@@ -212,9 +207,9 @@ public class CacheUtil {
 		ResultSetMetaData md = rs.getMetaData();
 		int count = md.getColumnCount();
 		for (int i = 1; i <= count; i++) {
-		    if (md.getColumnName(i).equals(s)) {
-		        return i;
-		    }
+			if (md.getColumnName(i).equals(s)) {
+				return i;
+			}
 		}
 
 		// Doesn't exist
