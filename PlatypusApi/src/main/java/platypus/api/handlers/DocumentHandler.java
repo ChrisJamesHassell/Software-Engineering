@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
 
 import platypus.api.JsonParser;
+import platypus.api.models.Category;
 import platypus.api.models.Document;
 import platypus.api.models.ItemType;
 
@@ -70,7 +71,7 @@ public class DocumentHandler {
 			Part uploadedFile = req.raw().getPart("FILE");
 
 			if (uploadedFile.getSize() > maxFileSize) {
-				// return new JsonResponse("FAILED", "", "File exceeds size limit.");
+//				return new JsonResponse("FAILED", "", "File exceeds size limit.");
 				response.redirect(req.headers("Referer"));
 				return "";
 			}
@@ -115,19 +116,19 @@ public class DocumentHandler {
 			// SUCCESSFUL response
 			response.redirect(req.headers("Referer"));
 			return "";
-
+			
 		} catch (SQLException sqlE) {
 			// ERROR in SQL response
 			sqlE.printStackTrace();
 			response.redirect(req.headers("Referer"));
 			return "";
-
+			
 		} catch (ServletException srvE) {
 			// SERVELET error
 			srvE.printStackTrace();
 			response.redirect(req.headers("Referer"));
 			return "";
-
+			
 		} finally {
 			conn.close();
 		}
@@ -159,7 +160,8 @@ public class DocumentHandler {
 			if (ret == 1) {
 				// Should not need to touch anything on the file system here, since we only
 				// touched the database entry for it.
-				return new JsonResponse("SUCCESS", getReturnedDocument(Integer.parseInt(req.queryParams("documentID")), conn),
+				return new JsonResponse("SUCCESS",
+						getReturnedDocument(Integer.parseInt(req.queryParams("documentID")), conn),
 						"Successfully edited document");
 			} else {
 				// The documentID does not exist.
@@ -187,7 +189,7 @@ public class DocumentHandler {
 			JsonObject document = jsonO.get("document").getAsJsonObject();
 
 			stmt = conn.prepareCall("{call delDoc(?)}");
-			stmt.setInt(1, Integer.parseInt(req.queryParams("documentID")));
+			stmt.setInt(1, document.get("documentID").getAsInt());
 			int ret = stmt.executeUpdate();
 
 			String PATH = File.separator + "platypus" + File.separator + "users";
@@ -238,11 +240,12 @@ public class DocumentHandler {
 			}
 			String fileLocation = results.getString(1);
 			Path filePath = Paths.get(fileLocation);
-			Tika tika = new Tika();
-			response.header("Content-Type", tika.detect(filePath.toFile()));
-			// Force download if preview mode is not specified
-			if (!"true".equals(request.queryParams("preview"))) {
-				response.header("Content-Disposition", String.format("attachment; filename=\"%s\"", filePath.getFileName()));
+		    Tika tika = new Tika();
+		    response.header("Content-Type", tika.detect(filePath.toFile()));
+		    // Force download if preview mode is not specified
+			if(!"true".equals(request.queryParams("preview"))) {
+				response.header("Content-Disposition",
+						String.format("attachment; filename=\"%s\"", filePath.getFileName()));
 			}
 			return Files.readAllBytes(filePath);
 		}
@@ -259,5 +262,33 @@ public class DocumentHandler {
 		} finally {
 			conn.close();
 		}
+	}
+
+	private static Document getReturnedDocument(int docID, Connection conn) throws SQLException {
+
+		PreparedStatement ps = conn.prepareStatement(
+				"SELECT * FROM documents INNER JOIN has_documents ON documents.docID = has_documents.docID WHERE documents.docID = ?");
+		ps.setInt(1, docID);
+
+		ResultSet rs = ps.executeQuery();
+		ps.close();
+
+		Document d = null;
+
+		// Get first doc
+		if (rs.next()) {
+			d = new Document();
+			d.setItemID(rs.getInt(ItemFilter.getColumnWithName("docID", rs)));
+			d.setType(ItemType.DOCUMENT);
+			d.setName(rs.getString(ItemFilter.getColumnWithName("name", rs)));
+			d.setDescription(rs.getString(ItemFilter.getColumnWithName("description", rs)));
+			d.setCategory(Category.valueOf(rs.getString(ItemFilter.getColumnWithName("category", rs)).toUpperCase()));
+			d.setExpiration(rs.getDate(ItemFilter.getColumnWithName("expirationDate", rs)));
+			d.setFileName(rs.getString(ItemFilter.getColumnWithName("fileName", rs)));
+			d.setNotification(rs.getDate(ItemFilter.getColumnWithName("notification", rs)));
+			d.setPinned(rs.getBoolean(ItemFilter.getColumnWithName("pinned", rs)));
+		}
+		rs.close();
+		return d;
 	}
 }
