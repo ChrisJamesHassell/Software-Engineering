@@ -3,24 +3,33 @@ package platypus.api;
 import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariDataSource;
 
+import platypus.api.handlers.HelloHandler;
 import platypus.api.handlers.IndexHandler;
 import platypus.api.handlers.LoginHandler;
-import platypus.api.handlers.TaskHandler;
-//import platypus.api.handlers.SettingsHandler;
-import platypus.api.handlers.UserHandler;
-import platypus.api.handlers.AuthFilter;
+import platypus.api.handlers.CorsFilter;
 import platypus.api.handlers.CreateHandler;
-import platypus.api.handlers.DocumentHandler;
-import platypus.api.services.*;
-import platypus.api.models.*;
-import platypus.api.handlers.EventHandler;
+import spark.Service.StaticFiles;
+import spark.embeddedserver.EmbeddedServers;
+import spark.embeddedserver.jetty.EmbeddedJettyServer;
+import spark.embeddedserver.jetty.JettyHandler;
+import spark.http.matching.MatcherFilter;
+import spark.route.Routes;
+import spark.servlet.SparkApplication;
+import spark.staticfiles.StaticFilesConfiguration;
 import spark.Spark;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
-
-	public final static boolean IS_PRODUCTION = false;
 
 	public static void main(String[] args) {
 		// To build on eclipse:
@@ -31,47 +40,59 @@ public class Main {
 		// platypus-api-1.0-SNAPSHOT-jar-with-dependencies.jar`
 
 		final Gson gson = new Gson();
-		final HikariDataSource ds = InitService.initDatabase();
-		final Properties emailConfig = InitService.initEmailConfig();
-		InitService.initNotificationService(ds, emailConfig);
-		InitService.initSparkConfig();
 
-		final AuthFilter authFilter = new AuthFilter();
+		// ***************************** //
+		// DB stuff
+		// ***************************** //
+		// DB conn pool config
+		final HikariDataSource ds = new HikariDataSource();
+		ds.setMaximumPoolSize(8);
+		ds.setDriverClassName("org.mariadb.jdbc.Driver");
+		ds.setJdbcUrl("jdbc:mariadb://127.0.0.1:3306/test"); // TODO, agree on a database name.
+		ds.addDataSourceProperty("user", "client");
+		ds.addDataSourceProperty("password", "temppass123");
+		ds.setAutoCommit(true); // Changed to true
 
-		Spark.path("/api", () -> {
+		final Properties emailConfig = new Properties();
+		emailConfig.put("mail.smtp.auth", true);
+		emailConfig.put("mail.smtp.starttls.enable", "true");
+		emailConfig.put("mail.smtp.host", "smtp.gmail.com"); // TODO
+		emailConfig.put("mail.smtp.port", "465");
+		// emailConfig.put("username", "someuser");
+		// emailConfig.put("password", "somepass");
+		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		// scheduler.scheduleAtFixedRate(new NotificationEngine(ds, emailConfig), 1, 30,
+		// TimeUnit.MINUTES);
+
+		// Force the server to only listen on localhost:8080. Nginx will forward to this
+		// interface / port.
+
+		Spark.ipAddress("127.0.0.1");
+		Spark.port(8080);
+		CorsFilter.apply();
+
+		// set static file location
+		/*
+		 * if (localhost) { String projectDir = System.getProperty("user.dir"); String
+		 * staticDir = "/src/main/resources/public";
+		 * staticFiles.externalLocation(projectDir + staticDir); } else {
+		 * staticFiles.location("/public"); }
+		 */
+
+		Spark.get("/", new IndexHandler(), gson::toJson);
+	
+		// Setting up the path groups.
+		Spark.path("/", () -> {
+			Spark.before("/*", (q, a) -> System.out.println("Api call"));
 			Spark.path("/user", () -> {
-				Spark.post("/create", new CreateHandler(ds, authFilter), gson::toJson);
-				Spark.post("/login", new LoginHandler(ds, authFilter), gson::toJson);
+				// Spark.verb(String, Route, ResponseTransformer.render(Object));
+				Spark.post("/create/:firstname/:lastname/:email/:username/:password/:dateofbirth", new CreateHandler(ds), gson::toJson); //Update this to be a userCreate handler
+				Spark.get("/settings", new IndexHandler(), gson::toJson); //Update to settings manager
+				Spark.post("/login/:username/:password", new LoginHandler(ds), gson::toJson);
 			});
-			Spark.before("/app/*", authFilter);
-			Spark.path("/app", () -> {
-				Spark.get("/test", (req, res) -> {
-					return "hi " + req.attribute(AuthFilter.USERNAME);
-				});
-
-				Spark.path("/task", () -> {
-
-					// TODO, validate that this path works
-					Spark.get("", (req, res) -> TaskHandler.get(ds, req), gson::toJson);
-
-					Spark.post("/add", (req, res) -> TaskHandler.addTask(ds, req), gson::toJson);
-					Spark.post("/update", (req, res) -> TaskHandler.editTask(ds, req), gson::toJson);
-					Spark.post("/delete", (req, res) -> TaskHandler.removeTask(ds, req), gson::toJson);
-				});
-				Spark.path("/event", () -> {
-					Spark.get("", (req, res) -> EventHandler.get(ds, req), gson::toJson);
-					Spark.post("/add", (req, res) -> EventHandler.addEvent(ds, req), gson::toJson);
-					Spark.post("/update", (req, res) -> EventHandler.editEvent(ds, req), gson::toJson);
-					Spark.post("/delete", (req, res) -> EventHandler.removeEvent(ds, req), gson::toJson);
-				});
-				Spark.path("/doc", () -> {
-					Spark.post("/add", (req, res) -> DocumentHandler.addDoc(ds, req), gson::toJson);
-					Spark.post("/update", (req, res) -> DocumentHandler.editDoc(ds, req), gson::toJson);
-					Spark.post("/delete", (req, res) -> DocumentHandler.removeDoc(ds, req), gson::toJson);
-				});
-
-			}); // end app path grouping
-		}); // End api path grouping
-
+		});
+		
+		
+			
 	}
 }

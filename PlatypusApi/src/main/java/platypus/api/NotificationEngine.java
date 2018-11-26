@@ -33,27 +33,27 @@ public class NotificationEngine implements Runnable {
 	@Override
 	public void run() {
 		// Connect to the mail server
-//		Session session = Session.getInstance(emailConfig, new Authenticator() {
-//		    @Override
-//		    protected PasswordAuthentication getPasswordAuthentication() {
-//		        return new PasswordAuthentication(emailConfig.getProperty("username"), emailConfig.getProperty("password"));
-//		    }
-//		});
-//		// These are try-blocks with auto-closing. obj.close() will be automatically called when the scope dies
-//		try (Connection sqlConn = dataSource.getConnection()) {
-//			try (PreparedStatement stmt = sqlConn.prepareStatement("TODO")) {
-//				try (ResultSet results = stmt.executeQuery()) {
-//					while (results.next()) {
-//						// send email
-//						sendEmail(session, "from address", "body here");
-//					}
-//				}
-//			}
-//		} catch (SQLException ex) {
-//			ex.printStackTrace();
-//		} catch(MessagingException ex) {
-//			ex.printStackTrace();
-//		}
+		Session session = Session.getInstance(emailConfig, new Authenticator() {
+		    @Override
+		    protected PasswordAuthentication getPasswordAuthentication() {
+		        return new PasswordAuthentication(emailConfig.getProperty("username"), emailConfig.getProperty("password"));
+		    }
+		});
+		// These are try-blocks with auto-closing. obj.close() will be automatically called when the scope dies
+		try (Connection sqlConn = dataSource.getConnection()) {
+			try (PreparedStatement stmt = sqlConn.prepareStatement("TODO")) {
+				try (ResultSet results = stmt.executeQuery()) {
+					while (results.next()) {
+						// send email
+						sendEmail(session, "from address", "body here");
+					}
+				}
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		} catch(MessagingException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	private void sendEmail(Session session, String fromAddress, String body) throws MessagingException {
