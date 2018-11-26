@@ -169,7 +169,7 @@ export default class Document extends React.Component {
         }
 
         else { // For MODIFY
-            this.state.events.forEach((i, index) => { if (i.id === itemType.id) editedIndex = index; });
+            this.state.items.forEach((i, index) => { if (i.id === itemType.id) editedIndex = index; });
             items[editedIndex] = itemType;
         }
         return items;

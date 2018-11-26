@@ -128,7 +128,6 @@ public class NotificationEngine implements Runnable {
 		for (int i = 0; i < docs.length; i++) {
 			emailBody += "\nDocument: " + docs[i].getDocument().getName() + " had a notification set for today.";
 		}
-		//System.out.println(emailBody);
 		return emailBody;
 	}
 	
@@ -218,7 +217,6 @@ public class NotificationEngine implements Runnable {
 			if (DateFormat.getDateInstance().format(itemDate).compareTo(DateFormat.getDateInstance().format(comparison))  == 0) {
 				return true;
 			}
-			
 		}	
 		return false;
 	}
@@ -234,7 +232,6 @@ public class NotificationEngine implements Runnable {
 		        return i;
 		    }
 		}
-		
 		// Doesn't exist
 		return -1;
 	}
