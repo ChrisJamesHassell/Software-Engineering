@@ -5,7 +5,7 @@ import {
 import { LinkContainer } from 'react-router-bootstrap';
 import AppLogoHeader from './AppLogoHeader';
 import logo from '../../../images/icons/logo_fill_white.svg';
-import { LeftNav } from '../Layouts/AuthLayout';
+import { LeftNav } from '../Navbar/LeftNav';
 import { deleteAllCookies } from '../../fetchHelpers';
 
 const AppNavbar = (props) => {
@@ -16,6 +16,7 @@ const AppNavbar = (props) => {
     marginBottom: '0',
     borderRadius: '0',
   };
+  let activeClass = window.location.pathname === "/dashboard" ? "active" : "";
   if (!props.isAuth && availWidth < 768) navStyle.display = 'none';
 
   return (
@@ -24,7 +25,7 @@ const AppNavbar = (props) => {
       <Navbar.Collapse>
         <Nav pullRight>
           {showHome && (
-            <LinkContainer id="nav-home" to="/">
+            <LinkContainer id="nav-home" to="/" activeClassName={activeClass}>
               <NavItem eventKey={1}>
                 <Glyphicon glyph="home" />
               </NavItem>
@@ -42,10 +43,10 @@ const AppNavbar = (props) => {
               </span>
             }
           >
-            <MenuItem eventKey={10.1}>Something1</MenuItem>
-            <MenuItem eventKey={10.2}>Something2</MenuItem>
+            {/* <MenuItem eventKey={10.1}>Something1</MenuItem>
+            <MenuItem eventKey={10.2}>Something2</MenuItem> */}
             <MenuItem divider />
-            <MenuItem eventKey={10.3}>Something3</MenuItem>
+            {/* <MenuItem eventKey={10.3}>Something3</MenuItem> */}
             <Button
               style={{ width: '100%', borderRadius: '0' }}
               onClick={() => {

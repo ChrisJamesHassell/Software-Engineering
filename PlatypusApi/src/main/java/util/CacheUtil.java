@@ -6,24 +6,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import platypus.api.models.CacheEntry;
 import platypus.api.models.Category;
@@ -37,41 +27,9 @@ import platypus.api.models.LoginEntry;
 import platypus.api.models.Priority;
 import platypus.api.models.Task;
 import platypus.api.models.TaskWrapper;
-import spark.Request;
+
 
 public class CacheUtil {
-
-	/*
-
-	public static CacheEntry buildCacheEntry(Request req, Connection conn) throws SQLException {
-
-		// Parse request to fill the bulk of the CacheEntry object.
-		JsonObject o = new JsonParser().parse(req.body()).getAsJsonObject();
-		int userId = o.get("userId").getAsInt();
-		String userName = o.get("userName").getAsString();
-		int groupId = o.get("groupId").getAsInt();
-		String groupName = o.get("groupName").getAsString();
-
-		// Use request info to get a list of all groups associated with the user.
-		// TODO: Update to retrieve all correct info later.
-		PreparedStatement ps = conn.prepareStatement("SELECT groupId, groupName FROM belongs_to inner join groups on groupId where belongs_to.userID = ?");
-		ps.setInt(1, userId);
-		ResultSet rs = ps.executeQuery();
-		ps.close();
-
-		GroupyWrapper[] groupyWrappers = new GroupyWrapper[getResultSetSize(rs)];
-
-		int ct = 0;
-		while (rs.next()) {
-			groupyWrappers[ct] = new GroupyWrapper(rs.getInt(1), rs.getString(2));
-			ct++;
-		}
-
-		return new CacheEntry(userName, userId, groupId, groupName, groupyWrappers);
-
-	}
-
-	*/
 
 	public static CacheEntry buildCacheEntry(String userName, int id, Connection conn) throws SQLException {
 
@@ -104,8 +62,6 @@ public class CacheUtil {
 		}
 		rs.close();
 
-		// TODO, verify that a user with multiple groups gets the right cacheEntry return.
-		// Needs a user in multiple groups.
 		return new CacheEntry(userName, id, groupId, groupName, groupyWrappers);
 
 	}
@@ -168,7 +124,7 @@ public class CacheUtil {
 		DocumentWrapper[] documentWrappers = new DocumentWrapper[getResultSetSize(rs)];
 		while (rs.next()) {
 			Document d = new Document();
-			d.setItemID(rs.getInt(getColumnWithName("eventID", rs)));
+			d.setItemID(rs.getInt(getColumnWithName("docID", rs)));
 			d.setType(ItemType.DOCUMENT);
 			d.setName(rs.getString(getColumnWithName("name", rs)));
 			d.setDescription(rs.getString(getColumnWithName("description", rs)));
@@ -233,9 +189,6 @@ public class CacheUtil {
 	}
 
 	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {
-
-		// TODO, verify that MM-dd is correct and not dd-MM;
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 		if (itemDate != null) {
 

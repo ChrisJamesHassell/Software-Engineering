@@ -20,6 +20,10 @@ export default class LoginForm extends React.Component {
     this.updateVals = this.updateVals.bind(this);
   }
 
+  componentDidMount() {
+    this.props.clearErrorAlert();
+  }
+
   updateVals(id, value) {
     if (value.length < 1) this.props.clearErrorAlert(); // clear error alert if field is cleared
     const temp = this.state.data;

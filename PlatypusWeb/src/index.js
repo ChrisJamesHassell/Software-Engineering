@@ -12,12 +12,14 @@ import logo from './images/icons/logo_fill_white.svg';
 const store = configureStore();
 const baseURI = 'https://www.platypus.null-terminator.com/api/';
 
-export default render(
+const Root = ({store}) => (
     <Provider store={store}>
-        {/* <App routes={routes} logo={logo} baseURI={baseURI} /> */}
         <App logo={logo} baseURI={baseURI} />
-    </Provider>,
+    </Provider>
+)
+render(
+    <Root store={store} />,
     document.getElementById('root'),
 );
 
-serviceWorker.register();
+// serviceWorker.register();

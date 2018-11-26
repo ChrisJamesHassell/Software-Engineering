@@ -1,13 +1,23 @@
 import React from 'react';
 // import { Glyphicon } from 'react-bootstrap';
+import { MenuItem } from 'react-bootstrap';
 import Tasks from './components/Pages/Tasks';
 import Dash from './components/Pages/DashPage';
 import { Events } from './components/Pages/EventsPage';
+import Document from './components/Pages/DocumentsPage';
+import Category from './components/Layouts/CategoryLayout';
 // import * as Icons from '../images/icons/NavIcons';
 // import NavIcons from '../images/icons/NavIcons';
 
 // const iconStyle = { width: 20, height: 20 };
 const routes = [
+  {
+    path: "",
+    name: 'Navigation',
+    type: 'divider',
+    glyph: "",
+    sidebar: () => <div><MenuItem divider /><div className='left-nav-divider'>Navigation</div></div>
+  },
   {
     path: '/dashboard',
     name: 'Dash',
@@ -18,12 +28,19 @@ const routes = [
     main: () => <Dash />,
   },
   {
+    path: "",
+    name: 'Categories',
+    type: 'divider',
+    glyph: "",
+    sidebar: () => <div><MenuItem divider /><div className='left-nav-divider'>Categories</div></div>
+  },
+  {
     path: '/dashboard/appliances',
     name: 'Appliances',
     glyph: 'appliances', // <Icons.Appliances {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Home and Appliances Page</b>,
+    main: () => <Category category="APPLIANCES" />,
   },
   {
     path: '/dashboard/auto',
@@ -31,7 +48,7 @@ const routes = [
     glyph: 'auto', // <Icons.Auto {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Home and Appliances Page</b>,
+    main: () => <Category category="AUTO" />,
   },
   {
     path: '/dashboard/meals',
@@ -39,7 +56,7 @@ const routes = [
     glyph: 'meals', // <Icons.Meals {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Meals</b>,
+    main: () => <Category category="MEALS" />,
   },
   {
     path: '/dashboard/medical',
@@ -47,7 +64,22 @@ const routes = [
     glyph: 'medical', // <Icons.Medical {...iconStyle} />,
     type: 'Category',
     sidebar: () => <div />,
-    main: () => <b>Medical Page</b>,
+    main: () => <Category category="MEDICAL" />,
+  },
+  {
+    path: '/dashboard/miscellaneous',
+    name: 'Miscellaneous',
+    glyph: 'miscellaneous', // <Icons.Meals {...iconStyle} />,
+    type: 'Category',
+    sidebar: () => <div />,
+    main: () => <Category category="MISCELLANEOUS" />,
+  },
+  {
+    path: "",
+    name: 'Actions',
+    type: 'divider',
+    glyph: "",
+    sidebar: () => <div><MenuItem divider /><div className='left-nav-divider'>Actions</div></div>
   },
   {
     path: '/dashboard/documents',
@@ -55,7 +87,7 @@ const routes = [
     glyph: 'documents', // <Icons.Events {...iconStyle} />,
     type: 'Actions',
     sidebar: () => <div />,
-    main: () => <b>Documents Page</b>,
+    main: () => <Document itemType="doc" />,
   },
   {
     path: '/dashboard/events',

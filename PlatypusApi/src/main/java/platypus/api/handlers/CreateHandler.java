@@ -38,16 +38,6 @@ public class CreateHandler implements Route {
 	public Object handle(Request request, Response response) throws Exception {
 		User u = JsonParser.getObject(User.class, request.body());
 
-		/*
-		 * 
-		 * How the input from FE will look.
-		 * 
-		 * { "user": { "id":1234 "name":"MYNAME" } "group": { "id":1234
-		 * "name":"GROUPIE NAME" } "task": { "id":123 "name":"name" "desc":"desc123"
-		 * "other shit":"" } }
-		 * 
-		 */
-
 		if (!matchesRegexRequirements(u)) {
 			return new JsonResponse("ERROR", "", "Fields do not match regex requirements.");
 		}
@@ -124,7 +114,7 @@ public class CreateHandler implements Route {
 				if (errorMap.get(key) > -1)
 					error = "ERROR: User with " + key + " already exists.";
 			}
-
+			
 			return new JsonResponse("ERROR", "", error);
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());

@@ -1,4 +1,5 @@
-import axios from 'axios';
+import moment from 'moment';
+import qs from 'qs';
 import React, { Fragment } from 'react';
 import {
   Button,
@@ -27,40 +28,41 @@ const Task = ({
     completed, description, id, name,
   },
 }) => (
-  <Draggable draggableId={id} index={index}>
-    {provided => (
-      <div
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        className="task"
-        onClick={onTaskClick}
-        ref={provided.innerRef}
-        style={{ alignItems: 'center', display: 'flex' }}
-      >
-        <input
-          checked={completed}
-          onChange={onTaskComplete}
-          style={{ marginLeft: 'calc(1em - 8px)', marginRight: '1em' }}
-          type="checkbox"
-        />
-        <div style={{ flexGrow: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <h4>{name}</h4>
-            <div style={{ display: 'flex' }}>
-              <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
-                <Glyphicon glyph="pencil" />
-              </a>
-              <a href="#remove" onClick={onTaskDeleteClick}>
-                <Glyphicon glyph="remove" />
-              </a>
+    <Draggable draggableId={id} index={index}>
+      {provided => (
+        <div
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          className="task"
+          onClick={onTaskClick}
+          ref={provided.innerRef}
+        >
+          <div style={{ alignItems: 'center', display: 'flex' }}>
+            <input
+              checked={completed}
+              onChange={onTaskComplete}
+              style={{ marginLeft: 'calc(1em - 8px)', marginRight: '1em' }}
+              type="checkbox"
+            />
+            <div style={{ flexGrow: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <h4>{name}</h4>
+                <div style={{ display: 'flex' }}>
+                  <a href="#edit" onClick={onTaskEditClick} style={{ marginRight: '0.5em' }}>
+                    <Glyphicon glyph="pencil" />
+                  </a>
+                  <a href="#remove" onClick={onTaskDeleteClick}>
+                    <Glyphicon glyph="remove" />
+                  </a>
+                </div>
+              </div>
+              <p>{description}</p>
             </div>
           </div>
-          <p>{description}</p>
         </div>
-      </div>
-    )}
-  </Draggable>
-);
+      )}
+    </Draggable>
+  );
 
 export class TaskList extends React.Component {
   render() {
@@ -68,7 +70,7 @@ export class TaskList extends React.Component {
 
     return (
       <Fragment>
-        {[2, 1, 0].map((value, index) => {
+        {['HIGH', 'MID', 'LOW'].map((value, index) => {
           const priority = priorityOptions.find(op => op.value === value);
 
           if (!priority) return null;
@@ -91,16 +93,16 @@ export class TaskList extends React.Component {
                         },
                         taskIndex,
                       ) => (
-                        <Task
-                          index={taskIndex}
-                          key={taskIndex}
-                          onTaskClick={onTaskClick}
-                          onTaskComplete={onTaskComplete}
-                          onTaskDeleteClick={onTaskDeleteClick}
-                          onTaskEditClick={onTaskEditClick}
-                          task={task}
-                        />
-                      ),
+                          <Task
+                            index={taskIndex}
+                            key={taskIndex}
+                            onTaskClick={onTaskClick}
+                            onTaskComplete={onTaskComplete}
+                            onTaskDeleteClick={onTaskDeleteClick}
+                            onTaskEditClick={onTaskEditClick}
+                            task={task}
+                          />
+                        ),
                     )}
                   {provided.placeholder}
                 </div>
@@ -118,9 +120,33 @@ export class Tasks extends React.Component {
     activeModal: null,
   };
 
+  async componentDidMount() {
+    const response = await fetch(
+      `${path}/app/task?${qs.stringify({
+        category: 'null',
+        groupID: localStorage.getItem('selfGroupId'),
+        pinned: 'null',
+        userID: localStorage.getItem('userId'),
+        weeksAhead: -1,
+      })}`,
+      {
+        credentials: 'include',
+      },
+    );
+    const { data: tasks } = await response.json();
+
+    this.props.dispatch({
+      type: 'REMOVE_ALL_TASKS',
+    });
+    this.props.dispatch({
+      type: 'ADD_TASKS',
+      payload: tasks.map(task => task.task),
+    });
+  }
+
   changeModal = value => this.setState({ activeModal: value });
 
-  onDragEnd = (result) => {
+  onDragEnd = async (result) => {
     const { tasks } = this.props;
     const { destination, draggableId, source } = result;
 
@@ -143,45 +169,40 @@ export class Tasks extends React.Component {
 
     const task = Object.values(tasks)
       .reduce((prev, curr) => [...prev, ...curr], [])
-      .find(tsk => tsk.taskID === draggableId);
+      .find(tsk => tsk.itemID === draggableId);
 
     if (!task) return;
 
-    this.props.dispatch({
-      type: 'UPDATE_TASK',
-      payload: {
-        ...task,
-        priority: newPriority.value,
-      },
+    await this.onTaskUpdate({
+      ...task,
+      deadline: moment(task.deadline).format('YYYY-MM-DD'),
+      notification: moment(task.notification).format('YYYY-MM-DD'),
+      priority: newPriority.value,
     });
   };
 
   onHideModal = () => this.changeModal(null);
 
-  onTaskClick = task => () => {
-    console.log({ task });
-  };
-
-  onTaskComplete = task => () => this.props.dispatch({
-    type: 'UPDATE_TASK',
-    payload: {
-      ...task,
-      completed: !task.completed,
-    },
+  onTaskComplete = task => () => this.onTaskUpdate({
+    ...task,
+    completed: !task.completed,
+    deadline: moment(task.deadline).format('YYYY-MM-DD'),
+    notification: moment(task.notification).format('YYYY-MM-DD'),
+    taskID: task.itemID,
   });
 
   onTaskCreate = async (values) => {
-    const {
-      data: { data: task },
-    } = await axios.post(`${path}/app/task/add`, {
-      group: {
-        groupID: localStorage.getItem('selfGroupId'),
-      },
-      task: values,
-      user: {
-        userID: localStorage.getItem('userId'),
-      },
+    const response = await fetch(`${path}/app/task/add`, {
+      body: JSON.stringify({
+        group: {
+          groupID: localStorage.getItem('selfGroupId'),
+        },
+        task: values,
+      }),
+      credentials: 'include',
+      method: 'POST',
     });
+    const { data: task } = await response.json();
 
     this.props.dispatch({
       type: 'ADD_TASK',
@@ -192,24 +213,28 @@ export class Tasks extends React.Component {
 
   onTaskCreateClick = () => this.changeModal('create-task');
 
-  onTaskDelete = async ({ taskID, category }) => {
-    await axios.post(`${path}/app/task/delete`, {
-      group: {
-        groupID: localStorage.getItem('selfGroupId'),
-      },
-      task: {
-        taskID,
-      },
-      user: {
-        userID: localStorage.getItem('userId'),
-      },
+  onTaskDelete = async ({ itemID, category }) => {
+    await fetch(`${path}/app/task/delete`, {
+      body: JSON.stringify({
+        // group: {
+        //   groupID: localStorage.getItem('selfGroupId'),
+        // },
+        task: {
+          taskID: itemID,
+        },
+        // user: {
+        //   userID: localStorage.getItem('userId'),
+        // },
+      }),
+      credentials: 'include',
+      method: 'POST',
     });
 
     this.props.dispatch({
       type: 'REMOVE_TASK',
       payload: {
         category,
-        taskID,
+        itemID,
       },
     });
   };
@@ -231,16 +256,28 @@ export class Tasks extends React.Component {
   };
 
   onTaskUpdate = async (values) => {
-    const {
-      data: { data: task },
-    } = await axios.post(`${path}/app/task/update`, {
-      task: values,
+    const response = await fetch(`${path}/app/task/update`, {
+      body: JSON.stringify({
+        task: {
+          ...values,
+          deadline: values.deadline ? moment(values.deadline).format('MMM DD, YYYY') : null,
+          notification: values.notification ? moment(values.notification).format('MMM DD, YYYY') : null,
+          completed: values.completed ? 1 : 0,
+          pinned: values.pinned ? 1 : 0,
+          taskID: values.itemID,
+        },
+      }),
+      credentials: 'include',
+      method: 'POST',
     });
+
+    const { data: task } = await response.json();
 
     this.props.dispatch({
       type: 'UPDATE_TASK',
       payload: task,
     });
+
     this.onHideModal();
   };
 
@@ -252,7 +289,7 @@ export class Tasks extends React.Component {
     if (activeModal && activeModal.includes('-')) {
       modalTask = Object.values(tasks)
         .reduce((prev, curr) => [...prev, ...curr], [])
-        .find(task => task.taskID === Number(activeModal.split('-')[1]));
+        .find(task => task.itemID === Number(activeModal.split('-')[1]));
     }
 
     return (
@@ -271,6 +308,7 @@ export class Tasks extends React.Component {
           </ModalHeader>
           <ModalBody>
             <TaskForm
+              isInitialValid={true}
               onSubmit={this.onTaskUpdate}
               task={activeModal && activeModal.startsWith('edit') && modalTask}
             />
@@ -329,11 +367,10 @@ export class Tasks extends React.Component {
                 <TaskList
                   tasks={tasks[value].map(task => ({
                     ...task,
-                    id: task.taskID,
-                    onTaskClick: this.onTaskClick(task),
+                    id: task.itemID,
                     onTaskComplete: this.onTaskComplete(task),
-                    onTaskDeleteClick: this.onTaskDeleteClick(task.taskID),
-                    onTaskEditClick: this.onTaskEditClick(task.taskID),
+                    onTaskDeleteClick: this.onTaskDeleteClick(task.itemID),
+                    onTaskEditClick: this.onTaskEditClick(task.itemID),
                   }))}
                 />
               </DragDropContext>

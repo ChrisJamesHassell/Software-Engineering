@@ -1,13 +1,11 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { NavItem, Nav } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 import routes from '../../routes';
-import NavIcons from '../../../images/icons/NavIcons';
+import { LeftNav } from '../Navbar/LeftNav';
 
 const Main = (props) => {
     return (
-        <div id='main-div' style={{ height: props.mainHeight}}>
+        <div id='main-div' style={{ height: props.mainHeight }}>
             {routes.map((route, index) => (
                 <Route
                     key={index}
@@ -16,45 +14,6 @@ const Main = (props) => {
                     component={route.main}
                 />
             ))}
-        </div>
-    )
-}
-
-export class LeftNavInner extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isMouseOver: false,
-            fill: 'white'
-        }
-        this.handleMouse = this.handleMouse.bind(this);
-    }
-
-    handleMouse(isOver) {
-        const fill = isOver ? '#18bc9c' : 'white';
-        this.setState({ isMouseOver: isOver, fill: fill });
-    }
-
-    render() {
-        return (
-            <div className='left-nav-container' onMouseOver={() => this.handleMouse(true)} onMouseOut={() => this.handleMouse(false)}>
-                <Nav className='left-nav-link'>
-                    <LinkContainer to={this.props.route.path}>
-                        <NavItem eventKey={this.props.index + 1}><NavIcons icon={this.props.route.glyph} fill={this.state.fill} /><b>{this.props.route.name}</b></NavItem>
-                    </LinkContainer>
-                    <Route key={this.props.index} path={this.props.route.path} exact={this.props.route.exact} component={this.props.route.sidebar} />
-                </Nav>
-            </div>
-        )
-    }
-}
-
-export const LeftNav = (props) => {
-    return (
-        <div id="left-nav-container">
-            {routes.map((route, index) =>
-                <LeftNavInner key={route.name} route={route} index={index} />
-            )}
         </div>
     )
 }

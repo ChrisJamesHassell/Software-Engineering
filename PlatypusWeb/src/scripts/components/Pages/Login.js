@@ -8,6 +8,7 @@ import { Route, Redirect } from 'react-router-dom';
 import LoginForm from '../Forms/LoginForm';
 import SignupForm from '../Forms/SignupForm';
 import logo from '../../../images/icons/icon_circle_white.svg';
+// import { setUserData, CategoryFilters, setCategoryFilter } from '../../actions/actions';
 
 const LoginMobileContent = props => (
   <Col id="login-logo" smHidden mdHidden lgHidden xs={12}>
@@ -61,6 +62,10 @@ export class Login extends React.Component {
     this.login = this.login.bind(this);
   }
 
+  componentDidMount() {
+    this.setState({ error: '' })
+  }
+
   login(route, data) {
     this.setState({ loading: true });
     const opts = {
@@ -86,32 +91,32 @@ export class Login extends React.Component {
 
   handleJsonResponse(response) {
     this.setState({ loading: false });
-    const {
-      data: { documents, events, tasks },
-      status,
-    } = response;
+    const isSuccess = response.status === 'SUCCESS';
 
-    this.props.dispatch({
-      type: 'ADD_DOCUMENTS',
-      payload: documents,
-    });
-    this.props.dispatch({
-      type: 'ADD_EVENTS',
-      payload: events,
-    });
-    this.props.dispatch({
-      type: 'ADD_TASKS',
-      payload: tasks,
-    });
+    if (isSuccess) {
+      const data = Object.assign({}, response.data);
+      Object.keys(data).forEach((key) => {
+        const value = JSON.stringify(data[key]);
+        localStorage.setItem(key, value);
+      });
+      this.setState({ redirect: true });
+      const {
+        data: { documents, events, tasks },
+      } = response;
 
-    const isSuccess = status === 'SUCCESS';
-    const data = Object.assign({}, response.data);
-    Object.keys(data).forEach((key) => {
-      const value = JSON.stringify(data[key]);
-      localStorage.setItem(key, value);
-    });
-
-    if (isSuccess) this.setState({ redirect: true });
+      this.props.dispatch({
+        type: 'ADD_DOCUMENTS',
+        payload: documents,
+      });
+      this.props.dispatch({
+        type: 'ADD_EVENTS',
+        payload: events,
+      });
+      this.props.dispatch({
+        type: 'ADD_TASKS',
+        payload: tasks,
+      });
+    }
     else this.logError(response.message);
   }
 
@@ -123,7 +128,7 @@ export class Login extends React.Component {
   }
 
   clearErrorAlert() {
-    this.setState({ error: null });
+    this.setState({ error: '' });
   }
 
   render() {
