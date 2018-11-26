@@ -82,21 +82,6 @@ const routes = [
     sidebar: () => <div><MenuItem divider /><div className='left-nav-divider'>Actions</div></div>
   },
   {
-    path: '/dashboard/miscellaneous',
-    name: 'Miscellaneous',
-    glyph: 'miscellaneous', // <Icons.Meals {...iconStyle} />,
-    type: 'Category',
-    sidebar: () => <div />,
-    main: () => <b>Miscellaneous</b>,
-  },
-  {
-    path: "",
-    name: 'Actions',
-    type: 'divider',
-    glyph: "",
-    sidebar: () => <div><MenuItem divider /><div className='left-nav-divider'>Actions</div></div>
-  },
-  {
     path: '/dashboard/documents',
     name: 'Documents',
     glyph: 'documents', // <Icons.Events {...iconStyle} />,

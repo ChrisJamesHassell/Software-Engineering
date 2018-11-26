@@ -39,7 +39,7 @@ export const LeftNav = (props) => {
     return (
         <div id="left-nav-container">
             {routes.map((route, index) =>
-                <LeftNavInner key={route.name} route={route} index={index} />
+                <LeftNavInner key={`${route.name}-${index}`} route={route} index={index} />
             )}
         </div>
     )
