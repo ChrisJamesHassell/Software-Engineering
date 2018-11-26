@@ -1,4 +1,5 @@
 package platypus.api.handlers;
+
 import spark.Request;
 import util.DateParser;
 import util.ItemFilter;
@@ -22,6 +23,7 @@ import platypus.api.models.Event;
 import platypus.api.models.ItemType;
 import platypus.api.models.Priority;
 import platypus.api.models.Task;
+
 public class EventHandler {
 
 	public static JsonResponse addEvent(HikariDataSource ds, Request req) throws SQLException {
@@ -38,18 +40,20 @@ public class EventHandler {
 
 			conn = ds.getConnection();
 
-
 			// Prepare the call from request body
 			stmt = conn.prepareCall("{call insertEvent(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 			stmt.setInt(1, event.get("pinned").getAsInt());
-			stmt.setDate(2, event.get("notification").isJsonNull() ? null : DateParser.parseDate(event.get("notification").getAsString()));
+			stmt.setDate(2, event.get("notification").isJsonNull() ? null
+					: DateParser.parseDate(event.get("notification").getAsString()));
 			stmt.setInt(3, group.get("groupID").getAsInt());
 			stmt.setString(4, event.get("name").getAsString());
 			stmt.setString(5, event.get("description").getAsString());
 			stmt.setString(6, event.get("category").getAsString());
-			stmt.setDate(7, event.get("startDate").isJsonNull() ? null : DateParser.parseDate(event.get("startDate").getAsString()));
-			stmt.setDate(8, event.get("endDate").isJsonNull() ? null : DateParser.parseDate(event.get("endDate").getAsString()));
-			stmt.setString(9, event.get("location") == null? null : event.get("location").getAsString());
+			stmt.setDate(7,
+					event.get("startDate").isJsonNull() ? null : DateParser.parseDate(event.get("startDate").getAsString()));
+			stmt.setDate(8,
+					event.get("endDate").isJsonNull() ? null : DateParser.parseDate(event.get("endDate").getAsString()));
+			stmt.setString(9, event.get("location") == null ? null : event.get("location").getAsString());
 			stmt.registerOutParameter(10, Types.INTEGER);
 
 			stmt.executeUpdate();
@@ -82,12 +86,15 @@ public class EventHandler {
 			conn.setAutoCommit(false);
 
 			// Prepare the call from request body
-			stmt = conn.prepareStatement("UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
+			stmt = conn.prepareStatement(
+					"UPDATE userevents SET name = ?, description = ?, category = ?, startDate = ?, endDate = ?, location = ? WHERE eventID = ?");
 			stmt.setString(1, event.get("name").getAsString());
 			stmt.setString(2, event.get("description").getAsString());
 			stmt.setString(3, event.get("category").getAsString());
-			stmt.setDate(4, event.get("startDate").isJsonNull() ? null : DateParser.parseDate(event.get("startDate").getAsString()));
-			stmt.setDate(5, event.get("endDate").isJsonNull() ? null : DateParser.parseDate(event.get("endDate").getAsString()));
+			stmt.setDate(4,
+					event.get("startDate").isJsonNull() ? null : DateParser.parseDate(event.get("startDate").getAsString()));
+			stmt.setDate(5,
+					event.get("endDate").isJsonNull() ? null : DateParser.parseDate(event.get("endDate").getAsString()));
 			stmt.setString(6, event.get("location").getAsString());
 			stmt.setInt(7, event.get("eventID").getAsInt());
 
@@ -99,15 +106,17 @@ public class EventHandler {
 				// Given a successful update, update the relational table too.
 				stmt = conn.prepareStatement("UPDATE has_events SET pinned = ?, notification = ? WHERE eventID = ?");
 				stmt.setInt(1, event.get("pinned").getAsInt());
-				stmt.setDate(2, event.get("notification").isJsonNull() ? null : DateParser.parseDate(event.get("notification").getAsString()));
+				stmt.setDate(2, event.get("notification").isJsonNull() ? null
+						: DateParser.parseDate(event.get("notification").getAsString()));
 				stmt.setInt(3, event.get("eventID").getAsInt());
-				
+
 				ret = stmt.executeUpdate();
 				stmt.close();
 				conn.commit();
-				
+
 				if (ret == 1) {
-					return new JsonResponse("SUCCESS", getReturnedEvent(event.get("eventID").getAsInt(), conn), "Successfully edited event");	
+					return new JsonResponse("SUCCESS", getReturnedEvent(event.get("eventID").getAsInt(), conn),
+							"Successfully edited event");
 				} else {
 					return new JsonResponse("FAIL", "", "Failure updating the relational table");
 				}
@@ -162,8 +171,7 @@ public class EventHandler {
 		try {
 			conn = ds.getConnection();
 			return new JsonResponse("SUCCESS", ItemFilter.getEvents(conn, request), "Berfect!");
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return new JsonResponse("ERROR", "", "SQLException in get_all_events");
 		} finally {
@@ -173,7 +181,8 @@ public class EventHandler {
 
 	private static Event getReturnedEvent(int eventID, Connection conn) throws SQLException {
 
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM userevents INNER JOIN has_events ON userevents.eventID = has_events.eventID WHERE userevents.eventID = ?");
+		PreparedStatement ps = conn.prepareStatement(
+				"SELECT * FROM userevents INNER JOIN has_events ON userevents.eventID = has_events.eventID WHERE userevents.eventID = ?");
 		ps.setInt(1, eventID);
 
 		ResultSet rs = ps.executeQuery();

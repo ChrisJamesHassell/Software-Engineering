@@ -26,7 +26,7 @@ import spark.Request;
 public class ItemFilter {
 
 	public static TaskWrapper[] getTasks(Connection conn, Request r) throws SQLException {
-				
+
 		int userId = Integer.parseInt(r.queryParams("userID"));
 		Category category = r.queryParams("category").equals("null") ? null : Category.valueOf(r.queryParams("category"));
 		int weeksAhead = Integer.parseInt(r.queryParams("weeksAhead"));
@@ -55,7 +55,8 @@ public class ItemFilter {
 
 		Stream<TaskWrapper> stream = tasks.stream().filter(t -> {
 			if ((category == null || t.getTask().getCategory().equals(category))
-					&& ((weeksAhead == -1 || t.getTask().getDeadline() == null || dateWithin(weeksAhead, t.getTask().getDeadline())))
+					&& ((weeksAhead == -1 || t.getTask().getDeadline() == null
+							|| dateWithin(weeksAhead, t.getTask().getDeadline())))
 					&& (pinned == null || t.getTask().isPinned() == pinned)) {
 				return true;
 			}
@@ -158,7 +159,7 @@ public class ItemFilter {
 		return -1;
 	}
 
-	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {		
+	private static boolean dateWithin(int weeks, java.sql.Date itemDate) {
 
 		if (itemDate != null) {
 
@@ -167,12 +168,8 @@ public class ItemFilter {
 					ZoneId.systemDefault());
 			Date dateToCompareTo = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-			
-			System.out.println("item deadline: " +
-			DateFormat.getDateInstance().format(itemDate));
-			System.out.println("Date to compare to: " +
-			DateFormat.getDateInstance().format(dateToCompareTo));
-			 
+			System.out.println("item deadline: " + DateFormat.getDateInstance().format(itemDate));
+			System.out.println("Date to compare to: " + DateFormat.getDateInstance().format(dateToCompareTo));
 
 			if (itemDate.compareTo(dateToCompareTo) < 0) {
 				return true;

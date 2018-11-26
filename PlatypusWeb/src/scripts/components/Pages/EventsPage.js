@@ -23,6 +23,25 @@ const localizer = BigCalendar.momentLocalizer(moment)
 //     </div>
 // )
 
+
+// REQUEST NEEDS TO LOOK LIKE:
+/*
+{
+	"group":{
+		"groupID": 24
+	},
+	"event":{
+		"category": "APPLIANCES",
+		"description": "sdfsdf",
+		"name": "eventhurr",
+		"notification": "1111-11-11",
+		"startDate":"1111-11-11",
+		"endDate": "1111-11-11",
+		"location":"",
+		"pinned": 1
+	}
+}
+*/
 export class Events extends React.Component {
     constructor(...args) {
         super(...args)
@@ -166,7 +185,7 @@ export class Events extends React.Component {
     handleJsonResponse(response, isEdit = false) {
         let { data: event } = response;
         let events = [];
-        /* TODO: Eventually, we need to allow TIME to be saved in the database 
+        /* TODO: Eventually, we need to allow TIME to be saved in the database
             so that the "weekly" and "daily" views show the correct span and PERSIST it
         */
         if (this.state.method === 'GET') { // Then it's an initial GET request which will return multiple events
