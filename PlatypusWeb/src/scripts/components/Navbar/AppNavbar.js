@@ -1,40 +1,64 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import {
+  Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon, Button,
+} from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import AppLogoHeader from './AppLogoHeader';
 import logo from '../../../images/icons/logo_fill_white.svg';
-export default class AppNavbar extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+import { LeftNav } from '../Layouts/AuthLayout';
+import { deleteAllCookies } from '../../fetchHelpers';
 
-    render() {
-        return (
-            <Navbar collapseOnSelect style={{ marginBottom: '0', borderRadius: '0' }}>
-                <Navbar.Header>
-                    <Navbar.Brand id='logo-brand'>
-                        <img src={logo}></img>
-                        <a href='#brand'><span id='brand-platy'>platy</span><span id='brand-pus'>pus</span></a>
-                    </Navbar.Brand>
-                    <Navbar.Toggle />
-                </Navbar.Header>
-                <Navbar.Collapse>
-                    <Nav>
-                        <NavItem eventKey={1} href='#'>Link</NavItem>
-                        <NavItem eventKey={2} href='#'>Link</NavItem>
-                        <NavDropdown eventKey={3} title='Dropdown' id='basic-nav-dropdown'>
-                            <MenuItem eventKey={3.1}>Action</MenuItem>
-                            <MenuItem eventKey={3.2}>Another action</MenuItem>
-                            <MenuItem eventKey={3.3}>Something else here</MenuItem>
-                            <MenuItem divider />
-                            <MenuItem eventKey={3.3}>Separated link</MenuItem>
-                        </NavDropdown>
-                    </Nav>
-                    <Nav pullRight>
-                        <NavItem eventKey={1} href='#'>Link Right</NavItem>
-                        <NavItem eventKey={2} href='#'>Link Right</NavItem>
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-        )
-    }
-}
+const AppNavbar = (props) => {
+  const { availWidth } = window.screen;
+  const mobileNav = props.isAuth && availWidth < 768;
+  const showHome = !mobileNav && props.isAuth;
+  const navStyle = {
+    marginBottom: '0',
+    borderRadius: '0',
+  };
+  if (!props.isAuth && availWidth < 768) navStyle.display = 'none';
+
+  return (
+    <Navbar collapseOnSelect style={navStyle} bsStyle={props.isAuth ? 'inverse' : 'default'}>
+      <AppLogoHeader logo={logo} />
+      <Navbar.Collapse>
+        <Nav pullRight>
+          {showHome && (
+            <LinkContainer id="nav-home" to="/">
+              <NavItem eventKey={1}>
+                <Glyphicon glyph="home" />
+              </NavItem>
+            </LinkContainer>
+          )}
+          {mobileNav && <LeftNav />}
+          <NavDropdown
+            id="basic-nav-dropdown"
+            eventKey={10}
+            title={
+              <span id="nav-profile">
+                <span id="nav-profile-username">
+                  {JSON.parse(localStorage.getItem('username'))}
+                </span>
+              </span>
+            }
+          >
+            <MenuItem eventKey={10.1}>Something1</MenuItem>
+            <MenuItem eventKey={10.2}>Something2</MenuItem>
+            <MenuItem divider />
+            <MenuItem eventKey={10.3}>Something3</MenuItem>
+            <Button
+              style={{ width: '100%', borderRadius: '0' }}
+              onClick={() => {
+                deleteAllCookies();
+                window.location.reload();
+              }}
+            >
+              Sign out
+            </Button>
+          </NavDropdown>
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
+  );
+};
+export default AppNavbar;

@@ -7,36 +7,36 @@ public class User {
 	private String lastName;
 	private String email;
 	private String username;
-	private String password;
+	private String pass;
 	private String dateOfBirth;
-	
+
 	public User() {
-		
+
 	}
-	
+
 	public User(String fn, String ln, String e, String un, String p, String dob) {
 		this.firstName = fn;
 		this.lastName = ln;
 		this.email = e;
 		this.username = un;
-		this.password = p;
+		this.pass = p;
 		dateOfBirth = dob;
 	}
-	
+
 	public User(int u, String fn, String ln, String e, String un, String p, String dob) {
 		this.userId = u;
 		this.firstName = fn;
 		this.lastName = ln;
 		this.email = e;
 		this.username = un;
-		this.password = p;
+		this.pass = p;
 		dateOfBirth = dob;
 	}
-	
+
 	public User(String un, String p) {
 		this.username = un;
-		this.password = p;
-	}	
+		this.pass = p;
+	}
 
 	public int getUserId() {
 		return userId;
@@ -79,25 +79,25 @@ public class User {
 	}
 
 	public String getPassword() {
-		return password;
+		return pass;
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.pass = password;
 	}
 
 	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
-	
+
 	public void setDateOfBirth(String dob) {
 		dateOfBirth = dob;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", username=" + username + ", password=" + password + ", dateOfBirth=" + dateOfBirth + "]";
+				+ ", username=" + username + ", password=" + pass + ", dateOfBirth=" + dateOfBirth + "]";
 	}
-	
+
 }
