@@ -39,12 +39,12 @@ export default class TaskForm extends React.Component {
   onSelectChange = (field, setFieldValue, defaultValue = null) => option => setFieldValue(field, Array.isArray(option) ? defaultValue : option);
 
   onSubmit = (values, { setSubmitting }) => {
-    
+
     const vals = {
       ...values,
       category: values.category.value || 'APPLIANCES',
-      // deadline: values.deadline.length < 1 ? 'null': values.deadline,
-      // notification: values.notification.length < 1 ? 'null' : values.notification,
+      deadline: moment(values.deadline).format('MMM d, YYYY'),
+      notification: moment(values.notification).format('MMM d, YYYY'),
       pinned: values.pinned.value ? 1 : 0,
       priority: values.priority.value,
     }
